@@ -1,0 +1,2 @@
+module EventOrganizers::RegistrationsHelper
+end

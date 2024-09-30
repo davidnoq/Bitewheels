@@ -1,0 +1,36 @@
+<h1>Events</h1>
+<%= link_to 'Create New Event', new_event_path, class: 'btn btn-primary' %>
+
+<ul>
+  <% Event.all.each do |event| %>
+    <li>
+      <strong>Event Name:</strong> <%= event.name %><br>
+      <strong>Location:</strong> <%= event.location %><br>
+      <strong>Date:</strong> <%= event.date.strftime('%B %d, %Y %H:%M') %><br>
+      <strong>Expected Attendees:</strong> <%= event.expected_attendees %><br>
+      <strong>Description:</strong> <%= event.description %><br>
+
+      <% if event.logo.attached? %>
+        <strong>Logo:</strong> 
+        <%= image_tag event.logo, width: 100, height: 100 %><br>
+      <% end %>
+
+      <strong>Number of Food Trucks:</strong> <%= event.amount_of_food_trucks %><br>
+
+      <strong>Food Trucks:</strong>
+      <% if event.food_trucks.any? %>
+        <ul>
+          <% event.food_trucks.each do |food_truck| %>
+            <li><%= food_truck.name %>: <%= food_truck.cuisine %></li>
+          <% end %>
+        </ul>
+      <% else %>
+        <p>No food trucks assigned.</p>
+      <% end %>
+
+      <%= link_to 'Delete', event_path(event), method: :delete, data: { confirm: 'Are you sure you want to delete this event?' }, class: 'btn btn-danger' %> 
+
+      <hr>
+    </li>
+  <% end %>
+</ul>
