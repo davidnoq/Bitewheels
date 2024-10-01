@@ -1,0 +1,20 @@
+<% if notice %>
+<div class="alert alert-primary" role="alert">
+  <%= notice %>
+</div>
+<% end %>
+
+<% content_for :title, "Events" %>
+
+<h1>Events</h1>
+
+<div id="events">
+  <% @events.each do |event| %>
+    <%= render event %>
+    <p>
+      <%= link_to "Show this event", event, class: "btn btn-outline-primary mt-3" %>
+    </p>
+  <% end %>
+</div>
+
+<%= link_to "New event", new_event_path, class: "btn btn-primary" %>
