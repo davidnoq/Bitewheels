@@ -4,8 +4,13 @@
     <div class="card-body">
       <h5 class="card-title"><%= event.name %></h5>
       <p class="card-text"><%= event.description %></p>
-      <p class="card-text"><strong>Start date:</strong><%= event.start_date %></p>
-      <p class="card-text"><strong>End date:<%= event.end_date %><strong/></p>
+      <p class="card-text"><strong>Location:</strong> <%= event.location %></p>
+      <p class="card-text"><strong>Expected Attendees:</strong> <%= event.expected_attendees %></p>
+      <p class="card-text"><strong>Number of Food Trucks:</strong> <%= event.foodtruck_amount %></p> <!-- Use count to get the number of food trucks -->
+      
+
+      <p class="card-text"><strong>Start Date:</strong> <%= event.start_date %></p>
+      <p class="card-text"><strong>End Date:</strong> <%= event.end_date %></p>
     </div>
   </div>
 </div>

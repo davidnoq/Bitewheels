@@ -1,16 +1,24 @@
 Rails.application.routes.draw do
+  devise_for :foodtruck_owners
+  devise_for :event_organizers
+
   resources :events
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
+  resources :food_truck_owners
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
-  get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/*
-  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
-  get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
   root to: "static#home"
 
-  # Defines the root path route ("/")
-  # root "posts#index"
+  authenticated :food_truck_owner do
+    root 'food_truck_owners#index', as: :authenticated_food_truck_owner_root
+  end
+
+  authenticated :event_organizer do
+    root 'events#index', as: :authenticated_event_organizer_root
+  end
+
+  # Health check endpoint
+  get "up" => "rails/health#show", as: :rails_health_check
+
+  # PWA routes
+  get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
+  get "manifest" => "rails/pwa#manifest"
 end

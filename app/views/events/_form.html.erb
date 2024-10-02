@@ -2,7 +2,6 @@
   <% if event.errors.any? %>
     <div style="color: red">
       <h2><%= pluralize(event.errors.count, "error") %> prohibited this event from being saved:</h2>
-
       <ul>
         <% event.errors.each do |error| %>
           <li><%= error.full_message %></li>
@@ -13,25 +12,47 @@
 
   <div>
     <%= form.label :name, style: "display: block" %>
-    <%= form.text_field :name %>
+    <%= form.text_field :name, required: true %>
+  </div>
+
+  <div>
+    <%= form.label :location, style: "display: block" %>
+    <%= form.text_field :location, required: true %>
   </div>
 
   <div>
     <%= form.label :description, style: "display: block" %>
-    <%= form.text_field :description %>
+    <%= form.text_area :description, required: true %>
   </div>
 
   <div>
     <%= form.label :start_date, style: "display: block" %>
-    <%= form.datetime_field :start_date %>
+    <%= form.datetime_field :start_date, required: true %>
   </div>
 
   <div>
     <%= form.label :end_date, style: "display: block" %>
-    <%= form.datetime_field :end_date %>
+    <%= form.datetime_field :end_date, required: true %>
   </div>
 
   <div>
-    <%= form.submit %>
+    <%= form.label :expected_attendees, style: "display: block" %>
+    <%= form.number_field :expected_attendees, min: 0, required: true %>
+  </div>
+
+ <div>
+  <%= form.label :foodtruck_amount, "Number of Food Trucks", style: "display: block" %>
+  <%= form.number_field :foodtruck_amount, min: 0, value: event.foodtruck_amount, id: "foodtruck_amount" %>
+</div>
+
+
+  
+
+
+  <!-- JavaScript-generated new Food Trucks -->
+  
+    <%= form.submit "Save Event" %>
   </div>
 <% end %>
+
+
