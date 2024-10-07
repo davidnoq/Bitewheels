@@ -1,0 +1,42 @@
+<nav class="navbar navbar-expand-lg navbar-light bg-light shadow-sm">
+  <div class="container-fluid d-flex justify-content-between">
+    
+    <a class="navbar-brand position-absolute" href="<%= root_path %>">Bitewheels</a>
+
+    
+    <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+      <ul class="navbar-nav mx-auto">
+        <% if helpers.current_user %>
+          <li class="nav-item">
+            <a class="nav-link" href="<%= user_profile_path %>">Profile</a>
+          </li>
+          <% if helpers.current_user.eventorganizer? %>
+            <li class="nav-item">
+              <a class="nav-link" href="<%= events_path %>">Events</a>
+            </li>
+          <% end %>
+          <% if helpers.current_user.user? %>
+            <li class="nav-item">
+              <%= button_to "Become an Event Organizer", promote_to_event_organizer_path, method: :post, class: "btn btn-primary btn-sm nav-link" %>
+            </li>
+          <% end %>
+          <li class="nav-item">
+            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-light btn-sm nav-link" %>
+          </li>
+        <% else %>
+          <li class="nav-item">
+            <%= link_to "Sign up", new_user_registration_path, class: "btn btn-light btn-sm nav-link" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Log in", new_user_session_path, class: "btn btn-light btn-sm nav-link" %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+
+    
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+  </div>
+</nav>

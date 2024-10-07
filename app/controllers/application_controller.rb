@@ -1,30 +1,29 @@
+# app/controllers/application_controller.rb
 class ApplicationController < ActionController::Base
-  # Include Devise's authentication helper methods
-  before_action :authenticate_user!, except: [:home]
+  include Pundit
+
+  before_action :configure_permitted_parameters, if: :devise_controller?
+
+  # Redirect to home page after sign out
+  def after_sign_out_path_for(resource_or_scope)
+    root_path # This will redirect to the root path, which is `pages#home`
+  end
+
+  rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
   private
 
-  def authenticate_user!
-    # Check if the user is signed in as an Event Organizer
-    if event_organizer_signed_in?
-      current_event_organizer
-    # Check if the user is signed in as a Food Truck Owner
-    elsif foodtruck_owner_signed_in?
-      current_food_truck_owner
-    else
-      # If neither is signed in, redirect to the home page
-      redirect_to root_path
-    end
+  # Handle unauthorized access gracefully
+  def user_not_authorized
+    flash[:alert] = "You are not authorized to view this page."
+    redirect_to(root_path)
   end
 
-  # Customize redirection after sign-in based on user type
-  def after_sign_in_path_for(resource)
-    if resource.is_a?(EventOrganizer)
-      events_path # Redirect event organizers to events_path
-    elsif resource.is_a?(FoodtruckOwner)
-      food_truck_owners_path # Redirect food truck owners to their index page
-    else
-      root_path # Fallback if the resource is neither
-    end
+  # Add extra permitted parameters for Devise
+  protected
+
+  def configure_permitted_parameters
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :phone_number])
+    devise_parameter_sanitizer.permit(:account_update, keys: [:first_name, :last_name, :phone_number])
   end
 end

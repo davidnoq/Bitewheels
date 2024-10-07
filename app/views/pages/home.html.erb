@@ -1,0 +1,20 @@
+<!-- app/views/pages/home.html.erb -->
+<%= render NavbarComponent.new %>
+<div class="d-flex justify-content-center align-items-center vh-100">
+  <div class="card shadow-sm" style="width: 30rem;">
+    <div class="card-body text-center">
+
+      <% if current_user %>
+        <p class="card-text">Hello <%= current_user.email %>!</p>
+        <p class="card-text">You are currently a [<%= current_user.role %>]</p>
+        <p class="card-text">
+          You have successfully authenticated with your Devise account and you are now ready to interact with this application.
+        </p>
+
+
+      <% else %>
+        <p class="card-text">To access this application you must sign in.</p>
+      <% end %>
+    </div>
+  </div>
+</div>

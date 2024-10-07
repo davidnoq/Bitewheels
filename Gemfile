@@ -4,9 +4,7 @@ source "https://rubygems.org"
 
 
 
-#DAVIDS ADDITIONS
 
-################
 
 # Bundle edge Rails instead: gem "rails", github: "rails/rails", branch: "main"
 gem "rails", "~> 7.2.1"
@@ -68,3 +66,14 @@ group :test do
 end
 
 gem "devise", "~> 4.9"
+gem "pundit"
+gem "phonelib"
+group :test do
+  gem 'minitest'
+  gem 'minitest-rails'
+  gem 'minitest-reporters' # Optional: for improved test output formatting
+end
+
+gem 'bcrypt', '~> 3.1.7'
+
+gem "view_component", "~> 3.16"
