@@ -1,0 +1,15 @@
+<!-- app/views/food_trucks/_food_truck.html.erb -->
+
+<div class="list-group-item mb-3">
+  <div class="d-flex w-100 justify-content-between">
+    <h5 class="mb-1"><%= link_to food_truck.event.name, food_truck.event %></h5>
+    <small><%= food_truck.created_at.strftime("%B %d, %Y") %></small>
+  </div>
+  <p class="mb-1"><strong>Cuisine:</strong> <%= food_truck.cuisine %></p>
+  
+  <div class="mt-3">
+    <%= link_to 'View', food_truck_path(food_truck), class: 'btn btn-info btn-sm me-2' %>
+    <%= link_to 'Edit', edit_food_truck_path(food_truck), class: 'btn btn-secondary btn-sm me-2' %>
+    <%= link_to 'Delete', food_truck_path(food_truck), method: :delete, data: { confirm: "Are you sure?" }, class: 'btn btn-danger btn-sm' %>
+  </div>
+</div>

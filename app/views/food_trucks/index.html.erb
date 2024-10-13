@@ -1,0 +1,28 @@
+<h1>Your Food Truck Applications</h1>
+
+<% if @food_trucks.any? %>
+  <ul>
+    <% @food_trucks.each do |food_truck| %>
+      <%= render partial: 'food_truck', locals: { food_truck: food_truck } %>
+    <% end %>
+  </ul>
+<% else %>
+  <p>You have not applied to any events yet.</p>
+<% end %>
+
+<h2>All Published Events</h2>
+
+<% if @published_events.any? %>
+  <ul>
+    <% @published_events.each do |event| %>
+      <li>
+        <strong><%= link_to event.name, event %></strong><br>
+        <%= truncate(event.description, length: 100) %><br>
+        <%= event.start_date.strftime("%B %d, %Y %I:%M %p") %> - <%= event.end_date.strftime("%B %d, %Y %I:%M %p") %><br>
+        <%= link_to 'Apply for Event', new_event_food_truck_path(event), class: 'btn btn-primary' %>
+      </li>
+    <% end %>
+  </ul>
+<% else %>
+  <p>No published events available at the moment.</p>
+<% end %>

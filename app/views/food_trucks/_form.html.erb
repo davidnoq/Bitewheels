@@ -1,0 +1,23 @@
+<!-- app/views/food_trucks/_form.html.erb -->
+
+<%= form_with(model: [@event, @food_truck], local: true, html: { class: 'needs-validation', novalidate: true }) do |form| %>
+  <% if @food_truck.errors.any? %>
+    <div class="alert alert-danger" role="alert">
+      <h4 class="alert-heading">Oops! Something went wrong.</h4>
+      <ul>
+        <% @food_truck.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="mb-3">
+    <%= form.label :cuisine, class: 'form-label' %>
+    <%= form.text_field :cuisine, class: 'form-control', placeholder: 'Enter your cuisine type' %>
+  </div>
+
+  <div class="d-grid gap-2">
+    <%= form.submit @food_truck.new_record? ? "Apply" : "Update Application", class: 'btn btn-primary' %>
+  </div>
+<% end %>

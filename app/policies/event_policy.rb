@@ -1,33 +1,46 @@
 # app/policies/event_policy.rb
 class EventPolicy < ApplicationPolicy
   class Scope < Scope
-    # NOTE: Be explicit about which records you allow access to!
     def resolve
-      scope.all
+      if user.eventorganizer?
+        # Event organizers can see their own drafts and all published events
+        scope.where(user: user).or(scope.where(status: 'published'))
+      else
+        # Regular users see only published events
+        scope.where(status: 'published')
+      end
     end
   end
 
   def index?
-    user&.eventorganizer?
+    true
   end
 
   def show?
-    user&.eventorganizer?
+    record.published? || (user.eventorganizer? && record.user_id == user.id)
   end
 
   def create?
-    user&.eventorganizer?
+    user.eventorganizer?
   end
 
   def new?
     create?
   end
 
+  def edit?
+    user.eventorganizer? && record.user_id == user.id && record.draft?
+  end
+
   def update?
-    create?
+    edit?
   end
 
   def destroy?
-    create?
+    user.eventorganizer? && record.user_id == user.id
+  end
+
+  def publish?
+    user.eventorganizer? && record.user_id == user.id && record.draft?
   end
 end

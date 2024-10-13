@@ -1,20 +1,139 @@
+<!-- app/views/events/index.html.erb -->
+
+<%# Display flash messages %>
 <% if notice %>
-<div class="alert alert-primary" role="alert">
-  <%= notice %>
-</div>
+  <div class="alert alert-primary text-center" role="alert">
+    <%= notice %>
+  </div>
+<% elsif alert %>
+  <div class="alert alert-danger text-center" role="alert">
+    <%= alert %>
+  </div>
 <% end %>
 
+<%# Set the page title %>
 <% content_for :title, "Events" %>
 
-<h1>Events</h1>
+<div class="d-flex justify-content-center align-items-start min-vh-100 bg-white py-5">
+  <div class="container">
+    <div class="card shadow-lg" style="max-width: 50rem; margin: auto;">
 
-<div id="events">
-  <% @events.each do |event| %>
-    <%= render event %>
-    <p>
-      <%= link_to "Show this event", event, class: "btn btn-outline-primary mt-3" %>
-    </p>
-  <% end %>
+      <div class="card-header bg-primary text-white text-center">
+        <h1 class="mb-0">
+          <% if current_user.eventorganizer? %>
+            My Events
+          <% else %>
+            Events
+          <% end %>
+        </h1>
+      </div>
+
+      <div class="card-body">
+
+        <% if current_user.eventorganizer? %>
+          <!-- Published Events Section -->
+          <h2 class="mt-4">Published Events</h2>
+          <div id="published-events">
+            <% if @published_events.any? %>
+              <% @published_events.each do |event| %>
+                <div class="mb-4 p-3 border rounded bg-white">
+                  <span class="badge bg-success">Published</span>
+                  <%= render event, show_name: true %>
+                  <div class="text-center mt-3">
+                    <%= link_to "Show this event", event, class: "btn btn-outline-primary" %>
+                  </div>
+
+                  <!-- Applications for this Event -->
+                  <h4 class="mt-4">Applications</h4>
+                  <% if event.food_trucks.any? %>
+                    <ul class="list-group">
+                      <% event.food_trucks.each do |food_truck| %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          <div>
+<strong>User:</strong> <%= link_to food_truck.user.email, user_path(food_truck.user) %><br>
+                            <strong>Cuisine:</strong> <%= food_truck.cuisine %>
+                          </div>
+                          <div>
+                            <%= link_to 'View', food_truck_path(food_truck), class: 'btn btn-info btn-sm' %>
+                          </div>
+                        </li>
+                      <% end %>
+                    </ul>
+                  <% else %>
+                    <p class="text-muted">No applications for this event yet.</p>
+                  <% end %>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-center text-muted">No published events available.</p>
+            <% end %>
+          </div>
+
+          <!-- Draft Events Section -->
+          <h2 class="mt-5">Drafted Events</h2>
+          <div id="draft-events">
+            <% if @draft_events.any? %>
+              <% @draft_events.each do |event| %>
+                <div class="mb-4 p-3 border rounded bg-white">
+                  <span class="badge bg-secondary">Draft</span>
+                  <%= render event, show_name: true %>
+                  <div class="text-center mt-3">
+                    <%= link_to "Show this event", event, class: "btn btn-outline-primary" %>
+                  </div>
+
+                  <!-- Applications for this Event -->
+                  <h4 class="mt-4">Applications</h4>
+                  <% if event.food_trucks.any? %>
+                    <ul class="list-group">
+                      <% event.food_trucks.each do |food_truck| %>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                          <div>
+                            <strong>User:</strong> <%= link_to food_truck.user.name, user_path(food_truck.user) %><br>
+                            <strong>Cuisine:</strong> <%= food_truck.cuisine %>
+                          </div>
+                          <div>
+                            <%= link_to 'View', food_truck_path(food_truck), class: 'btn btn-info btn-sm' %>
+                          </div>
+                        </li>
+                      <% end %>
+                    </ul>
+                  <% else %>
+                    <p class="text-muted">No applications for this event yet.</p>
+                  <% end %>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-center text-muted">No draft events available.</p>
+            <% end %>
+          </div>
+        <% else %>
+          <!-- Published Events Section for Regular Users -->
+          <h2 class="mt-4">Published Events</h2>
+          <div id="published-events">
+            <% if @published_events.any? %>
+              <% @published_events.each do |event| %>
+                <div class="mb-4 p-3 border rounded bg-white">
+                  <span class="badge bg-success">Published</span>
+                  <%= render event, show_name: true %>
+                  <div class="text-center mt-3">
+                    <%= link_to "Show this event", event, class: "btn btn-outline-primary" %>
+                  </div>
+                </div>
+              <% end %>
+            <% else %>
+              <p class="text-center text-muted">No events available at the moment.</p>
+            <% end %>
+          </div>
+        <% end %>
+
+        <!-- New Event Button -->
+        <% if current_user.eventorganizer? %>
+          <div class="d-flex justify-content-center">
+            <%= link_to "New Event", new_event_path, class: "btn btn-primary mt-4" %>
+          </div>
+        <% end %>
+
+      </div>
+    </div>
+  </div>
 </div>
-
-<%= link_to "New event", new_event_path, class: "btn btn-primary" %>

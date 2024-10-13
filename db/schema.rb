@@ -10,16 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_07_143833) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_11_201641) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
-
-  create_table "event_organizers", force: :cascade do |t|
-    t.string "name"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
 
   create_table "events", force: :cascade do |t|
     t.string "name"
@@ -28,10 +21,15 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_07_143833) do
     t.datetime "end_date"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.string "location"
     t.integer "expected_attendees"
     t.string "logo"
     t.integer "foodtruck_amount"
+    t.string "address"
+    t.float "latitude"
+    t.float "longitude"
+    t.string "status", default: "draft"
+    t.bigint "user_id"
+    t.index ["user_id"], name: "index_events_on_user_id"
   end
 
   create_table "food_trucks", force: :cascade do |t|
@@ -39,14 +37,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_07_143833) do
     t.string "cuisine"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
     t.index ["event_id"], name: "index_food_trucks_on_event_id"
-  end
-
-  create_table "foodtruck_owners", force: :cascade do |t|
-    t.string "name"
-    t.integer "user_id"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_food_trucks_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -55,15 +48,18 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_07_143833) do
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
-    t.integer "role", default: 0
+    t.string "role", default: "user"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "first_name"
     t.string "last_name"
     t.string "phone_number"
+    t.string "country"
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "events", "users"
   add_foreign_key "food_trucks", "events"
+  add_foreign_key "food_trucks", "users"
 end

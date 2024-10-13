@@ -27,7 +27,7 @@ gem "jbuilder"
 # Use Redis adapter to run Action Cable in production
 # gem "redis", ">= 4.0.1"
 gem 'bootstrap', '~> 5.1', '>= 5.1.3'
-gem 'dotenv-rails', groups: [:development, :test]
+
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem "kredis"
 
@@ -68,12 +68,3 @@ end
 gem "devise", "~> 4.9"
 gem "pundit"
 gem "phonelib"
-group :test do
-  gem 'minitest'
-  gem 'minitest-rails'
-  gem 'minitest-reporters' # Optional: for improved test output formatting
-end
-
-gem 'bcrypt', '~> 3.1.7'
-
-gem "view_component", "~> 3.16"

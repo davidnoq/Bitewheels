@@ -1,0 +1,12 @@
+<% content_for :title, "Editing foodtruck" %>
+
+<h1>Editing foodtruck</h1>
+
+<%= render "form", foodtruck: @food_truck %>
+
+<br>
+
+<div>
+  <%= link_to "Show this foodtruck", @food_truck %> |
+  <%= link_to "Back to foodtrucks", food_trucks_path %>
+</div>
