@@ -1,85 +1,133 @@
-# app/controllers/events_controller.rb
-
 class EventsController < ApplicationController
-  before_action :authenticate_user! # Ensure user is logged in
+  before_action :authenticate_user!, except: [:index, :show]
   before_action :set_event, only: %i[show edit update destroy publish]
-  after_action :verify_authorized, except: [:index]
+  after_action :verify_authorized, except: [:index, :published, :search]
   after_action :verify_policy_scoped, only: :index
 
-  # GET /events
+  #renders current users scope of events, as well as the current users pending applications they must view
   def index
-    if current_user.eventorganizer?
-      # Fetch published and draft events belonging to the current event organizer
-      @published_events = policy_scope(Event).where(status: 'published', user: current_user).includes(:food_trucks)
-      @draft_events = policy_scope(Event).where(status: 'draft', user: current_user).includes(:food_trucks)
-    else
-      # For regular users, fetch only published events
-      @published_events = policy_scope(Event).published.includes(:food_trucks)
-      @draft_events = Event.none # No draft events for regular users
+    @events = policy_scope(Event)
+               .includes(:food_trucks)
+               .page(params[:page])
+               .per(10)
+    authorize @events
+
+    if current_user&.eventorganizer?
+      @pending_applications_count = EventApplication.joins(:event)
+                                                    .where(events: { user_id: current_user.id }, status: 'pending')
+                                                    .count
     end
   end
 
-  # GET /events/1 or /events/1.json
-  def show
-    authorize @event
+  # right now this renders ALL published, since search functionality not implemented
+  def events_near_me
+    authorize :event, :events_near_me?
+    @events = Event.published
+                   .includes(:food_trucks)
+                   .page(params[:page])
+                   .per(10)
+  end
+  
+  
+  #def published
+  #  @events = policy_scope(Event)
+  #             .published
+  #             .includes(:food_trucks)
+  #             .page(params[:page])
+  #             .per(10)
+  #  authorize @events
+  #  render :index
+  #end
+
+  
+  #def drafts
+  #  authorize :event, :drafts?
+  #  @events = policy_scope(Event)
+  #             .draft
+  #             .where(user: current_user)
+  #             .includes(:food_trucks)
+  #             .page(params[:page])
+  #             .per(10)
+  #  render :index
+  #end
+
+  # GET /events/applications
+  def applications
+    authorize :event, :applications?
+    @event_applications = policy_scope(EventApplication)
+                           .joins(:event)
+                           .where(events: { user_id: current_user.id })
+                           .includes(:food_truck, :event)
+                           .order(created_at: :desc)
+                           .page(params[:page])
+                           .per(10)
   end
 
-  # GET /events/new
+
+  #food truck applictions partial
+  def show_application_food_truck
+    @event_application = EventApplication.find(params[:id])
+    @food_truck = @event_application.food_truck
+    @event_applications = @food_truck.event_applications.where(event: @event_application.event)
+
+    authorize @event_application
+  
+  end
+
+  
+  def show
+    authorize @event
+    @food_trucks = @event.food_trucks
+
+    if current_user&.foodtruckowner?
+      applied_food_truck_ids = current_user.food_trucks.joins(:event_applications)
+                                             .where(event_applications: { event_id: @event.id })
+                                             .pluck(:id)
+      @available_food_trucks = current_user.food_trucks.where.not(id: applied_food_truck_ids)
+    end
+  end
+
+
   def new
     @event = current_user.events.build
     authorize @event
   end
 
-  # GET /events/1/edit
   def edit
     authorize @event
   end
 
-  # POST /events or /events.json
   def create
     @event = current_user.events.build(event_params)
-    authorize @event # Explicitly authorize creation
+    authorize @event
 
-    respond_to do |format|
-      if @event.save
-        format.html { redirect_to @event, notice: "Event was successfully created." }
-        format.json { render :show, status: :created, location: @event }
-      else
-        format.html { render :new, status: :unprocessable_entity }
-        format.json { render json: @event.errors, status: :unprocessable_entity }
-      end
+    if @event.save
+      redirect_to @event, notice: "Event was successfully created."
+    else
+      render :new, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /events/1 or /events/1.json
   def update
-    authorize @event # Explicitly authorize update
-    respond_to do |format|
-      if @event.update(event_params)
-        format.html { redirect_to @event, notice: "Event was successfully updated." }
-        format.json { render :show, status: :ok, location: @event }
-      else
-        format.html { render :edit, status: :unprocessable_entity }
-        format.json { render json: @event.errors, status: :unprocessable_entity }
-      end
+    authorize @event
+    if @event.update(event_params)
+      redirect_to @event, notice: "Event was successfully updated."
+    else
+      render :edit, status: :unprocessable_entity
     end
   end
 
-  # DELETE /events/1 or /events/1.json
   def destroy
-    authorize @event # Explicitly authorize deletion
+    authorize @event
     @event.destroy!
 
-    respond_to do |format|
-      format.html { redirect_to events_path, status: :see_other, notice: "Event was successfully destroyed." }
-      format.json { head :no_content }
-    end
+    redirect_to events_path, status: :see_other, notice: "Event was successfully destroyed."
   end
 
   # PATCH /events/1/publish
   def publish
     authorize @event, :publish?
-    if @event.publish!
+    if @event.update(status: :published)
       redirect_to @event, notice: 'Event was successfully published.'
     else
       redirect_to @event, alert: 'Failed to publish the event.'
@@ -88,15 +136,13 @@ class EventsController < ApplicationController
 
   private
 
-  # Use callbacks to share common setup or constraints between actions.
   def set_event
     @event = Event.find(params[:id])
   end
 
   def event_params
-    # Only permit :status if the current user is an event organizer
-    permitted = [:name, :description, :address, :start_date, :end_date, :expected_attendees, :logo, :foodtruck_amount, :latitude, :longitude]
-    permitted << :status if current_user.eventorganizer?
+    permitted = [:name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude]
+    permitted << :status if user_signed_in? && current_user.eventorganizer?
     params.require(:event).permit(permitted)
   end
 end

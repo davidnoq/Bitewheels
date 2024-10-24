@@ -1,27 +1,32 @@
-# app/policies/event_policy.rb
 class EventPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
-      if user.eventorganizer?
-        # Event organizers can see their own drafts and all published events
-        scope.where(user: user).or(scope.where(status: 'published'))
+      if user&.eventorganizer?
+        # Event organizers can see all their events (both drafts and published)
+        scope.where(user: user)
       else
-        # Regular users see only published events
-        scope.where(status: 'published')
+        # Regular users and visitors can only see published events
+        scope.published
       end
     end
   end
 
   def index?
-    true
+    user&.eventorganizer? 
   end
 
   def show?
-    record.published? || (user.eventorganizer? && record.user_id == user.id)
+    if user.present?
+      # Allow event organizers to see their events, and regular users to see only published ones
+      record.published? || (user.eventorganizer? && record.user_id == user.id)
+    else
+      # Visitors can only see published events
+      record.published?
+    end
   end
 
   def create?
-    user.eventorganizer?
+    user&.eventorganizer?
   end
 
   def new?
@@ -29,7 +34,7 @@ class EventPolicy < ApplicationPolicy
   end
 
   def edit?
-    user.eventorganizer? && record.user_id == user.id && record.draft?
+    user&.eventorganizer? && record.user_id == user.id 
   end
 
   def update?
@@ -37,10 +42,18 @@ class EventPolicy < ApplicationPolicy
   end
 
   def destroy?
-    user.eventorganizer? && record.user_id == user.id
+    user&.eventorganizer? && record.user_id == user.id
   end
 
   def publish?
-    user.eventorganizer? && record.user_id == user.id && record.draft?
+    user&.eventorganizer? && record.user_id == user.id && record.draft?
+  end
+
+  def applications?
+    user&.eventorganizer?
+  end
+
+  def events_near_me?
+    true # All users are allowed to access the "Events Near Me" page
   end
 end

@@ -1,5 +1,3 @@
-# frozen_string_literal: true
-
 class ApplicationPolicy
   attr_reader :user, :record
 
@@ -13,7 +11,7 @@ class ApplicationPolicy
   end
 
   def show?
-    false
+    scope.where(id: record.id).exists?
   end
 
   def create?
@@ -36,18 +34,20 @@ class ApplicationPolicy
     false
   end
 
+  def scope
+    Pundit.policy_scope!(user, record.class)
+  end
+
   class Scope
+    attr_reader :user, :scope
+
     def initialize(user, scope)
       @user = user
       @scope = scope
     end
 
     def resolve
-      raise NoMethodError, "You must define #resolve in #{self.class}"
+      scope.all
     end
-
-    private
-
-    attr_reader :user, :scope
   end
 end

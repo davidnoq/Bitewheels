@@ -1,9 +1,9 @@
 <!-- app/views/events/_form.html.erb -->
 
-<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+<div class="d-flex justify-content-center align-items-center  bg-white">
   <div class="card shadow-lg" style="max-width: 800px; width: 100%; margin: auto;">
     <div class="card-body px-5 py-4">
-      <h2 class="card-title text-center text-primary mb-4">Edit Event</h2>
+      <h2 class="card-title text-center text-primary mb-4">Event Details</h2>
 
       <!-- Display Error Messages -->
       <% if event.errors.any? %>
@@ -41,10 +41,6 @@
           <div id="map" style="width: 100%; height: 300px; border: 1px solid #ddd;"></div>
         </div>
 
-        <div class="mb-3">
-          <%= form.label :description, class: "form-label" %>
-          <%= form.text_area :description, class: "form-control", rows: 3, required: true %>
-        </div>
 
         <div class="row">
           <div class="col-md-6 mb-3">

@@ -68,3 +68,4 @@ end
 gem "devise", "~> 4.9"
 gem "pundit"
 gem "phonelib"
+gem 'kaminari'

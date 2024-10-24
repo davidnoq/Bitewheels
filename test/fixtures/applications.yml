@@ -1,0 +1,11 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  food_truck: one
+  event: one
+  status: MyString
+
+two:
+  food_truck: two
+  event: two
+  status: MyString

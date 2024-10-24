@@ -28,12 +28,12 @@ has_many :food_trucks, dependent: :destroy
     phone.full_e164.presence || phone.full_national.presence
   end
   
-
-  # Define custom helper methods for checking roles
-  ROLES.each do |role_name|
-    define_method("#{role_name}?") do
-      self.role == role_name
-    end
+ # Define helper methods for roles
+ ROLES.each do |role_name|
+  define_method("#{role_name}?") do
+    self.role == role_name
   end
+end
+ 
 
 end
