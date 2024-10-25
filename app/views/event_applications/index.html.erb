@@ -1,0 +1,16 @@
+<h1>Event Applications</h1>
+
+<div class="row">
+  <% @event_applications.each do |event_application| %>
+    <div class="col">
+      <div class="card mb-3">
+        <div class="card-body">
+          <h5 class="card-title"><%= event_application.food_truck.name %></h5>
+          <p class="card-text"><%= event_application.food_truck.cuisine %><%= event_application.status %><br/></p>
+          <%= link_to "View more", event_event_application_path(@event, event_application), class: "btn btn-primary" %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>
+

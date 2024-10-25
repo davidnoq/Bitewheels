@@ -16,7 +16,7 @@ Rails.application.routes.draw do
     end
 
     # Nested route for Event Applications creation
-    resources :event_applications, only: [ :create ]
+    resources :event_applications
 
     # Route to show a food truck in the context of an event application
     get "applications/:id/food_trucks/:food_truck_id", to: "events#show_application_food_truck", as: "show_application_food_truck"
