@@ -1,0 +1,98 @@
+<div class="container py-5"> 
+  <div class="row justify-content-center">
+    <div class="col-lg-8 col-md-10 col-sm-12">
+      <%= form_with(model: [@event, @food_truck], local: true, html: { multipart: true, class: 'needs-validation', novalidate: true }) do |form| %>
+        <% if @food_truck.errors.any? %>
+          <div class="alert alert-danger" role="alert">
+            <h4 class="alert-heading">Oops! Something went wrong.</h4>
+            <ul>
+              <% @food_truck.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <!-- Name Field -->
+        <div class="mb-3">
+          <%= form.label :name, class: 'form-label' %>
+          <%= form.text_field :name, class: 'form-control', placeholder: 'Enter your food truck name', required: true %>
+          <div class="invalid-feedback">
+            Please provide a name.
+          </div>
+        </div>
+
+        <!-- Cuisine Field -->
+        <div class="mb-3">
+          <%= form.label :cuisine, class: 'form-label' %>
+          <%= form.text_field :cuisine, class: 'form-control', placeholder: 'Enter your cuisine type', required: true %>
+          <div class="invalid-feedback">
+            Please provide a cuisine.
+          </div>
+        </div>
+
+        <!-- Permit Upload Field -->
+        <div class="mb-3">
+    <%= form.label :permit, "Permit Image" %>
+    <%= form.file_field :permit, class: 'form-control' %>
+    <% if @food_truck.permit.attached? %>
+      <p>Current Permit:</p>
+      <%= image_tag url_for(@food_truck.permit), class: 'img-fluid img-thumbnail', alt: 'Current Permit', style: 'max-width: 300px; height: auto;' %>
+    <% end %>
+  </div>
+
+        <!-- Menu Images Upload Field (up to 3 images) -->
+        <div class="mb-3">
+          <%= form.label :menu_images, "Menu Images (up to 3)", class: 'form-label' %>
+          <%= form.file_field :menu_images, multiple: true, name: 'food_truck[menu_images][]', direct_upload: true, class: 'form-control-file', accept: 'image/png,image/jpeg' %>
+          <% if @food_truck.menu_images.attached? %>
+            <p>Current Menu Images:</p>
+            <div class="row">
+              <% @food_truck.menu_images.each do |image| %>
+                <div class="col-md-4 mb-2">
+                  <%= image_tag url_for(image), class: 'img-fluid img-thumbnail', style: 'max-width: 150px; height: auto;' %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Food Images Upload Field (up to 2 images) -->
+        <div class="mb-3">
+          <%= form.label :food_images, "Food Images (up to 2)", class: 'form-label' %>
+          <%= form.file_field :food_images, multiple: true, name: 'food_truck[food_images][]', direct_upload: true, class: 'form-control-file', accept: 'image/png,image/jpeg' %>
+          <% if @food_truck.food_images.attached? %>
+            <p>Current Food Images:</p>
+            <div class="row">
+              <% @food_truck.food_images.each do |image| %>
+                <div class="col-md-4 mb-2">
+                  <%= image_tag url_for(image), class: 'img-fluid img-thumbnail', style: 'max-width: 150px; height: auto;' %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Submit Button -->
+        <div class="d-grid gap-2">
+          <%= form.submit @food_truck.new_record? ? "Create New Food Truck" : "Update Food Truck", class: 'btn btn-primary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Form Validation -->
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.querySelector('form.needs-validation');
+
+    form.addEventListener('submit', function(event) {
+      if (!form.checkValidity()) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+      form.classList.add('was-validated');
+    }, false);
+  });
+</script>

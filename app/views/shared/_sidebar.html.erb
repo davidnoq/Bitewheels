@@ -1,0 +1,115 @@
+<!-- app/views/shared/_sidebar.html.erb -->
+
+<!-- Sidebar Toggle Button (Visible on Small Screens) -->
+<nav class="navbar navbar-dark bg-dark d-lg-none">
+  <div class="container-fluid">
+    <button class="btn text-white" type="button" data-bs-toggle="offcanvas" data-bs-target="#sidebarOffcanvas" aria-controls="sidebarOffcanvas">
+      ☰ Menu
+    </button>
+  </div>
+</nav>
+
+<!-- Offcanvas Sidebar for Small Screens -->
+<div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
+  <div class="offcanvas-header">
+    <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">
+      <a class="navbar-brand text-white" href="<%= root_path %>">Bitewheels</a>
+    </h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    <!-- Navigation Links -->
+    <ul class="nav flex-column">
+      <% if current_user %>
+        <li class="nav-item mb-2">
+          <a class="nav-link text-white" href="<%= user_profile_path %>">Profile</a>
+        </li>
+        <li class="nav-item mb-2">
+          <a class="nav-link text-white" href="<%= events_path %>">My Events</a>
+        </li>
+        <li class="nav-item mb-2">
+          <a class="nav-link text-white" href="<%= events_near_me_events_path %>">Events Near Me</a>
+        </li>
+        <% if current_user.eventorganizer? %>
+          <li class="nav-item mb-2">
+            <a class="nav-link text-white" href="<%= applications_events_path %>">Applications</a>
+          </li>
+        <% end %>
+        <% if current_user.foodtruckowner? %>
+          <li class="nav-item mb-2">
+            <a class="nav-link text-white" href="<%= food_trucks_path %>">Food Trucks</a>
+          </li>
+        <% end %>
+        <% if current_user.user? %>
+          <li class="nav-item mb-2">
+            <%= button_to "Become an Event Organizer", promote_to_event_organizer_path, method: :post, class: "btn btn-primary btn-sm w-100" %>
+          </li>
+          <li class="nav-item mb-2">
+            <%= button_to "Become a Food Truck Owner", promote_to_food_truck_owner_path, method: :post, class: "btn btn-primary btn-sm w-100" %>
+          </li>
+        <% end %>
+        <li class="nav-item mb-2">
+          <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-light btn-sm w-100" %>
+        </li>
+      <% else %>
+        <li class="nav-item mb-2">
+          <%= link_to "Sign up", new_user_registration_path, class: "btn btn-light btn-sm w-100" %>
+        </li>
+        <li class="nav-item mb-2">
+          <%= link_to "Log in", new_user_session_path, class: "btn btn-light btn-sm w-100" %>
+        </li>
+      <% end %>
+    </ul>
+  </div>
+</div>
+
+<!-- Fixed Sidebar for Large Screens -->
+<div class="d-none d-lg-block bg-dark text-white p-3" style="width: 250px; height: 100vh; position: relative;">
+  <!-- Brand -->
+  <h4 class="mb-4">
+    <a class="navbar-brand text-white" href="<%= root_path %>">Bitewheels</a>
+  </h4>
+
+  <!-- Navigation Links -->
+  <ul class="nav flex-column">
+    <% if current_user %>
+      <li class="nav-item mb-2">
+        <a class="nav-link text-white" href="<%= user_profile_path %>">Profile</a>
+      </li>
+      <li class="nav-item mb-2">
+        <a class="nav-link text-white" href="<%= events_near_me_events_path %>">Events Near Me</a>
+      </li>
+      <% if current_user.eventorganizer? %>
+      <li class="nav-item mb-2">
+        <a class="nav-link text-white" href="<%= events_path %>">My Events</a>
+      </li>
+        <li class="nav-item mb-2">
+          <a class="nav-link text-white" href="<%= applications_events_path %>">Applications</a>
+        </li>
+      <% end %>
+      <% if current_user.foodtruckowner? %>
+        <li class="nav-item mb-2">
+          <a class="nav-link text-white" href="<%= food_trucks_path %>">Food Trucks</a>
+        </li>
+      <% end %>
+      <% if current_user.user? %>
+        <li class="nav-item mb-2">
+          <%= button_to "Become an Event Organizer", promote_to_event_organizer_path, method: :post, class: "btn btn-primary btn-sm w-100" %>
+        </li>
+        <li class="nav-item mb-2">
+          <%= button_to "Become a Food Truck Owner", promote_to_food_truck_owner_path, method: :post, class: "btn btn-primary btn-sm w-100" %>
+        </li>
+      <% end %>
+      <li class="nav-item mb-2">
+        <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-light btn-sm w-100" %>
+      </li>
+    <% else %>
+      <li class="nav-item mb-2">
+        <%= link_to "Sign up", new_user_registration_path, class: "btn btn-light btn-sm w-100" %>
+      </li>
+      <li class="nav-item mb-2">
+        <%= link_to "Log in", new_user_session_path, class: "btn btn-light btn-sm w-100" %>
+      </li>
+    <% end %>
+  </ul>
+</div>

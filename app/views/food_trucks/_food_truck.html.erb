@@ -1,0 +1,35 @@
+<!-- app/views/food_trucks/_food_truck.html.erb -->
+
+<div id="<%= dom_id food_truck %>" class="border rounded bg-white p-3 mb-4">
+  <div class="d-flex justify-content-between align-items-center">
+    <strong><%= food_truck.name %></strong>
+    <small class="text-muted"><%= food_truck.created_at.strftime("%B %d, %Y") %></small>
+  </div>
+  <hr>
+
+  <p class="card-text">
+    <strong>Cuisine:</strong> <%= food_truck.cuisine %>
+  </p>
+
+  <p class="card-text">
+    <strong>Number of Food Trucks:</strong> <%= food_truck.number_of_food_trucks %>
+  </p>
+
+  <p class="card-text">
+    <strong>Permit:</strong> <%= food_truck.permit.attached? ? 'Available' : 'Not Attached' %>
+  </p>
+
+  <p class="card-text">
+    <strong>Menu Images:</strong> <%= food_truck.menu_images.count %> uploaded
+  </p>
+
+  <p class="card-text">
+    <strong>Food Images:</strong> <%= food_truck.food_images.count %> uploaded
+  </p>
+
+  <div class="text-center mt-3">
+    <%= link_to 'View Food Truck', food_truck_path(food_truck), class: 'btn btn-primary btn-sm' %>
+    <%= link_to 'Edit', edit_food_truck_path(food_truck), class: 'btn btn-secondary btn-sm' %>
+    <%= link_to 'Delete', food_truck_path(food_truck), method: :delete, data: { confirm: "Are you sure?" }, class: 'btn btn-danger btn-sm' %>
+  </div>
+</div>

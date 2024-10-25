@@ -13,12 +13,33 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
+    
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
   <body>
-    <%= render 'shared/navbar' %>
-    <%= yield %>
+    <% if alert.present? %>
+      <p class="alert alert-warning"><%= alert %></p>
+    <% end %>
+
+    
+    <% if (controller_name == 'food_trucks' ) ||(controller_name == 'events')%>
+    <!-- Render Sidebar for Dashboard -->
+    <div class="d-flex">
+      <%= render 'shared/sidebar' %>
+      <div class="flex-grow-1">
+        <%= yield %>
+      </div>
+    </div>
+  <% else %>
+    <!-- Render Top Navbar for Other Pages -->
+    <%= render 'shared/top_navbar' %>
+    <div class="container mt-4">
+      <%= yield %>
+    </div>
+  <% end %>
+    
+   
   </body>
 </html>

@@ -1,0 +1,143 @@
+<!-- app/views/events/_form.html.erb -->
+
+<div class="d-flex justify-content-center align-items-center  bg-white">
+  <div class="card shadow-lg" style="max-width: 800px; width: 100%; margin: auto;">
+    <div class="card-body px-5 py-4">
+      <h2 class="card-title text-center text-primary mb-4">Event Details</h2>
+
+      <!-- Display Error Messages -->
+      <% if event.errors.any? %>
+        <div class="alert alert-danger">
+          <h4 class="alert-heading"><%= pluralize(event.errors.count, "error") %> prohibited this event from being saved:</h4>
+          <ul>
+            <% event.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <!-- Event Form -->
+      <%= form_with(model: event, class: "px-3") do |form| %>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <%= form.label :name, class: "form-label" %>
+            <%= form.text_field :name, class: "form-control", required: true %>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <%= form.label :address, class: "form-label" %>
+            <%= form.text_field :address, placeholder: "123 Main St, Springfield, IL, USA", id: "event_address", class: "form-control", required: true %>
+          </div>
+        </div>
+
+        <!-- Hidden Fields for Latitude and Longitude -->
+        <%= form.hidden_field :latitude, id: :event_latitude %>
+        <%= form.hidden_field :longitude, id: :event_longitude %>
+
+        <!-- Map Preview -->
+        <div class="field mb-3">
+          <h5>Map Preview:</h5>
+          <div id="map" style="width: 100%; height: 300px; border: 1px solid #ddd;"></div>
+        </div>
+
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <%= form.label :start_date, class: "form-label" %>
+            <%= form.datetime_field :start_date, class: "form-control", required: true %>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <%= form.label :end_date, class: "form-label" %>
+            <%= form.datetime_field :end_date, class: "form-control", required: true %>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <%= form.label :expected_attendees, class: "form-label" %>
+            <%= form.number_field :expected_attendees, min: 0, class: "form-control", required: true %>
+          </div>
+
+          <div class="col-md-6 mb-3">
+            <%= form.label :foodtruck_amount, "Number of Food Trucks", class: "form-label" %>
+            <%= form.number_field :foodtruck_amount, min: 0, value: event.foodtruck_amount, class: "form-control", id: "foodtruck_amount" %>
+          </div>
+        </div>
+        
+        <% if current_user.eventorganizer? %>
+    <div class="mb-3">
+      <%= form.label :status, "Save as", class: "form-label" %>
+      <%= form.select :status, options_for_select([['Draft', 'draft'], ['Publish', 'published']], event.status), {}, class: "form-select" %>
+    </div>
+  <% end %>
+
+
+        <!-- Submit Button -->
+        <div class="d-flex justify-content-center">
+          <%= form.submit "Save Event", class: "btn btn-primary mt-4 px-5" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- JavaScript for Google Places Autocomplete and Map Integration -->
+<script>
+  function initAutocomplete() {
+    var input = document.getElementById('event_address');
+    var latitudeField = document.getElementById('event_latitude');
+    var longitudeField = document.getElementById('event_longitude');
+    var mapElement = document.getElementById('map');
+    var map;
+    var marker;
+
+    // Initialize the Autocomplete functionality
+    var autocomplete = new google.maps.places.Autocomplete(input, {
+      types: ['geocode'] // Restrict to geographical location types
+    });
+
+    // Listen for the event when a place is selected
+    autocomplete.addListener('place_changed', function() {
+      var place = autocomplete.getPlace();
+
+      // Check if the selected place has geometry
+      if (!place.geometry) {
+        alert("No details available for input: '" + place.name + "'");
+        return;
+      }
+
+      // Extract latitude and longitude
+      var lat = place.geometry.location.lat();
+      var lng = place.geometry.location.lng();
+
+      // Set the hidden fields
+      latitudeField.value = lat;
+      longitudeField.value = lng;
+
+      // Initialize or update the map
+      if (!map) {
+        map = new google.maps.Map(mapElement, {
+          center: { lat: lat, lng: lng },
+          zoom: 14
+        });
+      } else {
+        map.setCenter({ lat: lat, lng: lng });
+      }
+
+      // Initialize or move the marker
+      if (marker) {
+        marker.setPosition({ lat: lat, lng: lng });
+      } else {
+        marker = new google.maps.Marker({
+          position: { lat: lat, lng: lng },
+          map: map
+        });
+      }
+    });
+  }
+</script>
+
+<!-- Load the Google Maps JavaScript API with Places library and use Rails credentials for the API key -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps[:api_key] %>&libraries=places&callback=initAutocomplete"></script>

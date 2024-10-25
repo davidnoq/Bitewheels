@@ -1,0 +1,62 @@
+<!-- app/views/shared/_top_navbar.html.erb -->
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <!-- Brand -->
+    <a class="navbar-brand " href="<%= root_path %>">Bitewheels</a>
+
+    <!-- Toggler for Mobile View -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar" aria-controls="topNavbar" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Navigation Links & User Actions -->
+    <div class="collapse navbar-collapse d-flex justify-content-between" id="topNavbar">
+      <!-- Centered Navigation Links -->
+      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 justify-content-center">
+        <% if current_user %>
+          <li class="nav-item">
+            <a class="nav-link" href="<%= user_profile_path %>">Profile</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="<%= events_near_me_events_path %>">Events Near Me</a>
+          </li>
+          <% if current_user.eventorganizer? %>
+            <li class="nav-item">
+              <a class="nav-link" href="<%= applications_events_path %>">Applications</a>
+            </li>
+          <% end %>
+          <% if current_user.foodtruckowner? %>
+            <li class="nav-item">
+              <a class="nav-link" href="<%= food_trucks_path %>">Food Trucks</a>
+            </li>
+          <% end %>
+        <% end %>
+      </ul>
+
+      
+      <ul class="navbar-nav ">
+        <% if current_user %>
+          <% if current_user.user? %>
+            <li class="nav-item">
+              <%= button_to "Become an Event Organizer", promote_to_event_organizer_path, method: :post, class: "btn btn-primary btn-sm me-2" %>
+            </li>
+            <li class="nav-item">
+              <%= button_to "Become a Food Truck Owner", promote_to_food_truck_owner_path, method: :post, class: "btn btn-primary btn-sm me-2" %>
+            </li>
+          <% end %>
+          <li class="nav-item">
+            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-light btn-sm" %>
+          </li>
+        <% else %>
+          <li class="nav-item me-2">
+            <%= link_to "Sign up", new_user_registration_path, class: "btn btn-light btn-sm" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Log in", new_user_session_path, class: "btn btn-light btn-sm" %>
+          </li>
+        <% end %>
+      </ul>
+    </div>
+  </div>
+</nav>
