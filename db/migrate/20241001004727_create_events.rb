@@ -11,7 +11,7 @@ class CreateEvents < ActiveRecord::Migration[7.2]
       t.string :address
       t.float :latitude
       t.float :longitude
-      t.integer :status, default: 0, null: false 
+      t.integer :status, default: 0, null: false
       t.references :user, null: true, foreign_key: true
 
       t.timestamps

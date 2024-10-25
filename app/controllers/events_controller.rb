@@ -1,20 +1,21 @@
 class EventsController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show]
+  before_action :authenticate_user!, except: [ :index, :show ]
   before_action :set_event, only: %i[show edit update destroy publish]
-  after_action :verify_authorized, except: [:index, :published, :search]
+  after_action :verify_authorized, except: [ :index, :published, :search ]
   after_action :verify_policy_scoped, only: :index
 
-  #renders current users scope of events, as well as the current users pending applications they must view
+  # renders current users scope of events, as well as the current users pending applications they must view
   def index
     @events = policy_scope(Event)
                .includes(:food_trucks)
                .page(params[:page])
                .per(10)
+
     authorize @events
 
     if current_user&.eventorganizer?
       @pending_applications_count = EventApplication.joins(:event)
-                                                    .where(events: { user_id: current_user.id }, status: 'pending')
+                                                    .where(events: { user_id: current_user.id }, status: "pending")
                                                     .count
     end
   end
@@ -27,29 +28,6 @@ class EventsController < ApplicationController
                    .page(params[:page])
                    .per(10)
   end
-  
-  
-  #def published
-  #  @events = policy_scope(Event)
-  #             .published
-  #             .includes(:food_trucks)
-  #             .page(params[:page])
-  #             .per(10)
-  #  authorize @events
-  #  render :index
-  #end
-
-  
-  #def drafts
-  #  authorize :event, :drafts?
-  #  @events = policy_scope(Event)
-  #             .draft
-  #             .where(user: current_user)
-  #             .includes(:food_trucks)
-  #             .page(params[:page])
-  #             .per(10)
-  #  render :index
-  #end
 
   # GET /events/applications
   def applications
@@ -63,18 +41,15 @@ class EventsController < ApplicationController
                            .per(10)
   end
 
-
-  #food truck applictions partial
+  # food truck applictions partial
   def show_application_food_truck
     @event_application = EventApplication.find(params[:id])
     @food_truck = @event_application.food_truck
     @event_applications = @food_truck.event_applications.where(event: @event_application.event)
 
     authorize @event_application
-  
   end
 
-  
   def show
     authorize @event
     @food_trucks = @event.food_trucks
@@ -128,9 +103,9 @@ class EventsController < ApplicationController
   def publish
     authorize @event, :publish?
     if @event.update(status: :published)
-      redirect_to @event, notice: 'Event was successfully published.'
+      redirect_to @event, notice: "Event was successfully published."
     else
-      redirect_to @event, alert: 'Failed to publish the event.'
+      redirect_to @event, alert: "Failed to publish the event."
     end
   end
 
@@ -141,7 +116,7 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    permitted = [:name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude]
+    permitted = [ :name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude ]
     permitted << :status if user_signed_in? && current_user.eventorganizer?
     params.require(:event).permit(permitted)
   end

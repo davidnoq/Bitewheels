@@ -16,10 +16,10 @@ Rails.application.routes.draw do
     end
 
     # Nested route for Event Applications creation
-    resources :event_applications, only: [:create]
-    
+    resources :event_applications, only: [ :create ]
+
     # Route to show a food truck in the context of an event application
-    get 'applications/:id/food_trucks/:food_truck_id', to: 'events#show_application_food_truck', as: 'show_application_food_truck'
+    get "applications/:id/food_trucks/:food_truck_id", to: "events#show_application_food_truck", as: "show_application_food_truck"
   end
 
   # Routes for EventApplications with custom member actions
@@ -34,12 +34,12 @@ Rails.application.routes.draw do
   resources :food_trucks
 
   # User Promotion Routes
-  post 'promote_to_event_organizer', to: 'pages#promote_to_event_organizer'
-  post 'promote_to_food_truck_owner', to: 'pages#promote_to_food_truck_owner'
+  post "promote_to_event_organizer", to: "pages#promote_to_event_organizer"
+  post "promote_to_food_truck_owner", to: "pages#promote_to_food_truck_owner"
 
   # User Profiles
-  get 'users/:id', to: 'users#show', as: 'user'
-  get 'profile', to: 'users#show', as: 'user_profile'
+  get "users/:id", to: "users#show", as: "user"
+  get "profile", to: "users#show", as: "user_profile"
 
   # Health Check and PWA Routes
   get "up" => "rails/health#show", as: :rails_health_check

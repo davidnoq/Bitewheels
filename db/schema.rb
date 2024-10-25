@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_23_140025) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_14_203731) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -45,9 +45,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_23_140025) do
   create_table "event_applications", force: :cascade do |t|
     t.bigint "food_truck_id", null: false
     t.bigint "event_id", null: false
+    t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.integer "status", default: 0, null: false
     t.index ["event_id"], name: "index_event_applications_on_event_id"
     t.index ["food_truck_id", "event_id"], name: "index_event_applications_on_food_truck_id_and_event_id", unique: true
     t.index ["food_truck_id"], name: "index_event_applications_on_food_truck_id"
@@ -58,26 +58,25 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_23_140025) do
     t.string "description"
     t.datetime "start_date"
     t.datetime "end_date"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.integer "expected_attendees"
     t.string "logo"
     t.integer "foodtruck_amount"
     t.string "address"
     t.float "latitude"
     t.float "longitude"
-    t.bigint "user_id"
     t.integer "status", default: 0, null: false
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_events_on_user_id"
   end
 
   create_table "food_trucks", force: :cascade do |t|
+    t.string "name"
+    t.string "cuisine"
+    t.bigint "user_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.string "name"
-    t.integer "number_of_food_trucks", default: 1
-    t.string "cuisine"
     t.index ["user_id"], name: "index_food_trucks_on_user_id"
   end
 
@@ -88,12 +87,12 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_23_140025) do
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
     t.string "role", default: "user"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
     t.string "first_name"
     t.string "last_name"
     t.string "phone_number"
     t.string "country"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
