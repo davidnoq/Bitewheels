@@ -9,8 +9,7 @@ class EventApplicationsController < ApplicationController
 
   def show
     @event_application
-    # authorize @event_application
-    # @food_truck = @event_application.food_truck
+    @food_truck = @event_application.food_truck
   end
 
   def create
@@ -38,21 +37,43 @@ class EventApplicationsController < ApplicationController
 
   def approve
     authorize @event_application
-    if @event_application.update(status: :approved)
-      redirect_to request.referer || event_show_application_food_truck_path(@event_application.event, @event_application, @event_application.food_truck), notice: "Application approved successfully."
+    if @event_application.status == 'approved'
+      redirect_to event_event_application_path(@event, @event_application), alert: "Application has already been approved."
+      return
+    end
+    # Check if the event has food truck slots available
+    if @event.foodtruck_amount > 0
+      Event.transaction do
+        
+        @event.update!(foodtruck_amount: @event.foodtruck_amount - 1)
+  
+        @event_application.update!(status: :approved)
+      end
+      redirect_to event_event_application_path(@event, @event_application), notice: "Application approved successfully."
     else
-      redirect_to request.referer || event_show_application_food_truck_path(@event_application.event, @event_application, @event_application.food_truck), alert: "Failed to approve application."
+      redirect_to event_event_application_path(@event, @event_application), alert: "No available slots for food trucks."
     end
   end
 
   def reject
     authorize @event_application
-    if @event_application.update(status: :rejected)
-      redirect_to request.referer || event_show_application_food_truck_path(@event_application.event, @event_application, @event_application.food_truck), notice: "Application rejected successfully."
+    if @event_application.status == 'rejected'
+      redirect_to event_event_application_path(@event, @event_application), alert: "Application has already been rejected."
+      return
+    end
+    if @event_application.status == 'approved'
+      Event.transaction do
+        @event.update!(foodtruck_amount: @event.foodtruck_amount + 1)
+  
+        @event_application.update!(status: :rejected)
+      end
+      redirect_to event_event_application_path(@event, @event_application), notice: "Application rejected and slot freed up successfully."
     else
-      redirect_to request.referer || event_show_application_food_truck_path(@event_application.event, @event_application, @event_application.food_truck), alert: "Failed to reject application."
+      @event_application.update!(status: :rejected)
+      redirect_to event_event_application_path(@event, @event_application), notice: "Application rejected successfully."
     end
   end
+  
 
   private
 

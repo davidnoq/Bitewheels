@@ -16,8 +16,8 @@ class EventApplicationPolicy < ApplicationPolicy
 
   
   def show?
-    (user.eventorganizer? && record.event.user_id == user.id) ||
-    (user.foodtruckowner? && record.food_truck.user_id == user.id)
+    (user.eventorganizer? && record.event.user_id == user.id)
+    
   end
 
   def create?
@@ -25,8 +25,7 @@ class EventApplicationPolicy < ApplicationPolicy
   end
 
   def update?
-    (user.eventorganizer? && record.event.user_id == user.id) ||
-    (user.foodtruckowner? && record.food_truck.user_id == user.id)
+    (user.eventorganizer? && record.event.user_id == user.id)
   end
 
   def destroy?
@@ -40,13 +39,5 @@ class EventApplicationPolicy < ApplicationPolicy
   def reject?
     approve?
   end
-  def show_application_food_truck?
-    # Define the authorization logic here
-    # For example, allow if the user is the event organizer or the food truck owner
-    user.eventorganizer? || user.foodtruckowner?
-  end
-  
-  def applications?
-    user.eventorganizer? || user.foodtruckowner?
-  end
+ 
 end

@@ -4,29 +4,18 @@ Rails.application.routes.draw do
     registrations: "users/registrations"
   }
 
-  # Routes for Events
-  resources :events do
+   # Routes for Events
+   resources :events do
     member do
       patch :publish
     end
 
-    collection do
-      get :applications # Custom route for showing event applications
-      get :events_near_me # Custom route for showing nearby events
-    end
-
-    # Nested route for Event Applications creation
-    resources :event_applications
-
-    # Route to show a food truck in the context of an event application
-    get "applications/:id/food_trucks/:food_truck_id", to: "events#show_application_food_truck", as: "show_application_food_truck"
-  end
-
-  # Routes for EventApplications with custom member actions
-  resources :event_applications, only: [] do
-    member do
-      patch :approve
-      patch :reject
+    # Nested routes for Event Applications with custom member actions
+    resources :event_applications do
+      member do
+        patch :approve
+        patch :reject
+      end
     end
   end
 
