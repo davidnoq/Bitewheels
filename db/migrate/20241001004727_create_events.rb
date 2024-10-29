@@ -16,5 +16,6 @@ class CreateEvents < ActiveRecord::Migration[7.2]
 
       t.timestamps
     end
+    add_column :events, :credit_cost, :integer, default: 3, null: false
   end
 end

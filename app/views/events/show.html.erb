@@ -1,3 +1,6 @@
+<!-- app/views/events/show.html.erb -->
+
+<%# Display Flash Messages %>
 <% if flash[:notice] %>
   <div class="alert alert-success alert-dismissible fade show" role="alert">
     <%= flash[:notice] %>
@@ -10,6 +13,7 @@
   </div>
 <% end %>
 
+<%# Set the Page Title %>
 <% content_for :title, @event.name %>
 
 <div class="d-flex justify-content-center align-items-center m-auto min-vh-100 bg-white">
@@ -20,65 +24,76 @@
       </div>
       <div class="card-body" style="min-height: 300px;">
         <!-- Event Details -->
-        <%= render @event, show_date: true, show_name: false, show_latitude_longitude: true, show_map: false, show_expected_attendees: true, show_address: true, show_end_date: true %>
-         <!-- Approved Food Trucks Section -->
-  <h3 class="mt-4">Food Trucks Attending</h3>
-  <% if @approved_food_trucks.any? %>
-    <ul class="list-group mb-3">
-      <% @approved_food_trucks.each do |food_truck| %>
-        <li class="list-group-item">
-          <strong><%= food_truck.name %></strong> - <%= food_truck.cuisine %>
-        </li>
-      <% end %>
-    </ul>
-  <% else %>
-    <p class="text-muted">No food trucks are currently attending this event.</p>
-  <% end %>
+        <%= render @event, 
+                  show_date: true, 
+                  show_name: false, 
+                  show_latitude_longitude: true, 
+                  show_map: false, 
+                  show_expected_attendees: true, 
+                  show_address: true, 
+                  show_end_date: true %>
+
+        <!-- Credit Cost Display (Visible Only to Non-Event Organizers) -->
+        <% unless current_user&.eventorganizer? %>
+          <p class="card-text">
+            <strong>Credit Cost to Apply:</strong> <%= @event.credit_cost %>
+          </p>
+        <% end %>
+
+        <!-- Approved Food Trucks Section -->
+        <h3 class="mt-4">Food Trucks Attending</h3>
+        <% if @approved_food_trucks.any? %>
+          <ul class="list-group mb-3">
+            <% @approved_food_trucks.each do |food_truck| %>
+              <li class="list-group-item">
+                <strong><%= food_truck.name %></strong> - <%= food_truck.cuisine %>
+              </li>
+            <% end %>
+          </ul>
+        <% else %>
+          <p class="text-muted">No food trucks are currently attending this event.</p>
+        <% end %>
+
         <% if @event.status == 'published' %>
-         
           <hr>
-          <% if current_user.eventorganizer? %>
-            <div class="d-flex justify-content-between">
+
+          <%# Event Organizer Controls %>
+          <% if current_user&.eventorganizer? && current_user == @event.user %>
+            <div class="d-flex justify-content-between mb-3">
               <%= link_to "Edit Event", edit_event_path(@event), class: "btn btn-primary" %>
-              <%= link_to "Manage Food Trucks", event_event_applications_path(@event), class: "btn btn-primary"%>
+              <%= link_to "Manage Food Trucks", event_event_applications_path(@event), class: "btn btn-primary" %>
               <%= button_to "Delete Event", @event, method: :delete, data: { confirm: "Are you sure you want to delete this event?" }, class: "btn btn-danger" %>
-             
             </div>
           <% end %>
 
-          <!-- Apply for Event Section for Food Truck Owners -->
-          <% if current_user.foodtruckowner? %>
+          <%# Apply for Event Section for Food Truck Owners %>
+          <% if current_user&.foodtruckowner? %>
             <% if current_user.food_trucks.any? %>
               <% if @available_food_trucks.any? %>
-                <!-- Show Apply link -->
-                <%= link_to "Apply for Event", event_path(@event, show_apply_form: true), class: "btn btn-primary mt-4" %>
-
-                <!-- Display the application form if show_apply_form is present -->
-                <% if params[:show_apply_form].present? %>
-                  <div class="mt-4">
-                    <h3>Apply to <%= @event.name %></h3>
-                    <%= form_with(url: event_event_applications_path(@event), method: :post, local: true) do |form| %>
-                      <div class="row">
-                        <% @available_food_trucks.each do |food_truck| %>
-                          <div class="col-md-6">
-                            <div class="card mb-3">
-                              <div class="card-body">
-                                <h5 class="card-title"><%= food_truck.name %></h5>
-                                <p class="card-text"><strong>Cuisine:</strong> <%= food_truck.cuisine %></p>
-                                <!-- Custom checkbox -->
-                                <div class="form-check">
-                                  <%= form.check_box :food_truck_ids, { multiple: true, class: "form-check-input", id: "food_truck_#{food_truck.id}" }, food_truck.id, nil %>
-                                  <%= form.label :food_truck_ids, "Select this food truck", class: "form-check-label", for: "food_truck_#{food_truck.id}" %>
-                                </div>
+                <!-- Apply Form for Food Truck Owners -->
+                <div class="mt-4">
+                  <h3>Apply to <%= @event.name %></h3>
+                  <%= form_with(url: event_event_applications_path(@event), method: :post, local: true) do |form| %>
+                    <div class="row">
+                      <% @available_food_trucks.each do |food_truck| %>
+                        <div class="col-md-6">
+                          <div class="card mb-3">
+                            <div class="card-body">
+                              <h5 class="card-title"><%= food_truck.name %></h5>
+                              <p class="card-text"><strong>Cuisine:</strong> <%= food_truck.cuisine %></p>
+                              <!-- Custom Checkbox -->
+                              <div class="form-check">
+                                <%= form.check_box :food_truck_ids, { multiple: true, class: "form-check-input", id: "food_truck_#{food_truck.id}" }, food_truck.id, nil %>
+                                <%= form.label :food_truck_ids, "Select this food truck", class: "form-check-label", for: "food_truck_#{food_truck.id}" %>
                               </div>
                             </div>
                           </div>
-                        <% end %>
-                      </div>
-                      <%= form.submit "Confirm Application", class: "btn btn-primary mt-3" %>
-                    <% end %>
-                  </div>
-                <% end %>
+                        </div>
+                      <% end %>
+                    </div>
+                    <%= form.submit "Confirm Application", class: "btn btn-primary mt-3" %>
+                  <% end %>
+                </div>
               <% else %>
                 <p>You have already applied to this event with all your food trucks.</p>
               <% end %>
@@ -94,14 +109,15 @@
 
           <!-- Show Edit, Publish, and Delete Options for Drafted Events -->
           <hr>
-          
-          <div class="d-flex justify-content-between">
-            <%= link_to "Edit Event", edit_event_path(@event), class: "btn btn-primary" %>
-            <%= button_to "Publish Event", publish_event_path(@event), method: :patch, data: { confirm: "Are you sure you want to publish this event?" }, class: "btn btn-success" %>
-            <%= button_to "Delete Event", @event, method: :delete, data: { confirm: "Are you sure you want to delete this event?" }, class: "btn btn-danger" %>
-          </div>
-        <% end %>
 
+          <% if current_user&.eventorganizer? && current_user == @event.user %>
+            <div class="d-flex justify-content-between mb-3">
+              <%= link_to "Edit Event", edit_event_path(@event), class: "btn btn-primary" %>
+              <%= button_to "Publish Event", publish_event_path(@event), method: :patch, data: { confirm: "Are you sure you want to publish this event?" }, class: "btn btn-success" %>
+              <%= button_to "Delete Event", @event, method: :delete, data: { confirm: "Are you sure you want to delete this event?" }, class: "btn btn-danger" %>
+            </div>
+          <% end %>
+        <% end %>
       </div>
     </div>
   </div>

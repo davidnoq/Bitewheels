@@ -88,7 +88,7 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    permitted = [ :name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude ]
+    permitted = [ :name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude ,:credit_cost]
     permitted << :status if user_signed_in? && current_user.eventorganizer?
     params.require(:event).permit(permitted)
   end

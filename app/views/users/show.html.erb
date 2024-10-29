@@ -1,10 +1,26 @@
+<!-- app/views/users/show.html.erb -->
+
 <div class="d-flex justify-content-center align-items-center bg-white">
-  
   <div class="card shadow-lg w-100 mx-2 mx-md-auto" style="max-width: 35rem;">
     <div class="card-header bg-primary text-white text-center">
       <h2 class="card-title mb-0">My Profile</h2>
     </div>
     <div class="card-body">
+      <!-- Purchase Credits Section (Visible Only to Non-Event Organizers) -->
+      <% unless @user.eventorganizer? %>
+        <h2>Purchase Credits</h2>
+        <%= form_with url: purchase_credits_user_path, method: :post, local: true do |form| %>
+          <div class="mb-3">
+            <%= form.label :amount, "Credit Amount", class: "form-label" %>
+            <%= form.number_field :amount, min: 1, required: true, class: "form-control", placeholder: "Enter amount to purchase" %>
+          </div>
+          <div class="d-grid gap-2">
+            <%= form.submit "Add Credits", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      <% end %>
+
+      <!-- User Information -->
       <div class="row">
         <div class="col-4 text-right font-weight-bold">First Name:</div>
         <div class="col-8"><%= @user.first_name %></div>
@@ -20,6 +36,18 @@
         <div class="col-8"><%= @user.email %></div>
       </div>
       <hr>
+
+      <!-- Credits Display (Conditionally Visible) -->
+      <% if @user.foodtruckowner? %>
+      <div class="row">
+        <div class="col-4 text-right font-weight-bold">Credits:</div>
+        <div class="col-8">
+            <%= @user.credits %>
+        </div>
+      </div>
+      <hr>
+      <% end%>
+
       <div class="row">
         <div class="col-4 text-right font-weight-bold">Phone Number:</div>
         <div class="col-8"><%= @user.formatted_phone_number %></div>
@@ -30,6 +58,8 @@
         <div class="col-8"><%= @user.role %></div>
       </div>
       <hr>
+
+      <!-- Action Buttons -->
       <div class="d-flex justify-content-around mt-4">
         <%= link_to "Edit Profile", edit_user_registration_path, class: "btn btn-outline-primary" %>
         <%= link_to "Back to Home", root_path, class: "btn btn-outline-secondary" %>

@@ -14,7 +14,10 @@ class EventApplicationPolicy < ApplicationPolicy
     end
   end
 
-  
+  def index?
+    user.eventorganizer? 
+    
+  end
   def show?
     (user.eventorganizer? && record.event.user_id == user.id)
     

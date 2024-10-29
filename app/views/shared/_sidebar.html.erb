@@ -86,6 +86,11 @@
         <li class="nav-item mb-2">
           <a class="nav-link text-white" href="<%= food_trucks_path %>">Food Trucks</a>
         </li>
+        <li class="nav-item">
+                <span class="navbar-text me-3">
+                  Credits: <strong><%= current_user.credits %></strong>
+                </span>
+              </li>
       <% end %>
       <% if current_user.user? %>
         <li class="nav-item mb-2">

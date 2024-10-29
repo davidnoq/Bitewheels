@@ -32,7 +32,7 @@
     <!-- Events Near Me Section -->
 <!-- Events Near Me Section -->
 <div class="col flex-grow-1">
-  <% if @events.present? %>
+  
     <div class="mb-4">
       <div class="card h-100">
         <!-- Section Header -->
@@ -48,6 +48,7 @@
 
         <div class="card-body">
           <!-- Published Events Section -->
+          <% if @events.present? %>
           <h3 class="mb-3">Published Events</h3>
           <% if @published_events.any? %>
             <div class="row">
@@ -67,6 +68,7 @@
                       <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
                       <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
                       <p class="card-text"><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
+                      <p><strong>Credit Cost:</strong> <%= event.credit_cost %></p>
 
                       <!-- Pending Applications Count -->
                       <% if current_user&.eventorganizer? && @events_with_pending_applications.include?(event.id) %>

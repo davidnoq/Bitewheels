@@ -18,6 +18,7 @@ class Event < ApplicationRecord
 
   validates :latitude, numericality: true, allow_nil: true
   validates :longitude, numericality: true, allow_nil: true
+  validates :credit_cost, numericality: { only_integer: true, greater_than_or_equal_to: 0 }
 
   # Scopes
   scope :published, -> { where(status: statuses[:published]) }
