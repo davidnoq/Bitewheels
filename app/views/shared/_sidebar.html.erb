@@ -27,13 +27,9 @@
         <li class="nav-item mb-2">
           <a class="nav-link text-white" href="<%= events_path %>">My Events</a>
         </li>
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" href="<%= events_near_me_events_path %>">Events Near Me</a>
-        </li>
+        
         <% if current_user.eventorganizer? %>
-          <li class="nav-item mb-2">
-            <a class="nav-link text-white" href="<%= applications_events_path %>">Applications</a>
-          </li>
+          
         <% end %>
         <% if current_user.foodtruckowner? %>
           <li class="nav-item mb-2">
@@ -64,7 +60,7 @@
 </div>
 
 <!-- Fixed Sidebar for Large Screens -->
-<div class="d-none d-lg-block bg-dark text-white p-3" style="width: 250px; height: 100vh; position: relative;">
+<div class="d-none d-lg-block bg-dark text-white p-3" style="width: 250px; height: 100vh; position: relative; top: 0; left: 0;">
   <!-- Brand -->
   <h4 class="mb-4">
     <a class="navbar-brand text-white" href="<%= root_path %>">Bitewheels</a>
@@ -76,16 +72,15 @@
       <li class="nav-item mb-2">
         <a class="nav-link text-white" href="<%= user_profile_path %>">Profile</a>
       </li>
-      <li class="nav-item mb-2">
-        <a class="nav-link text-white" href="<%= events_near_me_events_path %>">Events Near Me</a>
-      </li>
+      
       <% if current_user.eventorganizer? %>
       <li class="nav-item mb-2">
         <a class="nav-link text-white" href="<%= events_path %>">My Events</a>
       </li>
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" href="<%= applications_events_path %>">Applications</a>
-        </li>
+       <%else%>
+       <li class="nav-item mb-2">
+        <a class="nav-link text-white" href="<%= events_path %>">Events Near Me</a>
+      </li>
       <% end %>
       <% if current_user.foodtruckowner? %>
         <li class="nav-item mb-2">

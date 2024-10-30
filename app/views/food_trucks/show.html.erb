@@ -1,18 +1,15 @@
 <% content_for :title, @food_truck.name %>
 
-<div class="d-flex justify-content-center align-items-center bg-white" >
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-white" >
   <div class="container">
     <div class="card shadow-lg" style="max-width: 40rem; margin: auto; min-height: 400px;">
-      <div class="card-header bg-primary text-white text-center">
+      <div class="card-header bg-dark text-white text-center">
         <h1 class="mb-0"><%= @food_truck.name %></h1>
       </div>
       <div class="card-body" style="min-height: 300px;">
         
         <!-- Food Truck Details -->
         <p><strong>Cuisine:</strong> <%= @food_truck.cuisine %></p>
-        <p><strong>Number of Trucks:</strong> <%= @food_truck.number_of_food_trucks %></p>
-
-        
 
         <!-- Display Menu Images if available -->
         <% if @food_truck.menu_images.any? %>
@@ -28,46 +25,17 @@
           <p>No menu images available.</p>
         <% end %>
 
-        <!-- Display Food Images if available -->
-        <% if @food_truck.food_images.any? %>
-          <p><strong>Food Images:</strong></p>
-          <div class="row">
-            <% @food_truck.food_images.each do |food_image| %>
-              <div class="col-md-6 mb-2">
-                <%= image_tag url_for(food_image), class: 'img-fluid img-thumbnail', style: 'max-width: 150px;' %>
-              </div>
-            <% end %>
+        <!-- Display Permit if available -->
+        <% if @food_truck.permit.attached? %>
+          <div class="mb-4">
+            <h5>Permit</h5>
+            <%= image_tag url_for(@food_truck.permit), class: 'img-fluid img-thumbnail', alt: 'Permit', style: 'max-width: 300px; height: auto;' %>
           </div>
         <% else %>
-          <p>No food images available.</p>
+          <p><em>No permit uploaded.</em></p>
         <% end %>
 
-        <!-- Application Actions for Event Organizers -->
-        <% if current_user.eventorganizer? %>
-          <h4>Application Actions</h4>
-          <div>
-            <% if @event_applications.any? %>
-              <% @event_applications.each do |application| %>
-                <div class="mb-3">
-                  <p>
-                    <strong>Event:</strong> <%= link_to application.event.name, event_path(application.event) %><br>
-                    <strong>Current Status:</strong> 
-                    <span class="badge <%= application.status == 'pending' ? 'bg-warning text-dark' : application.status == 'approved' ? 'bg-success' : 'bg-danger' %>">
-                      <%= application.status.capitalize %>
-                    </span>
-                  </p>
-                  <div class="d-flex justify-content-between">
-                      <%= button_to "Approve", approve_event_application_path(application), method: :patch, class: "btn btn-success btn-sm" %>
-                      <%= button_to "Reject", reject_event_application_path(application), method: :patch, class: "btn btn-danger btn-sm" %>
-                  </div>
-                </div>
-              <% end %>
-            <% else %>
-              <p>No applications found for this food truck.</p>
-            <% end %>
-          </div>
-        <% end %>
-
+        
         <!-- Actions for Food Truck Owners -->
         <% if current_user.foodtruckowner? %>
           <hr>

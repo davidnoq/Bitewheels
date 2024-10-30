@@ -24,11 +24,11 @@
     <% end %>
 
     
-    <% if (controller_name == 'food_trucks' ) ||(controller_name == 'events')%>
+    <% if (controller_name == 'food_trucks' ) ||(controller_name == 'events') ||(controller_name == 'event_applications')%>
     <!-- Render Sidebar for Dashboard -->
     <div class="d-flex">
       <%= render 'shared/sidebar' %>
-      <div class="flex-grow-1">
+      <div class="flex-grow-1" >
         <%= yield %>
       </div>
     </div>

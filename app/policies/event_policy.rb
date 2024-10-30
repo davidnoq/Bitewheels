@@ -12,7 +12,7 @@ class EventPolicy < ApplicationPolicy
   end
 
   def index?
-    user&.eventorganizer? 
+    user&.eventorganizer? || user&.foodtruckowner? 
   end
 
   def show?
@@ -53,7 +53,4 @@ class EventPolicy < ApplicationPolicy
     user&.eventorganizer?
   end
 
-  def events_near_me?
-    true # All users are allowed to access the "Events Near Me" page
-  end
 end

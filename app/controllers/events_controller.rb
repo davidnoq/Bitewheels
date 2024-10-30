@@ -12,47 +12,19 @@ class EventsController < ApplicationController
                .per(10)
 
     authorize @events
-
+    @published_events = @events.select { |event| event.status == 'published' }
+    @drafted_events = @events.select { |event| event.status == 'draft' }
     if current_user&.eventorganizer?
-      @pending_applications_count = EventApplication.joins(:event)
-                                                    .where(events: { user_id: current_user.id }, status: "pending")
-                                                    .count
+      @pending_applications_per_event = EventApplication.where(event_id: @events.pluck(:id), status: 'pending').group(:event_id).count
+      @events_with_pending_applications = @pending_applications_per_event.keys
     end
   end
 
-  # right now this renders ALL published, since search functionality not implemented
-  def events_near_me
-    authorize :event, :events_near_me?
-    @events = Event.published
-                   .includes(:food_trucks)
-                   .page(params[:page])
-                   .per(10)
-  end
-
-  # GET /events/applications
-  def applications
-    authorize :event, :applications?
-    @event_applications = policy_scope(EventApplication)
-                           .joins(:event)
-                           .where(events: { user_id: current_user.id })
-                           .includes(:food_truck, :event)
-                           .order(created_at: :desc)
-                           .page(params[:page])
-                           .per(10)
-  end
-
-  # food truck applictions partial
-  def show_application_food_truck
-    @event_application = EventApplication.find(params[:id])
-    @food_truck = @event_application.food_truck
-    @event_applications = @food_truck.event_applications.where(event: @event_application.event)
-
-    authorize @event_application
-  end
-
+  
   def show
     authorize @event
     @food_trucks = @event.food_trucks
+    @approved_food_trucks = @event.food_trucks.joins(:event_applications).where(event_applications: { status: 'approved' })
 
     if current_user&.foodtruckowner?
       applied_food_truck_ids = current_user.food_trucks.joins(:event_applications)

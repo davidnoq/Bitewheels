@@ -8,6 +8,7 @@ class FoodTrucksController < ApplicationController
 
   # GET /food_trucks
   def index
+    authorize FoodTruck
     @food_trucks = policy_scope(FoodTruck)
                       .where(user: current_user)
                       .page(params[:food_trucks_page]) 
@@ -19,7 +20,7 @@ class FoodTrucksController < ApplicationController
                           .where(food_trucks: { user_id: current_user.id })
                           .includes(:event, :food_truck)
                           .page(params[:applications_page]).per(10)
-
+                          authorize @food_trucks
    
   end
 
