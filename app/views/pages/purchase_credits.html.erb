@@ -1,0 +1,27 @@
+<!-- app/views/pages/purchase_credits.html.erb -->
+
+<div class="container my-5">
+  <div class="text-center">
+    <h2 class="display-4">Purchase Credits</h2>
+    <p class="lead">Add credits to your account to apply for more events and access premium options.</p>
+  </div>
+
+  <div class="row justify-content-center">
+    <% @credit_packages.each do |package| %>
+      <div class="col-md-4">
+        <div class="card mb-4 shadow-sm text-center">
+          <div class="card-header">
+            <h4 class="my-0 font-weight-normal"><%= package.name %></h4>
+          </div>
+          <div class="card-body">
+            <h1 class="card-title pricing-card-title">$<%= '%.2f' % (package.price_cents / 100.0) %></h1>
+            <ul class="list-unstyled mt-3 mb-4">
+              <li><strong>Credits:</strong> <%= package.credits %></li>
+            </ul>
+            <%= button_to "Buy #{package.name}", checkout_create_path(credit_package_id: package.id), method: :post, data: { turbo: false }, class: "btn btn-primary btn-lg w-100" %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

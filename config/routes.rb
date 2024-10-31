@@ -21,12 +21,20 @@ Rails.application.routes.draw do
 
   # Routes for Food Trucks
   resources :food_trucks
-
+  resources :checkout, only: [:create]
   # User Promotion Routes
+  get 'purchase_credits', to: 'pages#purchase_credits', as: 'purchase_credits'
+
   post "promote_to_event_organizer", to: "pages#promote_to_event_organizer"
   post "promote_to_food_truck_owner", to: "pages#promote_to_food_truck_owner"
 
   # User Profiles
+  post 'checkout/create', to: 'checkout#create', as: :checkout_create
+
+  # Routes for handling Stripe checkout success and cancellation
+  get 'checkout/success', to: 'checkout#success', as: :checkout_success
+  get 'checkout/cancel', to: 'checkout#cancel', as: :checkout_cancel
+
   get "users/:id", to: "users#show", as: "user"
   get "profile", to: "users#show", as: "user_profile"
 

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_14_203731) do
+ActiveRecord::Schema[7.2].define(version: 2024_10_29_020406) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,6 +42,14 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_14_203731) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "credit_packages", force: :cascade do |t|
+    t.string "name"
+    t.integer "credits"
+    t.integer "price_cents"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "event_applications", force: :cascade do |t|
     t.bigint "food_truck_id", null: false
     t.bigint "event_id", null: false
@@ -69,6 +77,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_14_203731) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "credit_cost", default: 3, null: false
+    t.boolean "accepting_applications", default: true, null: false
+    t.integer "approved_applications_count", default: 0, null: false
     t.index ["user_id"], name: "index_events_on_user_id"
   end
 

@@ -17,5 +17,7 @@ class CreateEvents < ActiveRecord::Migration[7.2]
       t.timestamps
     end
     add_column :events, :credit_cost, :integer, default: 3, null: false
+    add_column :events, :accepting_applications, :boolean, default: true, null: false
+    add_column :events, :approved_applications_count, :integer, default: 0, null: false
   end
 end

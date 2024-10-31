@@ -1,20 +1,95 @@
 <% content_for :title, "Home Page" %>
-<div class="d-flex justify-content-center align-items-center vh-100">
-  <div class="card shadow-sm" style="width: 30rem;">
-    <div class="card-body text-center">
 
-      <% if current_user %>
-      <h1>HOME PAGE</h1>
-        <p class="card-text">Hello <%= current_user.email %>!</p>
-        <p class="card-text">You are currently a [<%= current_user.role %>]</p>
-        <p class="card-text">
-          You have successfully authenticated with your Devise account and you are now ready to interact with this application.
+<!-- Flash Messages -->
+<% if flash[:notice] %>
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <%= flash[:notice] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% elsif flash[:alert] %>
+  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+    <%= flash[:alert] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<!-- Main Header Section -->
+<div class="d-flex justify-content-center align-items-center "  style="height: 50vh;">
+  <div class="jumbotron text-center mx-auto" style="width: 800px; ">
+    <div class="container">
+      <h1 class="display-1 fw-semibold">Organize Your Events</h1>
+      <p class="lead mt-5">Allow food trucks to apply, choose who comes to your event, and easily chat with users. Manage everything in one place and bring your event to life.</p>
+      <% if current_user&.user? %>
+        <p>
+          <%= button_to "Become an Event Organizer", promote_to_event_organizer_path, method: :post, class: "btn btn-primary btn-lg me-3" %>
+          <%= button_to "Become a Food Truck Owner", promote_to_food_truck_owner_path, method: :post, class: "btn btn-secondary btn-lg" %>
         </p>
-
-
-      <% else %>
-        <p class="card-text">To access this application you must sign in.</p>
       <% end %>
     </div>
   </div>
 </div>
+
+<!-- Sign Up Prompt for New Users -->
+<% unless current_user %>
+  <div class="container my-4 text-center">
+    <div class="bg-light p-4">
+      <h3>Join Us Today!</h3>
+      <p class="mb-3">Sign up to start organizing events, connect with food trucks, and make your event a success.</p>
+      <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-primary btn-lg me-3" %>
+      <%= link_to "Log In", new_user_session_path, class: "btn btn-secondary btn-lg" %>
+    </div>
+  </div>
+<% end %>
+<!-- User Greeting Section -->
+<% if current_user %>
+  <div class="container pb-5  my-5">
+    <div class="card mb-4 shadow-sm">
+      <div class="card-body text-center">
+        <h2 class="card-title">Welcome, <%= current_user.first_name %>!</h2>
+        <p class="card-text">
+          <strong>Role:</strong> <%= current_user.role.capitalize %>
+        </p>
+        <p class="text-muted">
+          You are now ready to explore events, purchase credits, and make the most out of your experience with Bitewheels.
+        </p>
+      </div>
+    </div>
+  </div>
+<% end %>
+
+<!-- Events Section -->
+<div class="container-fluid  py-5 mt-5" style="height: 50vh;">
+  <h3 class="mb-4 text-center">All Published Events</h3>
+  <% if @events.any? %>
+    <div class="row">
+      <% @events.each do |event| %>
+        <div class="col-sm-3 mb-4">
+          <div class="card shadow-sm h-100">
+            <div class="card-body text-left">
+              <h5 class="card-title">
+                <%= event.name %>
+                
+              </h5>
+              <span class="badge <%= event.status == 'published' ? 'bg-success' : 'bg-warning text-dark' %>">
+                  <%= event.status.capitalize %>
+                </span>
+              <p><strong>Address:</strong> <%= event.address %></p>
+              <p><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
+              <p><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
+              <p><strong>Credit Cost:</strong> <%= event.credit_cost %></p>
+              <div class="text-left">
+                <%= link_to "View Event", event_path(event), class: "btn btn-primary btn-sm" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+      <%= paginate @events %>
+    </div>
+  <% else %>
+    <p class="text-muted">No events available at the moment.</p>
+  <% end %>
+</div>
+

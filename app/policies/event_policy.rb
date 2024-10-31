@@ -12,7 +12,7 @@ class EventPolicy < ApplicationPolicy
   end
 
   def index?
-    user&.eventorganizer? || user&.foodtruckowner? 
+    true
   end
 
   def show?

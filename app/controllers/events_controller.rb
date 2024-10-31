@@ -9,7 +9,7 @@ class EventsController < ApplicationController
     @events = policy_scope(Event)
                .includes(:food_trucks)
                .page(params[:page])
-               .per(10)
+               .per(12)
 
     authorize @events
     @published_events = @events.select { |event| event.status == 'published' }
@@ -23,9 +23,12 @@ class EventsController < ApplicationController
   
   def show
     authorize @event
+   
+    @approved_count = @event.approved_applications_count
     @food_trucks = @event.food_trucks
-    @approved_food_trucks = @event.food_trucks.joins(:event_applications).where(event_applications: { status: 'approved' })
-
+    @approved_food_trucks = @event.food_trucks.joins(:event_applications)
+    .where(event_applications: { status: 'approved' })
+    .distinct
     if current_user&.foodtruckowner?
       applied_food_truck_ids = current_user.food_trucks.joins(:event_applications)
                                              .where(event_applications: { event_id: @event.id })
@@ -58,6 +61,7 @@ class EventsController < ApplicationController
   def update
     authorize @event
     if @event.update(event_params)
+      @event.update_accepting_applications!
       redirect_to @event, notice: "Event was successfully updated."
     else
       render :edit, status: :unprocessable_entity

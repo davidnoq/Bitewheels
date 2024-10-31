@@ -21,40 +21,37 @@
     <!-- Navigation Links -->
     <ul class="nav flex-column">
       <% if current_user %>
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" href="<%= user_profile_path %>">Profile</a>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="<%= events_path %>">Events</a>
         </li>
-        <li class="nav-item mb-2">
-          <a class="nav-link text-white" href="<%= events_path %>">My Events</a>
-        </li>
-        
-        <% if current_user.eventorganizer? %>
-          
-        <% end %>
         <% if current_user.foodtruckowner? %>
-          <li class="nav-item mb-2">
+          <li class="nav-item">
             <a class="nav-link text-white" href="<%= food_trucks_path %>">Food Trucks</a>
           </li>
         <% end %>
-        <% if current_user.user? %>
-          <li class="nav-item mb-2">
-            <%= button_to "Become an Event Organizer", promote_to_event_organizer_path, method: :post, class: "btn btn-primary btn-sm w-100" %>
-          </li>
-          <li class="nav-item mb-2">
-            <%= button_to "Become a Food Truck Owner", promote_to_food_truck_owner_path, method: :post, class: "btn btn-primary btn-sm w-100" %>
-          </li>
-        <% end %>
-        <li class="nav-item mb-2">
-          <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-light btn-sm w-100" %>
-        </li>
       <% else %>
-        <li class="nav-item mb-2">
-          <%= link_to "Sign up", new_user_registration_path, class: "btn btn-light btn-sm w-100" %>
-        </li>
-        <li class="nav-item mb-2">
-          <%= link_to "Log in", new_user_session_path, class: "btn btn-light btn-sm w-100" %>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="<%= root_path %>">Home</a>
         </li>
       <% end %>
+
+      <!-- Account Dropdown -->
+      <li class="nav-item dropdown mt-3">
+        <a class="nav-link dropdown-toggle text-white" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+          Account
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark">
+          <% if current_user %>
+            <li><a class="dropdown-item" href="<%= user_profile_path %>">View Profile</a></li>
+            <li>
+              <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+            </li>
+          <% else %>
+            <li><a class="dropdown-item" href="<%= new_user_registration_path %>">Sign Up</a></li>
+            <li><a class="dropdown-item" href="<%= new_user_session_path %>">Log In</a></li>
+          <% end %>
+        </ul>
+      </li>
     </ul>
   </div>
 </div>
@@ -66,50 +63,47 @@
     <a class="navbar-brand text-white" href="<%= root_path %>">Bitewheels</a>
   </h4>
 
-  <!-- Navigation Links -->
+  <!-- Main Navigation Links -->
   <ul class="nav flex-column">
     <% if current_user %>
-      <li class="nav-item mb-2">
-        <a class="nav-link text-white" href="<%= user_profile_path %>">Profile</a>
+     <% if current_user&.foodtruckowner? %>
+    <li class="nav-item ">
+     <a class="nav-link text-white" href="">Credits: <strong><%= current_user.credits %></strong></a>
       </li>
-      
-      <% if current_user.eventorganizer? %>
-      <li class="nav-item mb-2">
-        <a class="nav-link text-white" href="<%= events_path %>">My Events</a>
+      <li class="nav-item ">
+          <a class="nav-link text-white " href="<%= purchase_credits_path %>">Buy Credits</a>
+        </li>
+        <% end %>
+      <li class="nav-item">
+        <a class="nav-link text-white" href="<%= events_path %>">Events</a>
       </li>
-       <%else%>
-       <li class="nav-item mb-2">
-        <a class="nav-link text-white" href="<%= events_path %>">Events Near Me</a>
-      </li>
-      <% end %>
       <% if current_user.foodtruckowner? %>
-        <li class="nav-item mb-2">
+        <li class="nav-item">
           <a class="nav-link text-white" href="<%= food_trucks_path %>">Food Trucks</a>
         </li>
-        <li class="nav-item">
-                <span class="navbar-text me-3">
-                  Credits: <strong><%= current_user.credits %></strong>
-                </span>
-              </li>
       <% end %>
-      <% if current_user.user? %>
-        <li class="nav-item mb-2">
-          <%= button_to "Become an Event Organizer", promote_to_event_organizer_path, method: :post, class: "btn btn-primary btn-sm w-100" %>
-        </li>
-        <li class="nav-item mb-2">
-          <%= button_to "Become a Food Truck Owner", promote_to_food_truck_owner_path, method: :post, class: "btn btn-primary btn-sm w-100" %>
-        </li>
-      <% end %>
-      <li class="nav-item mb-2">
-        <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-light btn-sm w-100" %>
-      </li>
     <% else %>
-      <li class="nav-item mb-2">
-        <%= link_to "Sign up", new_user_registration_path, class: "btn btn-light btn-sm w-100" %>
-      </li>
-      <li class="nav-item mb-2">
-        <%= link_to "Log in", new_user_session_path, class: "btn btn-light btn-sm w-100" %>
+      <li class="nav-item">
+        <a class="nav-link text-white" href="<%= root_path %>">Home</a>
       </li>
     <% end %>
+
+    <!-- Account Dropdown -->
+    <li class="nav-item dropdown mt-3">
+      <a class="nav-link dropdown-toggle text-white" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        Account
+      </a>
+      <ul class="dropdown-menu dropdown-menu-dark">
+        <% if current_user %>
+          <li><a class="dropdown-item" href="<%= user_profile_path %>">View Profile</a></li>
+          <li>
+            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+          </li>
+        <% else %>
+          <li><a class="dropdown-item" href="<%= new_user_registration_path %>">Sign Up</a></li>
+          <li><a class="dropdown-item" href="<%= new_user_session_path %>">Log In</a></li>
+        <% end %>
+      </ul>
+    </li>
   </ul>
 </div>

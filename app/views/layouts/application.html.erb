@@ -13,15 +13,13 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
-    
+    <script src="https://js.stripe.com/v3/"></script>
     <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
   </head>
 
   <body>
-    <% if alert.present? %>
-      <p class="alert alert-warning"><%= alert %></p>
-    <% end %>
+   
 
     
     <% if (controller_name == 'food_trucks' ) ||(controller_name == 'events') ||(controller_name == 'event_applications')%>
@@ -39,7 +37,9 @@
       <%= yield %>
     </div>
   <% end %>
-    
+     <% if alert.present? %>
+      <p class="alert alert-warning"><%= alert %></p>
+    <% end %>
    
   </body>
 </html>

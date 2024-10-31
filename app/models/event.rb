@@ -23,4 +23,17 @@ class Event < ApplicationRecord
   # Scopes
   scope :published, -> { where(status: statuses[:published]) }
   scope :draft, -> { where(status: statuses[:draft]) }
+
+# Callbacks
+  after_update :update_accepting_applications!, if: :saved_change_to_approved_applications_count?
+
+  # Methods
+  def update_accepting_applications!
+    if approved_applications_count >= foodtruck_amount
+      update_columns(accepting_applications: false)
+    else
+      update_columns(accepting_applications: true)
+    end
+  end
+
 end

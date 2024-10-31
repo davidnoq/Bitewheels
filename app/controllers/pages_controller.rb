@@ -2,6 +2,8 @@
 class PagesController < ApplicationController
  
   def home
+    @events = Event.includes(:food_trucks).all.page(params[:page]).per(8)
+
   end
 
   def promote_to_event_organizer
@@ -23,5 +25,9 @@ class PagesController < ApplicationController
       flash[:alert] = "You are already an event organizer or food truck owner."
       redirect_to root_path
     end
+  end
+
+  def purchase_credits
+    @credit_packages = CreditPackage.all
   end
 end
