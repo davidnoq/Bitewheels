@@ -5,15 +5,17 @@
   <div class="mb-4 d-flex justify-content-start gap-2">
     <%= link_to "Back to Applications", event_event_applications_path(@event), class: "btn btn-secondary", aria: { label: "Back to Applications List" } %>
     
-    <% if @event.accepting_applications && @event.approved_applications_count < @event.foodtruck_amount %>
-      <% if current_user&.eventorganizer? && current_user == @event.user %>
-        <%= button_to "Approve", approve_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-success", data: { confirm: "Are you sure you want to approve this application?" } %>
-        <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger", data: { confirm: "Are you sure you want to reject this application?" } %>
-      <% end %>
-    <% end %>
-    <% if !@event.accepting_applications && @event_application.status == 'approved' %>
-      <% if current_user&.eventorganizer? && current_user == @event.user %>
-        <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger", data: { confirm: "Are you sure you want to reject this application?" } %>
+    <% if current_user&.eventorganizer? && current_user == @event.user %>
+      <% if @event.completed? %>
+        <!-- Completed Event: rate_event_event_application_path(@event, @event_application),Show Rate Button -->
+      <% else %>
+        <!-- Not Completed: Show Approve and Reject Buttons -->
+        <% if @event.accepting_applications && @event.approved_applications_count < @event.foodtruck_amount %>
+          <%= button_to "Approve", approve_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-success", data: { confirm: "Are you sure you want to approve this application?" } %>
+          <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger", data: { confirm: "Are you sure you want to reject this application?" } %>
+        <% elsif @event_application.status == 'approved' %>
+          <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger", data: { confirm: "Are you sure you want to reject this application?" } %>
+        <% end %>
       <% end %>
     <% end %>
   </div>
@@ -133,5 +135,26 @@
         </div>
       </div>
     </div>
+
+    <% if @event.completed? %>
+    <div class="card mt-5">
+      <div class="card-header">
+        <h5>Leave a Review and Rating</h5>
+      </div>
+      <div class="card-body">
+        <%= form_with model: @food_truck_rating, url: event_path(@event, @event_application), method: :post, local: true do |f| %>
+          <div class="mb-3">
+            <%= f.label :rating, "Rating (1-5)", class: "form-label" %>
+            <%= f.number_field :rating, in: 1..5, step: 1, class: "form-control", required: true %>
+          </div>
+          <div class="mb-3">
+            <%= f.label :review, "Review", class: "form-label" %>
+            <%= f.text_area :review, rows: 4, class: "form-control", required: true %>
+          </div>
+          <%= f.submit "Submit Review", class: "btn btn-primary" %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
   </div>
 </div>

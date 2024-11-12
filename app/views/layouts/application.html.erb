@@ -22,7 +22,7 @@
    
 
     
-    <% if (controller_name == 'food_trucks' ) ||(controller_name == 'events') ||(controller_name == 'event_applications')%>
+    <% if (controller_name == 'food_trucks' ) ||(controller_name == 'events') ||(controller_name == 'event_applications') ||(controller_name == 'pages' && action_name != 'home')%>
     <!-- Render Sidebar for Dashboard -->
     <div class="d-flex">
       <%= render 'shared/sidebar' %>
@@ -37,9 +37,7 @@
       <%= yield %>
     </div>
   <% end %>
-     <% if alert.present? %>
-      <p class="alert alert-warning"><%= alert %></p>
-    <% end %>
+     
    
   </body>
 </html>

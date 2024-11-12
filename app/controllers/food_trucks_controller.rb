@@ -3,41 +3,37 @@
 class FoodTrucksController < ApplicationController
   before_action :authenticate_user!
   before_action :set_food_truck, only: [:show, :edit, :update, :destroy, :remove_permit]
-  after_action :verify_authorized, except: [:index, :dashboard]
-  after_action :verify_policy_scoped, only: [:index, :dashboard]
+  after_action :verify_authorized, except: [:index]
+  after_action :verify_policy_scoped, only: [:index]
 
   # GET /food_trucks
   def index
-    authorize FoodTruck
-    @food_trucks = policy_scope(FoodTruck)
-                      .where(user: current_user)
-                      .page(params[:food_trucks_page]) 
-                      .per(5)                              
-
-    # Use policy_scope for event applications related to the user's food trucks
-    @event_applications = policy_scope(EventApplication)
-                          .joins(:food_truck)
-                          .where(food_trucks: { user_id: current_user.id })
-                          .includes(:event, :food_truck)
-                          .page(params[:applications_page]).per(10)
-                          authorize @food_trucks
+    # controller index
+  @food_trucks = FoodTruck.where(user: current_user)
+  policy_scope(@food_trucks)
+  authorize @food_trucks
+  @food_trucks = @food_trucks.page(params[:food_trucks_page]).per(5)
    
   end
 
   # GET /food_trucks/1
   def show
-    @food_truck = FoodTruck.find(params[:id])
+    if params[:event_application_id]
+      # If nested under EventApplication, fetch via the associated EventApplication
+      @event_application = policy_scope(EventApplication).find(params[:event_application_id])
+      @food_truck = @event_application.food_truck
+    else
+      # If not nested, fetch directly by the FoodTruck ID
+      @food_truck = policy_scope(FoodTruck).find(params[:id])
+    end
 
+    # Authorize the FoodTruck
     authorize @food_truck
+
   end
 
   # GET /food_trucks/new
   def new
-    if current_user.eventorganizer?
-      redirect_to root_path, alert: "Event organizers cannot create food trucks."
-      return
-    end
-
     @food_truck = current_user.food_trucks.build
     authorize @food_truck
   end
@@ -51,13 +47,19 @@ class FoodTrucksController < ApplicationController
   def create
     @food_truck = current_user.food_trucks.build(food_truck_params)
     authorize @food_truck
-
+  
     if @food_truck.save
-      redirect_to @food_truck, notice: "Food Truck was successfully created."
+      # Redirect to the event application creation page if an event ID is stored in the session
+      if session[:event_id]
+        redirect_to new_event_event_application_path(event_id: session[:event_id], food_truck_id: @food_truck.id)
+      else
+        redirect_to @food_truck, notice: "Food Truck was successfully created."
+      end
     else
       render :new, status: :unprocessable_entity
     end
   end
+  
 
   # PATCH/PUT /food_trucks/1
   def update
@@ -84,10 +86,16 @@ class FoodTrucksController < ApplicationController
 
   # Use callbacks to share common setup or constraints between actions.
   def set_food_truck
-    if current_user.eventorganizer?
-      @food_truck = FoodTruck.find(params[:id]) # Allow event organizers to access any food truck
+    if params[:event_application_id]
+      # Nested under EventApplication
+      @event_application = policy_scope(EventApplication).find(params[:event_application_id])
+      @food_truck = @event_application.food_truck
+    elsif current_user.eventorganizer?
+      # Direct access for event organizers
+      @food_truck = FoodTruck.find(params[:id])
     else
-      @food_truck = current_user.food_trucks.find(params[:id]) # Regular users can only access their own food trucks
+      # Direct access for regular food truck owners
+      @food_truck = current_user.food_trucks.find(params[:id])
     end
   end
 

@@ -1,141 +1,157 @@
+<% content_for :title, "Events" %>
+
+<!-- Flash Messages -->
 <% if flash[:notice] %>
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
+  <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
     <%= flash[:notice] %>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
 <% elsif flash[:alert] %>
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
     <%= flash[:alert] %>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
 <% end %>
 
-<!-- Remove the global pending applications alert -->
+<div class="container py-5">
+  <!-- Header Section -->
+  <div class="text-center mb-4">
+    <% if current_user&.eventorganizer? %>
+      <h1 class="fw-bold text-dark">Manage Your Events</h1>
+      
+    <% else %>
+      <h1 class="fw-bold text-dark">View Events In Any Area</h1>
+      
+    <% end %>
+  </div>
 
-<% content_for :title, "Events" %>
-
-<div class="d-flex" style="height: 100vh;">
-  <!-- Main Content Section -->
-  <div class="flex-grow-1 d-flex flex-column p-4">
-    <!-- Top Row: Search Bar -->
-    <% if current_user.foodtruckowner?%>
-    <div class="mb-4">
-      <form action="#" method="get" class="input-group">
-        <input type="text" class="form-control" placeholder="Find events in your area" aria-label="Search" aria-describedby="search-button">
-        <button class="btn btn-primary" type="submit" id="search-button">
-          Search
-        </button>
+  <!-- Search Form (for non-event organizers) -->
+  <% if !current_user&.eventorganizer? %>
+    <div class="mb-5">
+      <form action="<%= search_events_path %>" method="get" class="row g-3 justify-content-center">
+        <div class="col-md-2">
+          <input type="number" name="radius" class="form-control" placeholder="Radius (mi)" value="<%= params[:radius] || 50 %>" min="1" id="index_search_radius">
+        </div>
+        <div class="col-md-3">
+          <input type="date" name="start_date" class="form-control" placeholder="Start Date" value="<%= params[:start_date] %>" id="index_start_date">
+        </div>
+        <div class="col-md-3">
+          <input type="date" name="end_date" class="form-control" placeholder="End Date" value="<%= params[:end_date] %>" id="index_end_date">
+        </div>
+        <div class="col-md-4">
+          <input type="text" name="address" class="form-control" placeholder="Enter a city (e.g., Gainesville, FL)" value="<%= params[:address] %>" id="index_search_address">
+        </div>
+        <div class="col-md-2">
+          <button class="btn btn-primary w-100" type="submit" id="search-button">Search</button>
+        </div>
       </form>
     </div>
-    <%end%>
 
-    <!-- Events Near Me Section -->
-<!-- Events Near Me Section -->
-<div class="col flex-grow-1">
-  
-    <div class="mb-4">
-      <div class="card h-100">
-        <!-- Section Header -->
-        
-        <div class="d-flex justify-content-between align-items-center mb-3 bg-dark text-white py-4 px-3">
-          
-          <% if current_user.eventorganizer?%>
-          <h2>My Events</h2>
-          <%= link_to "Create Event", new_event_path, class: "text-white" %>
-          <% end%>
-        </div>
+    <!-- Google Maps Autocomplete -->
+    <script>
+      function initIndexAutocomplete() {
+        var input = document.getElementById('index_search_address');
+        if (input) {
+          var autocomplete = new google.maps.places.Autocomplete(input, { types: ['(cities)'] });
+          autocomplete.addListener('place_changed', function() {
+            var place = autocomplete.getPlace();
+            if (!place.geometry) {
+              alert("No details available for input: '" + place.name + "'");
+            }
+          });
+        }
+      }
 
-        <div class="card-body">
-          <!-- Published Events Section -->
-          <% if @events.present? %>
-          <h3 class="mb-3">Published Events</h3>
-          <% if @published_events.any? %>
-            <div class="row">
-  <% @published_events.each do |event| %>
-    <div class="col-lg-2 col-md-4 col-sm-6  mb-4">
-      <div class="card h-100" style="min-width: 200px; min-height: 200px; max-width: 300px">
-        <div class="card-body d-flex flex-column">
-          <!-- Event Name and Status Badge -->
-          <h5 class="card-title d-flex justify-content-between align-items-center">
-            <%= event.name %>
-            <p class="card-text">
-              <span class="badge bg-success">Published</span>
-            </p>
-          </h5>
+      function findEventsNearMe() {
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(function(position) {
+            const latitude = position.coords.latitude;
+            const longitude = position.coords.longitude;
+            window.location.href = `<%= search_events_path %>?latitude=${latitude}&longitude=${longitude}&radius=<%= params[:radius] || 50 %>`;
+          }, function() {
+            alert("Location access is needed to find events near you.");
+          });
+        } else {
+          alert("Geolocation is not supported by your browser.");
+        }
+      }
 
-          <!-- Event Details -->
-          <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
-          <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
-          <p class="card-text"><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
-          <p><strong>Credit Cost:</strong> <%= event.credit_cost %></p>
-
-          <!-- Pending Applications Count -->
-          <% if current_user&.eventorganizer? && @events_with_pending_applications.include?(event.id) %>
-            <p class="card-text">
-              <strong>Pending Applications:</strong>
-              <span class="badge bg-warning text-dark"><%= @pending_applications_per_event[event.id] %></span>
-            </p>
-          <% end %>
-
-          <!-- Show Event Button -->
-          <div class="mt-auto text-center">
-            <%= link_to "Show this event", event_path(event), class: "btn btn-primary" %>
-          </div>
-        </div>
-      </div>
-    </div>
+      document.addEventListener("DOMContentLoaded", function() {
+        initIndexAutocomplete();
+      });
+    </script>
+    <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps[:api_key] %>&libraries=places&callback=initIndexAutocomplete"></script>
   <% end %>
-</div>
-          <% else %>
-            <p class="text-muted">No published events available.</p>
-          <% end %>
-          
-          <!-- Drafted Events Section -->
-          <% if current_user.eventorganizer?%>
-          <h3 class="mt-5 mb-3">Drafted Events</h3>
-          <% if @drafted_events.any? %>
-            <div class="row">
-              <% @drafted_events.each do |event| %>
-                <div class="col-lg-2 col-md-4 col-sm-6  mb-4">
-      <div class="card h-100" style="min-width: 200px; min-height: 200px; max-width: 300px">
-        <div class="card-body d-flex flex-column">
-                      <!-- Event Name and Status Badge -->
-                      <h5 class="card-title d-flex justify-content-between align-items-center">
-                        <%= event.name %>
-                        <p class="card-text">
-                          <span class="badge bg-warning text-dark">Draft</span>
-                        </p>
-                      </h5>
 
-                      <!-- Event Details -->
-                      <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
-                      <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
-                      <p class="card-text"><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
+  <!-- Events Section -->
+  <div class="card shadow-sm">
+    <div class="d-flex justify-content-between align-items-center bg-dark text-white py-3 px-3">
+      <% if current_user&.eventorganizer? %>
+        <h2 class="mb-0"><%= @search_title || "My Events" %></h2>
+        <%= link_to "Create Event", new_event_path, class: "btn btn-sm btn-light" %>
+      <% else %>
+        <h2 class="mb-0"><%= @search_title || "Events" %></h2>
+      <% end %>
+    </div>
+    <div class="card-body">
+      <% if params[:address].present? %>
+        <p class="text-muted text-center mb-4">Found <strong><%= @events.count %></strong> event<%= @events.count == 1 ? '' : 's' %> near "<%= params[:address].titleize %>".</p>
+      <% end %>
 
-                      <!-- Show Event Button -->
-                      <div class="mt-auto text-center">
-                        <%= link_to "Show this event", event_path(event), class: "btn btn-secondary" %>
-                      </div>
-                    </div>
+      <!-- Published Events -->
+      <% if @published_events.any? %>
+        <h3 class="mb-4 text-center">Published Events</h3>
+        <div class="row g-4">
+          <% @published_events.each do |event| %>
+            <div class="col-lg-4 col-md-6">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title"><%= event.name %></h5>
+                  <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
+                  <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
+                  <p class="card-text"><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
+                  <p class="card-text"><strong>Credit Cost:</strong> <%= event.credit_cost %></p>
+                  <% if current_user&.eventorganizer? && @events_with_pending_applications.include?(event.id) %>
+                    <p class="card-text"><strong>Pending Applications:</strong> <%= @pending_applications_per_event[event.id] %></p>
+                  <% end %>
+                  <div class="mt-auto">
+                    <%= link_to "View Event", event_path(event), class: "btn btn-primary btn-sm w-100" %>
                   </div>
                 </div>
-              <% end %>
+              </div>
             </div>
-          <% else %>
-            <p class="text-muted">No drafted events available at the moment.</p>
-          <% end %>
           <% end %>
         </div>
-        
+      <% else %>
+        <p class="text-muted text-center">No published events found.</p>
+      <% end %>
 
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-2">
-          <%= paginate @events %>
+      <!-- Drafted Events -->
+      <% if current_user&.eventorganizer? && @drafted_events.any? %>
+        <h3 class="mt-5 mb-4 text-center">Drafted Events</h3>
+        <div class="row g-4">
+          <% @drafted_events.each do |event| %>
+            <div class="col-lg-4 col-md-6">
+              <div class="card shadow-sm h-100">
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title"><%= event.name %></h5>
+                  <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
+                  <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
+                  <p class="card-text"><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
+                  <div class="mt-auto">
+                    <%= link_to "View Draft", event_path(event), class: "btn btn-secondary btn-sm w-100" %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
         </div>
-      </div>
+      <% end %>
     </div>
-  <% else %>
-    <p class="text-muted">No events available near you at the moment.</p>
-  <% end %>
-</div>
+  </div>
 
+  <!-- Pagination -->
+  <div class="d-flex justify-content-center mt-4">
+    <%= paginate @events %>
+  </div>
+</div>

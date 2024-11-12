@@ -6,12 +6,6 @@ class CheckoutController < ApplicationController
     before_action :authorize_checkout, only: [:create]
   
     def create
-      # Only allow users who are not event organizers to purchase credits
-      unless current_user.foodtruckowner? || current_user.user?
-        redirect_to root_path, alert: "You are not authorized to purchase credits."
-        return
-      end
-  
       begin
         # Create a Stripe Checkout Session
         session = Stripe::Checkout::Session.create({

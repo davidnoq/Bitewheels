@@ -1,0 +1,78 @@
+<% content_for :title, "My Application" %>
+
+<div class="container py-5">
+  <div class="row">
+    <!-- Left Column: Event Details -->
+    <div class="col-lg-8 mb-4">
+      <div class="card shadow-lg">
+        <div class="card-header bg-dark text-white text-center">
+          <h3 class="mb-0"><%= @event.name %></h3>
+        </div>
+        <div class="card-body">
+          <!-- Event Details -->
+          <p>
+            <strong>Address:</strong> <%= @event.address %><br>
+            <strong>Dates:</strong> <%= @event.start_date.strftime("%B %d, %Y") %> - <%= @event.end_date.strftime("%B %d, %Y") %><br>
+            <strong>Food Trucks Needed:</strong> <%= @event.foodtruck_amount %><br>
+            <strong>Expected Attendees:</strong> <%= @event.expected_attendees %><br>
+            <strong>Status:</strong>
+            <% if @event.completed? %>
+              <span class="badge bg-success">Completed</span>
+            <% else %>
+              <span class="badge bg-secondary">Ongoing</span>
+            <% end %>
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Column: Application and Chat -->
+    <div class="col-lg-4">
+      <!-- Application Details Card -->
+      <div class="card h-100 shadow-sm mb-4">
+        <div class="card-header bg-secondary text-white">
+          <h5 class="card-title mb-0">Application Details</h5>
+        </div>
+        <div class="card-body">
+          <!-- Application Status -->
+          <p>
+            <strong>Status:</strong>
+            <% case @event_application.status %>
+            <% when 'pending' %>
+              <span class="badge bg-warning text-dark">Pending</span>
+            <% when 'approved' %>
+              <span class="badge bg-success">Approved</span>
+            <% when 'rejected' %>
+              <span class="badge bg-danger">Rejected</span>
+            <% else %>
+              <span class="badge bg-secondary"><%= @event_application.status.capitalize %></span>
+            <% end %>
+          </p>
+          <!-- Manage Food Truck Button -->
+          <%= link_to "Manage Food Truck", event_application_food_truck_path(@event_application), class: "btn btn-primary mb-3 " %>
+        </div>
+      </div>
+
+      <!-- Chat Section -->
+      <div class="card h-100 shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h5 class="card-title mb-0">
+            <% if @event.completed? %>
+              Chat History
+            <% else %>
+              Chat
+            <% end %>
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Placeholder for Chat -->
+          <% if @event.completed? %>
+            <p class="text-muted">Review past messages exchanged during the event.</p>
+          <% else %>
+            <p class="text-muted">Chat functionality will be here.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

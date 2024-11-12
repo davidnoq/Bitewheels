@@ -1,24 +1,33 @@
-<!-- app/views/pages/purchase_credits.html.erb -->
+<% content_for :title, "Purchase Credits" %>
 
-<div class="container my-5">
-  <div class="text-center">
-    <h2 class="display-4">Purchase Credits</h2>
-    <p class="lead">Add credits to your account to apply for more events and access premium options.</p>
+<div class="container py-5">
+  <!-- Page Header -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold text-dark">Purchase Credits</h1>
+    <p class="text-muted lead">Add credits to your account to apply for more events and access premium options.</p>
   </div>
 
+  <!-- Credit Packages Section -->
   <div class="row justify-content-center">
     <% @credit_packages.each do |package| %>
-      <div class="col-md-4">
-        <div class="card mb-4 shadow-sm text-center">
-          <div class="card-header">
-            <h4 class="my-0 font-weight-normal"><%= package.name %></h4>
+      <div class="col-lg-4 col-md-6 mb-4">
+        <!-- Credit Package Card -->
+        <div class="card shadow-lg border-1 h-100 border-0">
+          <!-- Header -->
+          <div class="card-header text-center bg-dark text-white py-3">
+            <h4 class="fw-bold mb-0"><%= package.name %></h4>
           </div>
-          <div class="card-body">
-            <h1 class="card-title pricing-card-title">$<%= '%.2f' % (package.price_cents / 100.0) %></h1>
+          <!-- Body -->
+          <div class="card-body text-center d-flex flex-column">
+            <!-- Pricing -->
+            <h2 class="card-title pricing-card-title text-dark fw-bold">$<%= '%.2f' % (package.price_cents / 100.0) %></h2>
             <ul class="list-unstyled mt-3 mb-4">
               <li><strong>Credits:</strong> <%= package.credits %></li>
             </ul>
-            <%= button_to "Buy #{package.name}", checkout_create_path(credit_package_id: package.id), method: :post, data: { turbo: false }, class: "btn btn-primary btn-lg w-100" %>
+            <!-- Purchase Button -->
+            <%= button_to "Buy #{package.name}", checkout_create_path(credit_package_id: package.id), 
+                          method: :post, data: { turbo: false }, 
+                          class: "btn btn-outline-primary btn-lg w-100 mt-auto" %>
           </div>
         </div>
       </div>

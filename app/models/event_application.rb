@@ -1,6 +1,6 @@
 class EventApplication < ApplicationRecord
   belongs_to :food_truck
-  belongs_to :event, optional: true
+  belongs_to :event
 
   # Enums
   enum status: { pending: 0, approved: 1, rejected: 2 }

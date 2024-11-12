@@ -14,6 +14,9 @@ class FoodTruck < ApplicationRecord
   validate :validate_food_images_limit
   validate :validate_menu_images_limit
 
+  def average_rating
+    ratings_count > 0 ? (total_rating_score.to_f / ratings_count).round(2) : 0
+  end
   private
 
   def validate_food_images_limit

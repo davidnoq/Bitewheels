@@ -1,0 +1,87 @@
+<div class="container py-5">
+  <h2 class="text-center fw-bold mb-4"><%= @search_title || "Published Events" %></h2>
+
+  <!-- Search Form -->
+  <div class="mb-5">
+    <form action="<%= all_events_path %>" method="get" class="row g-3 justify-content-center">
+      <div class="col-md-2">
+        <input type="number" name="radius" class="form-control" placeholder="Radius (mi)" value="<%= params[:radius] || 50 %>" min="1">
+      </div>
+      <div class="col-md-3">
+        <input type="date" name="start_date" class="form-control" placeholder="Start Date" value="<%= params[:start_date] %>">
+      </div>
+      <div class="col-md-3">
+        <input type="date" name="end_date" class="form-control" placeholder="End Date" value="<%= params[:end_date] %>">
+      </div>
+      <div class="col-md-4">
+        <input type="text" id="search_address" name="address" class="form-control" placeholder="Enter a city (e.g., Gainesville, FL)" value="<%= params[:address] %>">
+      </div>
+      <div class="col-md-2">
+        <button class="btn btn-primary w-100" type="submit">Search</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Events Section -->
+  <% if @events.any? %>
+    <div class="row g-4">
+      <% @events.each do |event| %>
+        <div class="col-lg-4 col-md-6">
+          <div class="card shadow-sm h-100">
+            <div class="card-body d-flex flex-column">
+              <h5 class="card-title text-center"><%= event.name %></h5>
+              <p><strong>Address:</strong> <%= event.address %></p>
+              <p><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
+              <p><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
+              <p><strong>Credit Cost:</strong> <%= event.credit_cost %></p>
+              <div class="text-center mt-auto">
+                <%= link_to "View Event", event_path(event), class: "btn btn-primary btn-sm w-100" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+    <div class="d-flex justify-content-center mt-4">
+      <%= paginate @events %>
+    </div>
+  <% else %>
+    <p class="text-muted text-center">No events found.</p>
+  <% end %>
+
+  <!-- JavaScript -->
+  <script>
+    function initIndexAutocomplete() {
+      var input = document.getElementById('search_address');
+      if (input) {
+        var autocomplete = new google.maps.places.Autocomplete(input, { types: ['(cities)'] });
+        autocomplete.addListener('place_changed', function() {
+          var place = autocomplete.getPlace();
+          if (!place.geometry) {
+            alert("No details available for input: '" + place.name + "'");
+          }
+        });
+      }
+    }
+
+    function findEventsNearMe() {
+      if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+          const latitude = position.coords.latitude;
+          const longitude = position.coords.longitude;
+          const radius = <%= params[:radius] || 50 %>;
+          window.location.href = `<%= all_events_path %>?latitude=${latitude}&longitude=${longitude}&radius=${radius}`;
+        }, function() {
+          alert("Location access is needed to find events near you.");
+        });
+      } else {
+        alert("Geolocation is not supported by your browser.");
+      }
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      initIndexAutocomplete();
+    });
+  </script>
+  <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps[:api_key] %>&libraries=places&callback=initIndexAutocomplete"></script>
+</div>

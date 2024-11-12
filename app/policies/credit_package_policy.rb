@@ -2,7 +2,7 @@
 
 class CreditPackagePolicy < ApplicationPolicy
     def purchase?
-      user.foodtruckowner? || user.user?
+      (user.foodtruckowner? || user.user?) && !user.eventorganizer?
     end
   
     class Scope < Scope

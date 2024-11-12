@@ -4,7 +4,6 @@ class CreateFoodTrucks < ActiveRecord::Migration[7.2]
       t.string :name
       t.string :cuisine
       t.references :user, null: false, foreign_key: true
-
       t.timestamps
     end
   end

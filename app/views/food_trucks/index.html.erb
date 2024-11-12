@@ -1,73 +1,52 @@
 <% content_for :title, "Food Trucks" %>
 
-<div class="d-flex" style="height: 100vh;">
-  
-    <!-- Bottom Row: My Food Trucks and My Applications -->
-    <div class="row flex-grow-1 d-flex  p-4">
-      
-      <div class="col-md-6 mb-4">
-        <div class="card h-100">
-          <div class="d-flex justify-content-between align-items-center mb-3 bg-dark text-white py-2 px-3">
-            <h2 class="mb-0">My Food Trucks</h2>
-            <%= link_to 'Add New Food Truck', new_food_truck_path, class: 'text-white ' %>
-          </div>
-          <div class="card-body">
-            <% if @food_trucks.any? %>
-              <ul class="list-group">
-                <% @food_trucks.each do |food_truck| %>
-                  <li class="list-group-item d-flex justify-content-between align-items-center">
-                    <%= food_truck.name %> (<%= food_truck.cuisine %>)
-                    <%= link_to 'View', food_truck_path(food_truck), class: 'btn btn-primary btn-sm' %>
-                  </li>
-                <% end %>
-              </ul>
-              <!-- Pagination Links -->
-              <div class="d-flex justify-content-center mt-2">
-                <%= paginate @food_trucks, param_name: :food_trucks_page %>
-              </div>
-            <% else %>
-              <p class="text-muted">You have no registered food trucks.</p>
-            <% end %>
-          </div>
-        </div>
-      </div>
-
-      <!-- My Applications Section -->
-      <div class="col-md-6 mb-4">
-        <div class="card h-100">
-          <div class="d-flex justify-content-between align-items-center mb-3 bg-dark text-white py-2 px-3">
-            <h2 class="mb-0">My Applications</h2>
-          </div>
-          <div class="card-body">
-            <% if @event_applications.present? && @event_applications.any? %>
-              <table class="table table-striped">
-                <thead>
-                  <tr>
-                    <th>Event</th>
-                    <th>Food Truck</th>
-                    <th>Status</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <% @event_applications.each do |application| %>
-                    <tr>
-                      <td><%= link_to application.event.name, event_path(application.event) %></td>
-                      <td><%= application.food_truck.name %></td>
-                      <td><%= application.status.capitalize %></td>
-                    </tr>
-                  <% end %>
-                </tbody>
-              </table>
-              <!-- Pagination Links -->
-              <div class="d-flex justify-content-center">
-                <%= paginate @event_applications, param_name: :applications_page %>
-              </div>
-            <% else %>
-              <p class="text-muted">You have no food truck applications.</p>
-            <% end %>
-          </div>
-        </div>
-      </div>
-    </div>
+<div class="container py-5">
+  <!-- Page Header -->
+  <div class="text-center mb-5">
+    <h1 class="fw-bold text-dark">Manage Your Food Trucks</h1>
+    <p class="text-muted">Keep track of your food trucks and make updates as needed.</p>
+    <%= link_to "Add New Food Truck", new_food_truck_path, class: "btn btn-primary btn-lg" %>
   </div>
+
+  <% if @food_trucks.any? %>
+    <div class="row justify-content-center">
+      <% @food_trucks.each do |food_truck| %>
+        <div class="col-lg-4 col-md-6 mb-4">
+          <!-- Food Truck Card -->
+          <div class="card h-100 border-1 shadow-lg rounded">
+            <!-- Image Placeholder -->
+            <div class="card-img-top bg-secondary d-flex align-items-center justify-content-center text-white" style="height: 200px;">
+              <i class="fas fa-truck fa-5x"></i>
+            </div>
+            <div class="card-body d-flex flex-column">
+              <!-- Food Truck Name -->
+              <h5 class="card-title text-center fw-bold text-dark"><%= food_truck.name %></h5>
+
+              <!-- Cuisine -->
+              <p class="card-text text-center text-muted">
+                <strong>Cuisine:</strong> <%= food_truck.cuisine %>
+              </p>
+
+              <!-- Action Buttons -->
+              <div class="mt-auto text-center">
+                <%= link_to "View", food_truck_path(food_truck), class: "btn btn-outline-primary btn-sm me-2" %>
+                <%= link_to "Edit", edit_food_truck_path(food_truck), class: "btn btn-outline-secondary btn-sm" %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Pagination -->
+    <div class="d-flex justify-content-center mt-4">
+      <%= paginate @food_trucks, param_name: :food_trucks_page %>
+    </div>
+  <% else %>
+    <!-- No Food Trucks Message -->
+    <div class="text-center">
+      <i class="fas fa-truck fa-3x text-muted mb-3"></i>
+      <p class="text-muted">You have no registered food trucks. Add one to get started!</p>
+    </div>
+  <% end %>
 </div>

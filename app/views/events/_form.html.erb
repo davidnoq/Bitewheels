@@ -140,6 +140,26 @@
     });
   }
 </script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const startDateField = document.getElementById("event_start_date");
+    const endDateField = document.getElementById("event_end_date");
+
+    function validateDates() {
+      const startDate = new Date(startDateField.value);
+      const endDate = new Date(endDateField.value);
+
+      if (endDate < startDate) {
+        endDateField.setCustomValidity("End date must be after the start date.");
+      } else {
+        endDateField.setCustomValidity("");
+      }
+    }
+
+    startDateField.addEventListener("change", validateDates);
+    endDateField.addEventListener("change", validateDates);
+  });
+</script>
 
 <!-- Load the Google Maps JavaScript API with Places library and use Rails credentials for the API key -->
 <script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps[:api_key] %>&libraries=places&callback=initAutocomplete"></script>

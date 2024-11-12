@@ -14,6 +14,12 @@ class EventPolicy < ApplicationPolicy
   def index?
     true
   end
+  def search?
+    true
+  end
+  def all?
+    true
+  end
 
   def show?
     if user.present?
@@ -23,6 +29,13 @@ class EventPolicy < ApplicationPolicy
       # Visitors can only see published events
       record.published?
     end
+  end
+
+  def complete?
+    user&.eventorganizer?
+  end
+  def completed?
+    user&.eventorganizer?
   end
 
   def create?
@@ -49,8 +62,6 @@ class EventPolicy < ApplicationPolicy
     user&.eventorganizer? && record.user_id == user.id && record.draft?
   end
 
-  def applications?
-    user&.eventorganizer?
-  end
+  
 
 end

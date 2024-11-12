@@ -70,3 +70,4 @@ gem "pundit"
 gem "phonelib"
 gem 'kaminari'
 gem 'stripe'
+gem 'geocoder'

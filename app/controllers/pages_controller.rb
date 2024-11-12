@@ -1,10 +1,5 @@
 # app/controllers/pages_controller.rb
 class PagesController < ApplicationController
- 
-  def home
-    @events = Event.includes(:food_trucks).all.page(params[:page]).per(8)
-
-  end
 
   def promote_to_event_organizer
     if current_user.user?
@@ -28,6 +23,7 @@ class PagesController < ApplicationController
   end
 
   def purchase_credits
-    @credit_packages = CreditPackage.all
+    @credit_packages = policy_scope(CreditPackage)
+    authorize CreditPackage, :purchase?
   end
 end
