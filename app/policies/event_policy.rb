@@ -12,7 +12,7 @@ class EventPolicy < ApplicationPolicy
   end
 
   def index?
-    true
+    user&.eventorganizer?
   end
   def search?
     true

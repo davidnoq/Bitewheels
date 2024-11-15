@@ -1,15 +1,16 @@
+# app/policies/event_application_policy.rb
 class EventApplicationPolicy < ApplicationPolicy
   class Scope < Scope
     def resolve
       if user.eventorganizer?
-        # Return applications associated with events the user organizes
-        EventApplication.joins(:event).where(events: { user_id: user.id })
+        # Applications for events the user organizes
+        scope.joins(:event).where(events: { user_id: user.id })
       elsif user.foodtruckowner?
-        # Return applications associated with the user's food trucks
-        EventApplication.joins(:food_truck).where(food_trucks: { user_id: user.id })
+        # Applications for the user's food trucks
+        scope.joins(:food_truck).where(food_trucks: { user_id: user.id })
       else
-        # Return no records if the user is not authorized
-        EventApplication.none
+        # No access for other users
+        scope.none
       end
     end
   end
@@ -17,8 +18,6 @@ class EventApplicationPolicy < ApplicationPolicy
   def index?
     user.eventorganizer? || user.foodtruckowner?
   end
-
-  
 
   def show?
     # Allow viewing if the user owns the associated event or food truck
@@ -34,7 +33,7 @@ class EventApplicationPolicy < ApplicationPolicy
   end
 
   def update?
-    (user.eventorganizer? && record.event.user_id == user.id)
+    user.eventorganizer? && record.event.user_id == user.id
   end
 
   def destroy?
@@ -48,5 +47,4 @@ class EventApplicationPolicy < ApplicationPolicy
   def reject?
     approve?
   end
- 
 end

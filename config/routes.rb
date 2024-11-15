@@ -22,7 +22,7 @@ Rails.application.routes.draw do
     end
 
     # Nested routes for Event Applications specific to events
-    resources :event_applications, only: [:new, :create] do
+    resources :event_applications, only: [:index, :new, :create, :show] do
       member do
         patch :approve
         patch :reject

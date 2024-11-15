@@ -1,20 +1,26 @@
 # app/controllers/events_controller.rb
 class EventsController < ApplicationController
-  before_action :authenticate_user!, except: [:index, :show, :search]
+  before_action :authenticate_user!, except: [:index, :show, :search, :all]
   before_action :set_event, only: %i[show edit update destroy publish complete]
   after_action :verify_authorized, except: [:index, :show, :search]
   after_action :verify_policy_scoped, only: :index
 
   def index
-    @events = policy_scope(Event).includes(:food_trucks)
-    @events = @events.page(params[:page]).per(12)
-    authorize @events
 
+    @events = policy_scope(Event)
+    .includes(:food_trucks)
+    .page(params[:page])
+    .per(12)
+   authorize @events
     @published_events = @events.select { |event| event.status == 'published' }
     @drafted_events = @events.select { |event| event.status == 'draft' }
-
+  
     if current_user&.eventorganizer?
-      @pending_applications_per_event = EventApplication.where(event_id: @events.pluck(:id), status: 'pending').group(:event_id).count
+      # Fetch pending applications for the current user's events
+      @pending_applications_per_event = EventApplication
+        .where(event_id: @events.pluck(:id), status: 'pending')
+        .group(:event_id)
+        .count
       @events_with_pending_applications = @pending_applications_per_event.keys
     end
   end
@@ -77,7 +83,7 @@ class EventsController < ApplicationController
 
   def all
     @events = Event.where(status: 'published')
-  
+    authorize :event, :all? 
     # Location-based filtering
     if params[:latitude].present? && params[:longitude].present?
       coordinates = [params[:latitude].to_f, params[:longitude].to_f]

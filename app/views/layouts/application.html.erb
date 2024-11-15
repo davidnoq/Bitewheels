@@ -22,22 +22,23 @@
    
 
     
-    <% if (controller_name == 'food_trucks' ) ||(controller_name == 'events') ||(controller_name == 'event_applications') ||(controller_name == 'pages' && action_name != 'home')%>
+    <% if (controller_name == 'food_trucks' ) ||(controller_name == 'events') ||(controller_name == 'event_applications')%>
     <!-- Render Sidebar for Dashboard -->
     <div class="d-flex">
       <%= render 'shared/sidebar' %>
-      <div class="flex-grow-1" >
+      <div class="flex-fill" >
         <%= yield %>
       </div>
     </div>
   <% else %>
     <!-- Render Top Navbar for Other Pages -->
     <%= render 'shared/top_navbar' %>
-    <div class="container mt-4">
+    <div class="flex-fill" >
       <%= yield %>
     </div>
+    
   <% end %>
      
-   
+   <%= render 'shared/footer' %>
   </body>
 </html>

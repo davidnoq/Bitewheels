@@ -1,6 +1,7 @@
 # app/controllers/pages_controller.rb
 class PagesController < ApplicationController
-
+  before_action :authenticate_user!, only: [:purchase_credits]
+  
   def promote_to_event_organizer
     if current_user.user?
       current_user.update(role: :eventorganizer)

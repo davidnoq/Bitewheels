@@ -1,59 +1,73 @@
+<!-- app/views/users/show.html.erb -->
+
+<%# Set the Page Title %>
 <% content_for :title, "My Profile" %>
 
-<div class="d-flex justify-content-center align-items-center min-vh-100">
-  <div class="card shadow-lg w-100 mx-3 mx-md-auto" style="max-width: 40rem;">
-    <!-- Header Section -->
-    <div class="card-header bg-dark text-white text-center py-4">
-      <h2 class="card-title mb-0">My Profile</h2>
-    </div>
-
-    <!-- Body Section -->
-    <div class="card-body p-4">
-      <!-- User Information -->
-      <div class="mb-4">
-        <h5 class="text-muted text-uppercase mb-3">User Information</h5>
-        <hr class="mb-4">
-        <!-- User Details -->
-        <div class="row mb-3">
-          <div class="col-5 text-muted fw-semibold">First Name:</div>
-          <div class="col-7"><%= @user.first_name %></div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-5 text-muted fw-semibold">Last Name:</div>
-          <div class="col-7"><%= @user.last_name %></div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-5 text-muted fw-semibold">Email:</div>
-          <div class="col-7"><%= @user.email %></div>
-        </div>
-
-        <% if @user.foodtruckowner? %>
-          <div class="row mb-3">
-            <div class="col-5 text-muted fw-semibold">Credits:</div>
-            <div class="col-7"><%= @user.credits %></div>
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <!-- Profile Header -->
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-4">
+            
+    
+            <!-- User Name and Role -->
+            <div>
+              <h3 class="mb-0"><%= @user.first_name %> <%= @user.last_name %></h3>
+              <p class="text-muted"><%= @user.role.capitalize %></p>
+            </div>
           </div>
-        <% end %>
-
-        <div class="row mb-3">
-          <div class="col-5 text-muted fw-semibold">Phone Number:</div>
-          <div class="col-7"><%= @user.formatted_phone_number %></div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-5 text-muted fw-semibold">Role:</div>
-          <div class="col-7"><%= @user.role.capitalize %></div>
+    
+          <!-- User Information -->
+          <div>
+            <h5 class="text-dark mb-3">User Information</h5>
+            <hr>
+    
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted fw-semibold">First Name:</div>
+              <div class="col-sm-8"><%= @user.first_name %></div>
+            </div>
+    
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted fw-semibold">Last Name:</div>
+              <div class="col-sm-8"><%= @user.last_name %></div>
+            </div>
+    
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted fw-semibold">Email:</div>
+              <div class="col-sm-8"><%= @user.email %></div>
+            </div>
+    
+            <% if @user.foodtruckowner? %>
+              <div class="row mb-3">
+                <div class="col-sm-4 text-muted fw-semibold">Credits:</div>
+                <div class="col-sm-8"><%= @user.credits %></div>
+              </div>
+            <% end %>
+    
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted fw-semibold">Phone Number:</div>
+              <div class="col-sm-8"><%= @user.formatted_phone_number %></div>
+            </div>
+    
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted fw-semibold">Role:</div>
+              <div class="col-sm-8">
+                <span class="badge bg-<%= @user.role == 'admin' ? 'danger' : 'primary' %>">
+                  <%= @user.role.capitalize %>
+                </span>
+              </div>
+            </div>
+          </div>
+    
+          <%# Action Buttons %>
+          <div class="d-flex justify-content-end gap-3 mt-4">
+            <%= link_to "Edit Profile", edit_user_registration_path, class: "btn btn-primary" %>
+            <%= link_to "Back to Home", root_path, class: "btn btn-secondary" %>
+          </div>
         </div>
       </div>
-
-      <!-- Action Buttons -->
-      <div class="text-center mt-4">
-        <%= link_to "Edit Profile", edit_user_registration_path, class: "btn btn-primary btn-lg me-3 px-4" %>
-        <%= link_to "Back to Home", root_path, class: "btn btn-secondary btn-lg px-4" %>
-      </div>
-    </div>
-
-    <!-- Footer Section -->
-    <div class="card-footer text-center bg-light text-muted py-3">
-      <small>Keep your profile updated to make the most out of your experience.</small>
     </div>
   </div>
 </div>

@@ -1,5 +1,3 @@
-<!-- app/views/shared/_sidebar.html.erb -->
-
 <!-- Sidebar Toggle Button (Visible on Small Screens) -->
 <nav class="navbar navbar-dark bg-dark d-lg-none">
   <div class="container-fluid">
@@ -12,116 +10,196 @@
 <!-- Offcanvas Sidebar for Small Screens -->
 <div class="offcanvas offcanvas-start bg-dark text-white" tabindex="-1" id="sidebarOffcanvas" aria-labelledby="sidebarOffcanvasLabel">
   <div class="offcanvas-header">
-    <h5 class="offcanvas-title" id="sidebarOffcanvasLabel">
-      <a class="navbar-brand text-white" href="<%= root_path %>">Bitewheels</a>
-    </h5>
+    <h4 class="mb-4 d-flex align-items-center">
+    <%= image_tag "svgs/logo.svg", alt: "Logo", class: "me-2", style: "height: 30px;" %>
+    <a class="navbar-brand text-white" href="<%= root_path %>">Bitewheels</a>
+  </h4>
     <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
   </div>
+   <hr class="text-secondary">
   <div class="offcanvas-body">
-    <!-- Navigation Links -->
-    <ul class="nav flex-column">
-      <% if current_user %>
-        <li class="nav-item">
-          <a class="nav-link text-white" href="<%= events_path %>">Events</a>
-        </li>
-        <% if current_user.foodtruckowner? %>
+    <% if current_user %>
+      <% if current_user.foodtruckowner? %>
+        <!-- Food Truck Owner Sidebar -->
+        <div class="mb-3">
+          <h5>Welcome, <%= current_user.first_name %>!</h5>
+          <p class="mb-1"><strong>Credits:</strong> <%= current_user.credits %></p>
+          <p class="mb-3"><strong>Role:</strong> Food Truck Owner</p>
+
+          <!-- Account Dropdown -->
+          <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle w-100" href="#" role="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              Account
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark">
+              <li><a class="dropdown-item" href="<%= user_profile_path %>">View Account</a></li>
+              <li><a class="dropdown-item" href="<%= purchase_credits_path %>">Buy Credits</a></li>
+              <li>
+                <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <hr class="text-secondary">
+
+        <!-- Navigation Links -->
+        <ul class="nav flex-column">
           <li class="nav-item">
             <a class="nav-link text-white" href="<%= food_trucks_path %>">Food Trucks</a>
           </li>
-        <% end %>
-      <% else %>
+          <li class="nav-item">
+            <a class="nav-link text-white" href="<%= event_applications_path %>">My Applications</a>
+          </li>
+        </ul>
+      <% elsif current_user.eventorganizer? %>
+        <!-- Event Organizer Sidebar -->
+        <div class="mb-3">
+          <h5>Welcome, <%= current_user.first_name %>!</h5>
+          <p class="mb-3"><strong>Role:</strong> Event Organizer</p>
+
+          <!-- Account Dropdown -->
+          <div class="dropdown">
+            <a class="btn btn-secondary dropdown-toggle w-100" href="#" role="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              Account
+            </a>
+            <ul class="dropdown-menu dropdown-menu-dark">
+              <li><a class="dropdown-item" href="<%= user_profile_path %>">View Account</a></li>
+              <li>
+                <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <hr class="text-secondary">
+
+        <!-- Events Dropdown -->
+        <div class="dropdown mb-3">
+          <a class="btn btn-secondary dropdown-toggle w-100" href="#" role="button" id="eventsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Events
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item" href="<%= all_events_path %>">All Events</a></li>
+            <li><a class="dropdown-item" href="<%= events_path %>">My Events</a></li>
+            <li><a class="dropdown-item" href="<%= completed_events_path %>">Completed Events</a></li>
+          </ul>
+        </div>
+      <% end %>
+    <% else %>
+      <!-- Default Sidebar for Non-Authenticated Users -->
+      <ul class="nav flex-column">
         <li class="nav-item">
           <a class="nav-link text-white" href="<%= root_path %>">Home</a>
         </li>
-      <% end %>
-
-      <!-- Account Dropdown -->
-      <li class="nav-item dropdown mt-3">
-        <a class="nav-link dropdown-toggle text-white" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-          Account
-        </a>
-        <ul class="dropdown-menu dropdown-menu-dark">
-          <% if current_user %>
-            <li><a class="dropdown-item" href="<%= user_profile_path %>">View Profile</a></li>
-            <li>
-              <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
-            </li>
-          <% else %>
-            <li><a class="dropdown-item" href="<%= new_user_registration_path %>">Sign Up</a></li>
-            <li><a class="dropdown-item" href="<%= new_user_session_path %>">Log In</a></li>
-          <% end %>
-        </ul>
-      </li>
-    </ul>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="<%= new_user_session_path %>">Log In</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link text-white" href="<%= new_user_registration_path %>">Sign Up</a>
+        </li>
+      </ul>
+    <% end %>
   </div>
 </div>
 
 <!-- Fixed Sidebar for Large Screens -->
 <div class="d-none d-lg-block bg-dark text-white p-3" style="width: 250px; height: 100vh; position: relative; top: 0; left: 0;">
-  <!-- Brand -->
-  <h4 class="mb-4">
+  <h4 class="mb-4 d-flex align-items-center">
+    <%= image_tag "svgs/logo.svg", alt: "Logo", class: "me-2", style: "height: 30px;" %>
     <a class="navbar-brand text-white" href="<%= root_path %>">Bitewheels</a>
   </h4>
+ <hr class="text-secondary">
+  <% if current_user %>
+    <% if current_user.foodtruckowner? %>
+      <!-- Food Truck Owner Sidebar -->
+      <div class="mb-3">
+        <h5>Welcome, <%= current_user.first_name %>!</h5>
+        <p class="mb-1"><strong>Credits:</strong> <%= current_user.credits %></p>
+        <p class="mb-3"><strong>Role:</strong> Food Truck Owner</p>
 
-  <!-- Main Navigation Links -->
-  <ul class="nav flex-column">
-    <% if current_user %>
-     <% if current_user&.foodtruckowner? %>
-    <li class="nav-item ">
-     <a class="nav-link text-white" href="">Credits: <strong><%= current_user.credits %></strong></a>
-      </li>
-      <li class="nav-item ">
-          <a class="nav-link text-white " href="<%= purchase_credits_path %>">Buy Credits</a>
-        </li>
-        <li class="nav-item">
-        <a class="nav-link text-white" href="<%= events_path %>">Events</a>
-      </li>
-        <% end %>
-      
-      <% if current_user.eventorganizer? %>
-      <li class="nav-item">
-        <a class="nav-link text-white" href="<%= events_path %>">My Events</a>
-      </li>
-      <li class="nav-item">
-        <a class="nav-link text-white" href="<%= all_events_path %>">All Events</a>
-      </li>
-      <li class="nav-item">
-  <%= link_to "View Completed Events", completed_events_path, class: "btn btn-outline-primary" %>
-      </li>
-      <%end%>
-      <% if current_user.foodtruckowner? %>
+        <!-- Account Dropdown -->
+        <div class="dropdown">
+          <a class="btn btn-secondary dropdown-toggle w-100" href="#" role="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Account
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item" href="<%= user_profile_path %>">View Account</a></li>
+            <li><a class="dropdown-item" href="<%= purchase_credits_path %>">Buy Credits</a></li>
+            <li>
+              <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <hr class="text-secondary">
+
+      <!-- Navigation Links -->
+      <ul class="nav flex-column">
         <li class="nav-item">
           <a class="nav-link text-white" href="<%= food_trucks_path %>">Food Trucks</a>
         </li>
         <li class="nav-item">
-    <a class="nav-link text-white" href="<%= event_applications_path %>">
-      My Applications
-    </a>
-    
-  </li>
-      <% end %>
-    <% else %>
-      <li class="nav-item">
-        <a class="nav-link text-white" href="<%= root_path %>">Home</a>
-      </li>
-    <% end %>
+          <a class="nav-link text-white" href="<%= event_applications_path %>">My Applications</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link text-white" href="<%= all_events_path %>">All Events</a>
 
-    <!-- Account Dropdown -->
-    <li class="nav-item dropdown mt-3">
-      <a class="nav-link dropdown-toggle text-white" href="#" id="accountDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-        Account
-      </a>
-      <ul class="dropdown-menu dropdown-menu-dark">
-        <% if current_user %>
-          <li><a class="dropdown-item" href="<%= user_profile_path %>">View Profile</a></li>
-          <li>
-            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
-          </li>
-        <% else %>
-          <li><a class="dropdown-item" href="<%= new_user_registration_path %>">Sign Up</a></li>
-          <li><a class="dropdown-item" href="<%= new_user_session_path %>">Log In</a></li>
-        <% end %>
+        </li>
       </ul>
-    </li>
-  </ul>
+    <% elsif current_user.eventorganizer? %>
+      <!-- Event Organizer Sidebar -->
+      <div class="mb-3">
+        <h5>Welcome, <%= current_user.first_name %>!</h5>
+        <p class="mb-3"><strong>Role:</strong> Event Organizer</p>
+
+        <!-- Account Dropdown -->
+        <div class="dropdown">
+          <a class="btn btn-secondary dropdown-toggle w-100" href="#" role="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Account
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+            <li><a class="dropdown-item" href="<%= user_profile_path %>">View Account</a></li>
+            <li>
+              <%= button_to "Sign Out", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <hr class="text-secondary">
+
+      <!-- Events Dropdown -->
+      <div class="dropdown">
+        <a class="btn btn-secondary dropdown-toggle w-100" href="#" role="button" id="eventsDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          Events
+        </a>
+        <ul class="dropdown-menu dropdown-menu-dark">
+          <li><a class="dropdown-item" href="<%= all_events_path %>">All Events</a></li>
+          <li><a class="dropdown-item" href="<%= events_path %>">My Events</a></li>
+          <li><a class="dropdown-item" href="<%= completed_events_path %>">Completed Events</a></li>
+        </ul>
+      </div>
+    <% end %>
+  <% else %>
+    <!-- Default Sidebar for Non-Authenticated Users -->
+    <ul class="nav flex-column">
+      
+      <div class="dropdown">
+          <a class="btn btn-secondary dropdown-toggle w-100" href="#" role="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+            Account
+          </a>
+          <ul class="dropdown-menu dropdown-menu-dark">
+             <li class="nav-item">
+        <a class="nav-link text-white" href="<%= new_user_session_path %>">Log In</a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link text-white" href="<%= new_user_registration_path %>">Sign Up</a>
+      </li>
+          </ul>
+        </div>
+     
+    </ul>
+  <% end %>
 </div>

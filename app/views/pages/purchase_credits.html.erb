@@ -4,30 +4,26 @@
   <!-- Page Header -->
   <div class="text-center mb-5">
     <h1 class="fw-bold text-dark">Purchase Credits</h1>
-    <p class="text-muted lead">Add credits to your account to apply for more events and access premium options.</p>
+    <p class="text-muted  pt-5 lead">Users signed up automatically are given 100 FREE credits. </p><p class="text-muted lead">Add credits to your account to apply for more events and unlock premium features.</p>
   </div>
 
   <!-- Credit Packages Section -->
-  <div class="row justify-content-center">
+  <div class="m-auto py-5 row row-cols-1 row-cols-md-3 mb-3 text-center">
     <% @credit_packages.each do |package| %>
-      <div class="col-lg-4 col-md-6 mb-4">
-        <!-- Credit Package Card -->
-        <div class="card shadow-lg border-1 h-100 border-0">
-          <!-- Header -->
-          <div class="card-header text-center bg-dark text-white py-3">
-            <h4 class="fw-bold mb-0"><%= package.name %></h4>
+      <div class="col">
+        <div class="card mb-4 rounded-3 shadow-sm">
+          <div class="card-header py-3">
+            <h4 class="my-0 fw-normal"><%= package.name %></h4>
           </div>
-          <!-- Body -->
-          <div class="card-body text-center d-flex flex-column">
-            <!-- Pricing -->
-            <h2 class="card-title pricing-card-title text-dark fw-bold">$<%= '%.2f' % (package.price_cents / 100.0) %></h2>
+          <div class="card-body">
+            <h1 class="card-title pricing-card-title">$<%= '%.2f' % (package.price_cents / 100.0) %><small class="text-body-secondary fw-light">/package</small></h1>
             <ul class="list-unstyled mt-3 mb-4">
               <li><strong>Credits:</strong> <%= package.credits %></li>
             </ul>
-            <!-- Purchase Button -->
-            <%= button_to "Buy #{package.name}", checkout_create_path(credit_package_id: package.id), 
+            <%= button_to "Buy #{package.name}", 
+                          checkout_create_path(credit_package_id: package.id), 
                           method: :post, data: { turbo: false }, 
-                          class: "btn btn-outline-primary btn-lg w-100 mt-auto" %>
+                          class: "w-100 btn btn-lg btn-primary" %>
           </div>
         </div>
       </div>

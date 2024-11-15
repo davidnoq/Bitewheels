@@ -1,20 +1,25 @@
 # app/controllers/event_applications_controller.rb
 class EventApplicationsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_event_application, only: [:approve, :reject, :show]
-
+  before_action :set_event, only: [:index, :new, :create, :approve, :reject]
+  before_action :set_event_application, only: [:show, :approve, :reject]
 
 
   def index
-    @event_applications = policy_scope(EventApplication).page(params[:page]).per(10)
+    if @event
+      # Nested route: Event Organizer viewing applications for a specific event
+      @event_applications = policy_scope(@event.event_applications).page(params[:page]).per(10)
+    else
+      # Top-level route: Food Truck Owner viewing their own applications
+      @event_applications = policy_scope(EventApplication).page(params[:page]).per(10)
+    end
+
     authorize @event_applications
 
     if current_user.eventorganizer?
-      render "event_applications/index" # Renders the view for event organizers
-    elsif current_user.foodtruckowner?
-      render "event_applications/food_truck_index" # Renders the view for food truck owners
+      render "event_applications/index" # View for Event Organizers
     else
-      redirect_to root_path, alert: "You are not authorized to view applications."
+      render "event_applications/food_truck_index" # View for Food Truck Owners
     end
   end
 
@@ -127,11 +132,20 @@ class EventApplicationsController < ApplicationController
   private
 
   def set_event
-    @event = Event.find(params[:event_id])
+    @event = Event.find(params[:event_id]) if params[:event_id].present?
   end
+  
 
   def set_event_application
-    @event_application = policy_scope(EventApplication).find(params[:id])
+    if @event
+      # Nested route: Event Organizer viewing applications for a specific event
+      @event_application = @event.event_applications.find(params[:id])
+      authorize @event_application
+    else
+      # Top-level route: Food Truck Owner viewing their own applications
+      @event_application = policy_scope(EventApplication).find(params[:id])
+      authorize @event_application
+    end
   end
   
 end

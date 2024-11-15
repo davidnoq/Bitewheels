@@ -2,66 +2,190 @@
 
 <!-- Flash Messages -->
 <% if flash[:notice] %>
-  <div class="alert alert-success alert-dismissible fade show mx-auto mt-3" style="max-width: 80%;" role="alert">
+  <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 80%; color: #2D3A73;" role="alert">
     <%= flash[:notice] %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="color: #2D3A73;"></button>
   </div>
 <% elsif flash[:alert] %>
-  <div class="alert alert-danger alert-dismissible fade show mx-auto mt-3" style="max-width: 80%;" role="alert">
+  <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 80%; color: white;" role="alert">
     <%= flash[:alert] %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close" style="color: white;"></button>
   </div>
 <% end %>
 
-<!-- Hero Section -->
-<div class="container-fluid  text-black text-center py-5">
-  <h1 class="display-4 fw-bold">Organize Your Events</h1>
-  <p class="lead mt-3">Allow food trucks to apply, choose attendees, and manage your event with ease.</p>
-  <% if current_user&.user? %>
-    <div class="mt-4">
-      <%= button_to "Become an Event Organizer", promote_to_event_organizer_path, method: :post, class: "btn btn-primary btn-lg me-3" %>
-      <%= button_to "Become a Food Truck Owner", promote_to_food_truck_owner_path, method: :post, class: "btn btn-secondary btn-lg" %>
-    </div>
-  <% end %>
-</div>
+<!-- Main Container -->
+<div class="container py-5" >
 
-<!-- New User Sign-Up Section -->
-<% unless current_user %>
-  <div class="container text-center my-5">
-    <h2 class="fw-bold">Join Us Today!</h2>
-    <p class="text-muted">Sign up to start organizing events, connect with food trucks, and make your event a success.</p>
-    <div class="mt-3">
-      <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-primary btn-lg me-3" %>
-      <%= link_to "Log In", new_user_session_path, class: "btn btn-secondary btn-lg" %>
-    </div>
-  </div>
-<% end %>
-
-<!-- User Greeting Section -->
-<% if current_user %>
-
-  <div class="container my-5">
-    <div class="card shadow-lg mx-auto" style="max-width: 75%;">
-      <div class="card-body text-center">
-        <h2 class="card-title">Welcome, <%= current_user.first_name %>!</h2>
-        <p class="card-text"><strong>Role:</strong> <%= current_user.role.capitalize %></p>
-        <% if current_user.foodtruckowner? %>
-          <p class="text-muted">Ready to apply for events? Explore opportunities and get started now.</p>
-          <%= link_to "View Dashboard", food_trucks_path, class: "btn btn-primary" %>
+  <!-- Hero Section -->
+  <div class="hero-section d-flex align-items-center justify-content-between" style="height: 60vh; background-color: #f8f9fa; border-radius: 10px; padding: 50px;">
+    <!-- Text Content -->
+    <div class="hero-text" style="max-width: 50%;">
+      <h1 class="display-4 fw-bold" >Event Management Made Easy</h1>
+      <p class="mt-3 lead" >Connecting Event Organizers with the Best Food Trucks</p>
+      <!-- Get Started Button -->
+      <div class="mt-4">
+        <% if user_signed_in? %>
+          <% if current_user.eventorganizer? %>
+            <%= link_to "Get Started", events_path, class: "btn btn-primary btn-md px-5 py-3 fw-bold" %>
+          <% elsif current_user.foodtruckowner? %>
+            <%= link_to "Get Started", food_trucks_path, class: "btn btn-primary btn-md px-5 py-3 fw-bold" %>
+          <% end %>
         <% else %>
-          <p class="text-muted">Discover events and manage your credits with ease.</p>
+          <%= link_to "Get Started", new_user_registration_path, class: "btn btn-primary btn-md px-5 py-3 fw-bold" %>
         <% end %>
-        
       </div>
     </div>
-  </div>
+    
   
-<% end %>
-<hr>
+  </div>
 
+  <!-- Features Section -->
+  <div class="container features-section py-5">
+    <h2 class="text-center fw-bold mb-5">Our Features</h2>
+    
+    <div class="row g-4">
+      
+      <!-- Event Organizers Features -->
+      <div class="col-lg-6">
+        <div class="p-4 border rounded shadow-sm bg-light">
+          <h3 class="text-center mb-4">For Event Organizers</h3>
+          <div class="row g-3">
+            
+            <!-- Feature 1 -->
+            <div class="col-md-6">
+              <div class="feature-item text-center">
+                <div class="mb-3">
+                  <i class="fas fa-calendar-check fa-3x text-primary" aria-hidden="true"></i>
+                </div>
+                <h5 class="fw-bold">Efficient Management</h5>
+                <p class="text-muted">Streamline your event planning by managing applications, coordinating with food trucks, and overseeing all event details from a centralized dashboard.</p>
+              </div>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="col-md-6">
+              <div class="feature-item text-center">
+                <div class="mb-3">
+                  <i class="fas fa-users fa-3x text-primary" aria-hidden="true"></i>
+                </div>
+                <h5 class="fw-bold">Collaborative Tools</h5>
+                <p class="text-muted">Utilize in-app chat and collaboration features to communicate effectively with food truck owners, ensuring smooth coordination and successful events.</p>
+              </div>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="col-md-6">
+              <div class="feature-item text-center">
+                <div class="mb-3">
+                  <i class="fas fa-chart-line fa-3x text-primary" aria-hidden="true"></i>
+                </div>
+                <h5 class="fw-bold">Analytics Dashboard</h5>
+                <p class="text-muted">Gain insights into event performance, attendee engagement, and food truck participation to make informed decisions and improve future events.</p>
+              </div>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="col-md-6">
+              <div class="feature-item text-center">
+                <div class="mb-3">
+                  <i class="fas fa-bullhorn fa-3x text-primary" aria-hidden="true"></i>
+                </div>
+                <h5 class="fw-bold">Marketing Integration</h5>
+                <p class="text-muted">Promote your events through integrated marketing tools, social media sharing, and email campaigns to reach a wider audience.</p>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      
+      <!-- Food Truck Owners Features -->
+      <div class="col-lg-6">
+        <div class="p-4 border rounded shadow-sm bg-light">
+          <h3 class="text-center mb-4">For Food Truck Owners</h3>
+          <div class="row g-3">
+            
+            <!-- Feature 1 -->
+            <div class="col-md-6">
+              <div class="feature-item text-center">
+                <div class="mb-3">
+                  <i class="fas fa-truck fa-3x text-success" aria-hidden="true"></i>
+                </div>
+                <h5 class="fw-bold">Profile Management</h5>
+                <p class="text-muted">Create and manage your food truck profile, showcase your cuisine, and update your offerings to attract more event organizers.</p>
+              </div>
+            </div>
+            
+            <!-- Feature 2 -->
+            <div class="col-md-6">
+              <div class="feature-item text-center">
+                <div class="mb-3">
+                  <i class="fas fa-comments fa-3x text-success" aria-hidden="true"></i>
+                </div>
+                <h5 class="fw-bold">In-App Chat</h5>
+                <p class="text-muted">Communicate directly with event organizers to discuss opportunities and details, ensuring seamless collaboration.</p>
+              </div>
+            </div>
+            
+            <!-- Feature 3 -->
+            <div class="col-md-6">
+              <div class="feature-item text-center">
+                <div class="mb-3">
+                  <i class="fas fa-check-circle fa-3x text-success" aria-hidden="true"></i>
+                </div>
+                <h5 class="fw-bold">View Application Status</h5>
+                <p class="text-muted">Track the status of your event applications in real-time, allowing you to manage your schedule effectively.</p>
+              </div>
+            </div>
+            
+            <!-- Feature 4 -->
+            <div class="col-md-6">
+              <div class="feature-item text-center">
+                <div class="mb-3">
+                  <i class="fas fa-analytics fa-3x text-success" aria-hidden="true"></i>
+                </div>
+                <h5 class="fw-bold">Performance Tracking</h5>
+                <p class="text-muted">Monitor your participation in events, analyze performance metrics, and optimize your business growth strategies.</p>
+              </div>
+            </div>
+            
+          </div>
+        </div>
+      </div>
+      
+    </div>
+  </div>
+<div class="text-center my-5">
+  <p class="lead mb-4">Want to explore all the events we have to offer? Check them out now!</p>
+  <%= link_to "View All Events", all_events_path, class: "btn btn-outline-secondary btn-md px-5 py-3 fw-bold" %>
+</div>
 
-<!-- Call-to-Action Section -->
-<div class="text-center py-5">
-  <p class="lead">Looking for events? Browse all available events now.</p>
-  <%= link_to "View All Events", events_path, class: "btn btn-outline-primary btn-lg" %>
+  <!-- Additional Informational Section -->
+  <div class="container py-5 my-5">
+    <div class="row align-items-center justify-content-center text-center">
+      <div class="col-md-6">
+        <h2 class="fw-bold">Why Choose BiteWheels?</h2>
+        <p class="text-muted">BiteWheels bridges the gap between event organizers and food truck owners, fostering a community where great food and memorable events come together seamlessly. Whether you're planning a large-scale festival or running a local food truck, our platform provides the tools and connections you need to succeed.</p>
+        <p class="text-muted">Join us today to take advantage of our comprehensive features designed to simplify event management and enhance your food truck's visibility.</p>
+      </div>
+    
+    </div>
+  </div>
+
+  <!-- Join Our Community Section -->
+  <div class="text-center my-5 p-5 bg-light rounded shadow">
+    <h2 class="fw-bold">Join Our Community!</h2>
+    <p class="text-muted">Whether you're an event organizer looking to host unforgettable events or a food truck owner seeking new opportunities, BiteWheels is your go-to platform.</p>
+    <% if user_signed_in? %>
+      <% if current_user.eventorganizer? %>
+        <%= link_to "Manage Your Events", events_path, class: "btn btn-primary btn-md px-5 py-3 fw-bold" %>
+      <% elsif current_user.foodtruckowner? %>
+        <%= link_to "Manage Your Food Trucks", food_trucks_path, class: "btn btn-primary btn-md px-5 py-3 fw-bold" %>
+      <% end %>
+    <% else %>
+      <%= link_to "Get Started", new_user_registration_path, class: "btn btn-primary btn-md px-5 py-3 fw-bold" %>
+    <% end %>
+  </div>
+
+ 
 </div>
