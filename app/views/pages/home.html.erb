@@ -14,10 +14,11 @@
 <% end %>
 
 <!-- Hero Section -->
-<div class="hero-section text-center text-white position-relative" style="background: linear-gradient(135deg, #0F172A, #4F46E5); padding: 100px;  ">
+<div class="hero-section text-center text-white position-relative" style="background: linear-gradient(135deg, #0F172A, #4F46E5); padding: 100px;">
   <div class="container">
     <h1 class="display-4 fw-bold animated fadeInDown">Event Management Made Easy</h1>
     <p class="lead mt-4 animated fadeInUp">Connecting Event Organizers with the Best Food Trucks</p>
+    
     <!-- Get Started Button -->
     <div class="mt-4">
       <% if user_signed_in? %>
@@ -30,6 +31,17 @@
         <%= link_to "Get Started", new_user_registration_path, class: "btn btn-outline-light btn-lg px-5 py-3 fw-bold hover-animate" %>
       <% end %>
     </div>
+
+    <!-- Promotion Buttons -->
+    <% if user_signed_in? && current_user.user? %>
+      <div class="mt-4">
+        <h3>Upgrade Your Account</h3>
+        <div class="d-flex justify-content-center mt-3">
+           <%= button_to "Promote to Event Organizer", promote_to_event_organizer_path, method: :post, class: "btn btn-primary btn-lg me-2", data: { confirm: "Are you sure you want to become an Event Organizer?" }, form: { data: { turbo: false } } %>
+      <%= button_to "Promote to Food Truck Owner", promote_to_food_truck_owner_path, method: :post, class: "btn btn-success btn-lg", data: { confirm: "Are you sure you want to become a Food Truck Owner?" }, form: { data: { turbo: false } } %>
+        </div>
+      </div>
+    <% end %>
   </div>
 </div>
 

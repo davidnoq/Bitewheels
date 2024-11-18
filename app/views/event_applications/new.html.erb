@@ -1,13 +1,15 @@
+<!-- app/views/event_applications/new.html.erb -->
 <% content_for :title, "Apply to Event" %>
 
-<div class="container-fluid min-vh-100 d-flex align-items-center justify-content-center bg-white flex-column">
-  <!-- Event Card -->
-  <div class="card shadow-lg mb-4" style="max-width: 60rem; width: 100%;">
-    <div class="card-header bg-dark text-white text-center">
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-white">
+  <div class="card shadow-lg" style="max-width: 800px; width: 100%; margin: auto;">
+    <!-- Event Header -->
+    <div class="card-body px-5 py-4">
       <h1 class="mb-0"><%= @event.name %></h1>
     </div>
+
+    <!-- Event Details -->
     <div class="card-body p-4">
-      <!-- Event Details -->
       <%= render @event,
                 show_date: true,
                 show_name: false,
@@ -17,33 +19,38 @@
                 show_address: true,
                 show_end_date: true %>
     </div>
+
     <hr> <!-- Separator -->
-    <div class="card-body d-flex justify-content-between">
-  <!-- Left Section: Food Trucks -->
-  <div class="p-3">
-    <h4>Your Food Trucks</h4>
-    <% if @food_trucks.any? %>
-      <%= form_with url: event_event_applications_path(@event), local: true do |f| %>
-        <% @food_trucks.each do |food_truck| %>
-          <div class="form-check mb-3">
-            <%= f.check_box :food_truck_ids, { multiple: true, class: "form-check-input" }, food_truck.id, nil %>
-            <%= f.label :food_truck_ids, food_truck.name, class: "form-check-label" %>
-            <p class="mb-0"><small><strong>Cuisine:</strong> <%= food_truck.cuisine %></small></p>
+
+    <!-- Form Section -->
+    <div class="card-body">
+      <% if @food_trucks.any? %>
+        <%= form_with url: event_event_applications_path(@event), local: true do |f| %>
+          <div class="row">
+            <!-- Left Section: Food Trucks -->
+            <div class="col-md-6 p-3">
+              <h4>Your Food Trucks</h4>
+              <% @food_trucks.each do |food_truck| %>
+                <div class="form-check mb-3">
+                  <%= f.check_box :food_truck_ids, { multiple: true, class: "form-check-input" }, food_truck.id, nil %>
+                  <%= f.label :food_truck_ids, food_truck.name, class: "form-check-label" %>
+                  <p class="mb-0"><small><strong>Cuisine:</strong> <%= food_truck.cuisine %></small></p>
+                </div>
+              <% end %>
+            </div>
+
+            <!-- Right Section: Confirmation -->
+            <div class="col-md-6 p-3">
+              <h4>Confirmation</h4>
+              <p>This event will cost <strong><%= @event.credit_cost %> credits per food truck</strong> to apply.</p>
+              <p>Are you sure you want to confirm?</p>
+              <%= f.submit "Confirm Application", class: "btn btn-primary" %>
+            </div>
           </div>
         <% end %>
-        </div>
-
-        <!-- Right Section: Confirmation -->
-        <div class="p-3">
-          <h4>Confirmation</h4>
-          <p>This event will cost <strong><%= @event.credit_cost %> credits per food truck</strong> to apply.</p>
-          <p>Are you sure you want to confirm?</p>
-          <%= f.submit "Confirm Application", class: "btn btn-primary" %>
-        </div>
+      <% else %>
+        <p class="text-muted">You have no eligible food trucks to apply with for this event.</p>
       <% end %>
-    <% else %>
-      <p class="text-muted">You have no eligible food trucks to apply with for this event.</p>
-    <% end %>
+    </div>
   </div>
 </div>
-

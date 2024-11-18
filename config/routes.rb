@@ -5,10 +5,7 @@ Rails.application.routes.draw do
   }
 
   # Define a Devise scope for the apply_to_event route
-  devise_scope :user do
-    get 'apply_to_event/:event_id', to: 'users/registrations#apply_to_event', as: 'apply_to_event'
-  end
-
+  
   # Routes for Events
   resources :events do
     member do
@@ -60,6 +57,10 @@ resources :checkout, only: [:create]
   get "up" => "rails/health#show", as: :rails_health_check
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  
+  devise_scope :user do
+    get 'apply_to_event/:event_id', to: 'users/registrations#apply_to_event', as: 'apply_to_event'
+  end
 
   # Root Path
   root "pages#home"

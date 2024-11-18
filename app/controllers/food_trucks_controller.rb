@@ -49,9 +49,9 @@ class FoodTrucksController < ApplicationController
     authorize @food_truck
   
     if @food_truck.save
-      # Redirect to the event application creation page if an event ID is stored in the session
-      if session[:event_id]
-        redirect_to new_event_event_application_path(event_id: session[:event_id], food_truck_id: @food_truck.id)
+      if session[:event_id].present? # Check if the user started from an event link
+        event_id = session.delete(:event_id) # Retrieve and delete the session variable
+        redirect_to new_event_event_application_path(event_id: event_id, food_truck_id: @food_truck.id), notice: "Food Truck was successfully created. Proceed to apply to the event."
       else
         redirect_to @food_truck, notice: "Food Truck was successfully created."
       end
@@ -59,6 +59,8 @@ class FoodTrucksController < ApplicationController
       render :new, status: :unprocessable_entity
     end
   end
+  
+  
   
 
   # PATCH/PUT /food_trucks/1

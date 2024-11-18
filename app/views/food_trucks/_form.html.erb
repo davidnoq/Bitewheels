@@ -1,7 +1,9 @@
-<div class="d-flex justify-content-center align-items-center  min-vh-100 bg-white">
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-white">
   <div class="card shadow-lg" style="max-width: 800px; width: 100%; margin: auto;">
     <div class="card-body px-5 py-4">
-      <h2 class="card-title text-center text-darj mb-4"><%= @food_truck.new_record? ? "Create New Food Truck" : "Update Food Truck" %></h2>
+      <h2 class="card-title text-center text-dark mb-4">
+        <%= @food_truck.new_record? ? "Create New Food Truck" : "Update Food Truck" %>
+      </h2>
 
       <!-- Display Error Messages -->
       <% if @food_truck.errors.any? %>
@@ -15,8 +17,11 @@
         </div>
       <% end %>
 
+      <!-- Determine form model based on @event -->
+      <% form_model = @event.present? ? [@event, @food_truck] : @food_truck %>
+
       <!-- Food Truck Form -->
-      <%= form_with(model: [@event, @food_truck], local: true, html: { multipart: true, class: 'px-3 needs-validation', novalidate: true }) do |form| %>
+      <%= form_with(model: form_model, local: true, html: { multipart: true, class: 'px-3 needs-validation', novalidate: true }) do |form| %>
         <div class="row">
           <!-- Name Field -->
           <div class="col-md-6 mb-3">
@@ -83,4 +88,3 @@
     </div>
   </div>
 </div>
-

@@ -18,21 +18,19 @@
       <ul class="navbar-nav mx-auto mb-2 mb-md-0">
         <% if current_user %>
           <li class="nav-item">
-            <%= link_to "Events", all_events_path, class: "text-white nav-link" %>
+            <%= link_to "All Events", all_events_path, class: "text-white nav-link" %>
           </li>
           <% if current_user.foodtruckowner? %>
             <li class="nav-item">
               <%= link_to "Food Trucks", food_trucks_path, class: "text-white nav-link" %>
             </li>
             <li class="nav-item">
-            <%= link_to "Pricing", purchase_credits_path, class: "text-white nav-link" %>
+            <a class="nav-link text-white" href="<%= event_applications_path %>">My Applications</a>
           </li>
+            
           <% end %>
        
           
-          <li class="nav-item">
-            <%= link_to "About", root_path, class: "text-white nav-link" %>
-          </li>
           
           
         <% end %>

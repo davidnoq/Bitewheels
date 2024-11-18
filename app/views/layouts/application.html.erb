@@ -19,26 +19,31 @@
   </head>
 
   <body>
-   
-
+   <% 
+      # Determine whether to render the sidebar
+      # Exclude 'new' and 'create' actions of 'event_applications' controller
+      should_render_sidebar = 
+        (controller_name == 'food_trucks' ) || 
+        (controller_name == 'events') || 
+        (controller_name == 'event_applications' && !['new', 'create'].include?(action_name))
+    %>
     
-    <% if (controller_name == 'food_trucks' ) ||(controller_name == 'events') ||(controller_name == 'event_applications')%>
-    <!-- Render Sidebar for Dashboard -->
-    <div class="d-flex">
-      <%= render 'shared/sidebar' %>
-      <div class="flex-fill" >
+    <% if should_render_sidebar %>
+      <!-- Render Sidebar for Dashboard -->
+      <div class="d-flex">
+        <%= render 'shared/sidebar' %>
+        <div class="flex-fill">
+          <%= yield %>
+        </div>
+      </div>
+    <% else %>
+      <!-- Render Top Navbar for Other Pages -->
+      <%= render 'shared/top_navbar' %>
+      <div class="flex-fill">
         <%= yield %>
       </div>
-    </div>
-  <% else %>
-    <!-- Render Top Navbar for Other Pages -->
-    <%= render 'shared/top_navbar' %>
-    <div class="flex-fill" >
-      <%= yield %>
-    </div>
-    
-  <% end %>
-     
-   <%= render 'shared/footer' %>
+    <% end %>
+       
+    <%= render 'shared/footer' %>
   </body>
 </html>

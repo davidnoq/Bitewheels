@@ -47,11 +47,7 @@ class EventApplicationsController < ApplicationController
     applied_truck_ids = @event.event_applications.pluck(:food_truck_id)
     @food_trucks = current_user.food_trucks.where.not(id: applied_truck_ids)
   
-    # If the user has no eligible food trucks, redirect with an alert
-    if @food_trucks.empty?
-      flash[:alert] = "You don't have any eligible food trucks to apply with."
-      redirect_to @event and return
-    end
+   
   end
   
 

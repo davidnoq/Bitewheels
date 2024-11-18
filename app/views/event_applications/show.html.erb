@@ -9,11 +9,11 @@
       <% if @event.completed? %>
         <!-- Completed Event: rate_event_event_application_path(@event, @event_application),Show Rate Button -->
       <% else %>
-        <!-- Not Completed: Show Approve and Reject Buttons -->
+       <!-- Not Completed: Show Approve and Reject Buttons Based on Conditions -->
         <% if @event.accepting_applications && @event.approved_applications_count < @event.foodtruck_amount %>
           <%= button_to "Approve", approve_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-success", data: { confirm: "Are you sure you want to approve this application?" } %>
           <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger", data: { confirm: "Are you sure you want to reject this application?" } %>
-        <% elsif @event_application.status == 'approved' %>
+        <% elsif @event_application.status == 'pending' || @event_application.status == 'approved' %>
           <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger", data: { confirm: "Are you sure you want to reject this application?" } %>
         <% end %>
       <% end %>
