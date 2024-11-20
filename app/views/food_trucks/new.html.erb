@@ -1,9 +1,40 @@
-<% content_for :title, "New Food Truck Application" %>
+<% content_for :title, "Food Trucks - Create New Truck" %>
+
+<!-- Flash Messages -->
+<% if flash[:notice] %>
+  <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+    <%= flash[:notice] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% elsif flash[:alert] %>
+  <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+    <%= flash[:alert] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<div class="p-5">
+  <!-- Top Section with Heading and Icon -->
+  <div class="mb-4">
+    <h2 class="fw-bold text-dark d-flex align-items-center justify-content-center">
+      <i class="bi bi-truck me-2"></i> Food Trucks - Create New Truck
+    </h2>
+    <hr class="my-4">
+  </div>
+
+  <!-- Instruction Section (Optional) -->
+  <!-- 
+  <div class="text-center mb-4">
+    <div class="p-3 bg-light rounded shadow-sm">
+      <p class="lead text-muted mb-0">
+        <i class="bi bi-info-circle me-2"></i>Fill out the form below to add a new food truck to your fleet. Ensure all details are accurate.
+      </p>
+    </div>
+  </div>
+  -->
 
         <%= render 'form', event: @event, food_truck: @food_truck %>
       
 
-      
-        <%= link_to 'Back to Foodtrucks', food_trucks_path, class: 'btn btn-secondary' %>
       
    

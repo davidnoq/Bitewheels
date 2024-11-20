@@ -1,46 +1,47 @@
-<div class="d-flex justify-content-center align-items-center min-vh-100 bg-white">
+<div class="d-flex justify-content-center align-items-center bg-white">
   <div class="card shadow-lg" style="max-width: 800px; width: 100%; margin: auto;">
     <div class="card-body px-5 py-4">
-      <h2 class="card-title text-center text-dark mb-4">
-        <%= @food_truck.new_record? ? "Create New Food Truck" : "Update Food Truck" %>
+      <h2 class="card-title text-center text-dark fw-bold mb-4">
+        <%= @food_truck.new_record? ? "Food Truck Details" : "Food Truck Details" %>
       </h2>
+      <p class="text-center text-secondary mb-4">
+        Enter the information for your new food truck.
+        </p>
 
-      <!-- Display Error Messages -->
-      <% if @food_truck.errors.any? %>
-        <div class="alert alert-danger">
-          <h4 class="alert-heading">Oops! Something went wrong.</h4>
-          <ul>
-            <% @food_truck.errors.full_messages.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
-          </ul>
-        </div>
-      <% end %>
-
+     
       <!-- Determine form model based on @event -->
       <% form_model = @event.present? ? [@event, @food_truck] : @food_truck %>
 
       <!-- Food Truck Form -->
       <%= form_with(model: form_model, local: true, html: { multipart: true, class: 'px-3 needs-validation', novalidate: true }) do |form| %>
-        <div class="row">
+        
           <!-- Name Field -->
-          <div class="col-md-6 mb-3">
+          <div class="mb-3">
             <%= form.label :name, class: 'form-label' %>
             <%= form.text_field :name, class: 'form-control', placeholder: 'Enter your food truck name', required: true %>
             <div class="invalid-feedback">Please provide a name.</div>
           </div>
 
           <!-- Cuisine Field -->
-          <div class="col-md-6 mb-3">
-            <%= form.label :cuisine, class: 'form-label' %>
-            <%= form.text_field :cuisine, class: 'form-control', placeholder: 'Enter your cuisine type', required: true %>
-            <div class="invalid-feedback">Please provide a cuisine.</div>
-          </div>
-        </div>
+            <div class="mb-3">
+    <%= form.label :cuisine, class: 'form-label' %>
+    <%= form.select :cuisine, options_for_select(['Latin', 'Italian', 'Japanese', 'American', 'Indian', 'Other'], form.object.cuisine), { prompt: 'Select a Cuisine Type' }, class: 'form-control', required: true, id: 'cuisine_select' %>
+    <div class="invalid-feedback">Please select a cuisine type.</div>
+  </div>
+
+  <!-- Other Cuisine Text Field -->
+  <div class="mb-3" id="other_cuisine_field" style="display: none;">
+    <%= form.label :other_cuisine, 'Please specify:', class: 'form-label' %>
+    <%= form.text_field :other_cuisine, class: 'form-control', placeholder: 'Enter your cuisine type' %>
+  </div>
+
+        
 
         <!-- Permit Upload Field -->
         <div class="mb-3">
-          <%= form.label :permit, "Permit Image", class: 'form-label' %>
+          <%= form.label :permit, class: 'form-label d-flex align-items-center' do %>
+            <i class="bi bi-file-earmark-text me-2"></i> Permit Image
+          <% end %>
           <%= form.file_field :permit, class: 'form-control' %>
           <% if @food_truck.permit.attached? %>
             <p>Current Permit:</p>
@@ -50,7 +51,9 @@
 
         <!-- Menu Images Upload Field (up to 3 images) -->
         <div class="mb-3">
-          <%= form.label :menu_images, "Menu Images (up to 3)", class: 'form-label' %>
+          <%= form.label :menu_images, class: 'form-label d-flex align-items-center' do %>
+            <i class="bi bi-card-image me-2"></i> Menu Images (up to 3)
+          <% end %>
           <%= form.file_field :menu_images, multiple: true, name: 'food_truck[menu_images][]', direct_upload: true, class: 'form-control', accept: 'image/png,image/jpeg' %>
           <% if @food_truck.menu_images.attached? %>
             <p>Current Menu Images:</p>
@@ -66,7 +69,9 @@
 
         <!-- Food Images Upload Field (up to 2 images) -->
         <div class="mb-3">
-          <%= form.label :food_images, "Food Images (up to 2)", class: 'form-label' %>
+          <%= form.label :food_images, class: 'form-label d-flex align-items-center' do %>
+            <i class="bi bi-egg-fried me-2"></i> Food Images (up to 2)
+          <% end %>
           <%= form.file_field :food_images, multiple: true, name: 'food_truck[food_images][]', direct_upload: true, class: 'form-control', accept: 'image/png,image/jpeg' %>
           <% if @food_truck.food_images.attached? %>
             <p>Current Food Images:</p>
@@ -88,3 +93,20 @@
     </div>
   </div>
 </div>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const cuisineSelect = document.getElementById('cuisine_select');
+    const otherCuisineField = document.getElementById('other_cuisine_field');
+
+    cuisineSelect.addEventListener('change', function() {
+      if (this.value === 'Other') {
+        otherCuisineField.style.display = 'block';
+      } else {
+        otherCuisineField.style.display = 'none';
+      }
+    });
+
+    // Trigger change event on page load to set initial state
+    cuisineSelect.dispatchEvent(new Event('change'));
+  });
+</script>

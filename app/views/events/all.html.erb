@@ -2,24 +2,34 @@
 
 <% content_for :title, "Events" %>
 
+<div class="  p-5">
+  <!-- Top Section with Heading and Icon -->
+  <div class="mb-4">
+    <h2 class="fw-bold text-dark d-flex justify-content-center align-items-center">
+      <i class="bi bi-calendar-week me-2"></i> Events - All Published in the Area
+    </h2>
+    <hr class="my-4">
+  </div>
 
-<div class="container py-5">
   <!-- Header Section -->
-  <div class="text-center mb-4">
-    <h1 class="display-4 fw-bold text-dark">Published Events</h1>
-    <%= link_to "Back to Events", events_path, class: "btn btn-light btn-lg mt-3" %>
+  <div class=" container text-center mb-4">
+    <div class="p-3 bg-light rounded shadow-sm">
+      <p class="lead text-muted mb-0">
+        <i class="bi bi-search me-2"></i>To find events in a specific area, within a certain radius, or on particular dates, please enter the details below.
+      </p>
+    </div>
   </div>
 
   <!-- Search Form -->
-  <div class="mb-5">
+  <div class="container mb-5">
     <form action="<%= all_events_path %>" method="get" class="row g-3 justify-content-center">
       <div class="col-md-2">
         <input type="number" name="radius" class="form-control" placeholder="Radius (mi)" value="<%= params[:radius] || 50 %>" min="1" id="index_search_radius">
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <input type="date" name="start_date" class="form-control" placeholder="Start Date" value="<%= params[:start_date] %>" id="index_start_date">
       </div>
-      <div class="col-md-3">
+      <div class="col-md-2">
         <input type="date" name="end_date" class="form-control" placeholder="End Date" value="<%= params[:end_date] %>" id="index_end_date">
       </div>
       <div class="col-md-4">
@@ -32,7 +42,7 @@
   </div>
 
   <!-- Published Events Section -->
-  <div class="mb-5">
+  <div class="container mb-5">
     <% if @events.any? %>
       <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
         <% @events.each do |event| %>
