@@ -2,13 +2,17 @@
 
 <% content_for :title, "Completed Events" %>
 
-<div class="container py-5">
+<div class=" p-5">
   <!-- Header Section -->
-  <div class="text-center mb-4">
-    <h1 class="display-4 fw-bold text-dark">Completed Events</h1>
-    <%= link_to "Back to Events", events_path, class: "btn btn-light btn-lg mt-3" %>
-  </div>
 
+  <!-- Top Section with Heading and Icon -->
+  <div class="container">
+  <div class="mb-4">
+    <h2 class="fw-bold text-dark d-flex justify-content-center align-items-center">
+      <i class="bi bi-calendar-week me-2"></i> Events - Past Events
+    </h2>
+    <hr class="my-4">
+  </div>
   <!-- Completed Events Section -->
   <% if @events.any? %>
     <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
@@ -47,7 +51,7 @@
     <p class="text-muted text-center">No completed events available.</p>
   <% end %>
 </div>
-
+</div>
 <!-- JavaScript for Google Places Autocomplete (if needed) -->
 <script>
   function initAutocomplete() {

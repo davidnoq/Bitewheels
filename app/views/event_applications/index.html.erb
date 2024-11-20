@@ -1,118 +1,134 @@
-<!-- app/views/events/applications.html.erb -->
+<!-- app/views/event_applications/index.html.erb -->
 
 <% content_for :title, "#{@event.name} - Applications" %>
 
-<div class="container my-5">
-  <!-- Header Section -->
-  <div class="text-center mb-4">
-    <h1 class="display-4 fw-bold text-dark">
-      <%= @event.name %> 
-      <%= @event.status != 'completed' ? 'Applications' : 'Previous Trucks' %>
-    </h1>
-    <%= link_to "Back to Events", events_path, class: "btn btn-secondary btn-lg mt-3" %>
+<div class="p-5">
+  <!-- Top Section with Heading and Icon -->
+  <div class="mb-4 text-center">
+    <h2 class="fw-bold text-dark d-flex align-items-center justify-content-center">
+      <i class="bi bi-clipboard2-pulse me-2"></i> <%= @event.name %> - <%= @event.status != 'completed' ? 'Applications' : 'Previous Trucks' %>
+    </h2>
+    <hr class="my-4">
+    <%= link_to "Back to Event", event_path(@event), class: "btn btn-secondary btn-lg mt-3" %>
   </div>
 
- 
+ <!-- Instruction Section -->
+<div class="container text-center mb-4">
+  <div class="p-3 bg-light rounded shadow-sm">
+    <p class="lead text-muted mb-0">
+      <i class="bi bi-info-circle me-2"></i>
+      <% if current_user.eventorganizer? %>
+        Here you can view the status of applications for this event. Check the details below for approved, pending, and rejected applications.
+      <% else %>
+        Here you can view the status of your applications.
+      <% end %>
+    </p>
+  </div>
+</div>
 
-  <!-- Applications Section -->
-  <% if @event_applications.present? %>
-    <div class="row">
-      <!-- Approved Applications -->
-      <div class="col-lg-4 col-md-6 mb-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-header bg-dark text-white">
-            <h4 class="mb-0">Approved</h4>
-          </div>
-          <div class="card-body">
-            <% approved_apps = @event_applications.approved %>
-            <% if approved_apps.any? %>
-              <ul class="list-group list-group-flush">
-                <% approved_apps.each do |application| %>
-                  <li class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                        <h5 class="mb-1"><%= application.food_truck.name %></h5>
-                        <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
-                        <span class="badge bg-success">Approved</span>
-                      </div>
-                      <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-primary btn-sm" %>
-                    </div>
-                  </li>
-                <% end %>
-              </ul>
-            <% else %>
-              <p class="text-muted">No approved applications.</p>
-            <% end %>
-          </div>
+  <!-- Applications Sections -->
+  <div class="container m-auto  justify-content-center row">
+    
+    <!-- Approved Applications -->
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100 shadow-sm border-success">
+        <div class="card-header bg-success text-white">
+          <h4 class="mb-0 d-flex align-items-center">
+            <i class="bi bi-check-circle-fill me-2"></i> Approved
+          </h4>
         </div>
-      </div>
-
-      <!-- Pending Applications -->
-      <div class="col-lg-4 col-md-6 mb-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-header bg-dark text-white">
-            <h4 class="mb-0">Pending</h4>
-          </div>
-          <div class="card-body">
-            <% pending_apps = @event_applications.pending %>
-            <% if pending_apps.any? %>
-              <ul class="list-group list-group-flush">
-                <% pending_apps.each do |application| %>
-                  <li class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                        <h5 class="mb-1"><%= application.food_truck.name %></h5>
-                        <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
-                        <span class="badge bg-warning text-dark">Pending</span>
-                      </div>
-                      <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-primary btn-sm" %>
+        <div class="card-body">
+          <% approved_apps = @event_applications.approved %>
+          <% if approved_apps.any? %>
+            <ul class="list-group list-group-flush">
+              <% approved_apps.each do |application| %>
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h5 class="mb-1"><%= application.food_truck.name %></h5>
+                      <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
+                      <span class="badge bg-success">Approved</span>
                     </div>
-                  </li>
-                <% end %>
-              </ul>
-            <% else %>
-              <p class="text-muted">No pending applications.</p>
-            <% end %>
-          </div>
-        </div>
-      </div>
-
-      <!-- Rejected Applications -->
-      <div class="col-lg-4 col-md-12 mb-4">
-        <div class="card h-100 shadow-sm">
-          <div class="card-header bg-dark text-white">
-            <h4 class="mb-0">Rejected</h4>
-          </div>
-          <div class="card-body">
-            <% rejected_apps = @event_applications.rejected %>
-            <% if rejected_apps.any? %>
-              <ul class="list-group list-group-flush">
-                <% rejected_apps.each do |application| %>
-                  <li class="list-group-item">
-                    <div class="d-flex justify-content-between align-items-center">
-                      <div>
-                        <h5 class="mb-1"><%= application.food_truck.name %></h5>
-                        <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
-                        <span class="badge bg-danger">Rejected</span>
-                      </div>
-                      <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-primary btn-sm" %>
-                    </div>
-                  </li>
-                <% end %>
-              </ul>
-            <% else %>
-              <p class="text-muted">No rejected applications.</p>
-            <% end %>
-          </div>
+                    <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-primary btn-sm" %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted">No approved applications.</p>
+          <% end %>
         </div>
       </div>
     </div>
 
-    <!-- Pagination -->
-    <div class="d-flex justify-content-center">
-      <%= paginate @event_applications %>
+    <!-- Pending Applications -->
+    <div class="col-lg-4 col-md-6 mb-4">
+      <div class="card h-100 shadow-sm border-warning">
+        <div class="card-header bg-warning text-dark">
+          <h4 class="mb-0 d-flex align-items-center">
+            <i class="bi bi-hourglass-split me-2"></i> Pending
+          </h4>
+        </div>
+        <div class="card-body">
+          <% pending_apps = @event_applications.pending %>
+          <% if pending_apps.any? %>
+            <ul class="list-group list-group-flush">
+              <% pending_apps.each do |application| %>
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h5 class="mb-1"><%= application.food_truck.name %></h5>
+                      <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
+                      <span class="badge bg-warning text-dark">Pending</span>
+                    </div>
+                    <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-primary btn-sm" %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted">No pending applications.</p>
+          <% end %>
+        </div>
+      </div>
     </div>
-  <% else %>
-    <p class="text-muted text-center">No applications for this event at the moment.</p>
-  <% end %>
+
+    <!-- Rejected Applications -->
+    <div class="col-lg-4 col-md-12 mb-4">
+      <div class="card h-100 shadow-sm border-danger">
+        <div class="card-header bg-danger text-white">
+          <h4 class="mb-0 d-flex align-items-center">
+            <i class="bi bi-x-circle-fill me-2"></i> Rejected
+          </h4>
+        </div>
+        <div class="card-body">
+          <% rejected_apps = @event_applications.rejected %>
+          <% if rejected_apps.any? %>
+            <ul class="list-group list-group-flush">
+              <% rejected_apps.each do |application| %>
+                <li class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                      <h5 class="mb-1"><%= application.food_truck.name %></h5>
+                      <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
+                      <span class="badge bg-danger">Rejected</span>
+                    </div>
+                    <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-primary btn-sm" %>
+                  </div>
+                </li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted">No rejected applications.</p>
+          <% end %>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Pagination -->
+  <div class="d-flex justify-content-center mt-4">
+    <%= paginate @event_applications %>
+  </div>
 </div>
