@@ -1,22 +1,39 @@
 <% content_for :title, "Purchase Credits" %>
 
-<div class="container py-5">
-  <!-- Page Header -->
-  <div class="text-center mb-5">
-    <h1 class="fw-bold text-dark">Purchase Credits</h1>
-    <p class="text-muted  pt-5 lead">Users signed up automatically are given 100 FREE credits. </p><p class="text-muted lead">Add credits to your account to apply for more events and unlock premium features.</p>
+<div class="p-5">
+  <!-- Top Section with Heading and Icon -->
+  <div class="mb-4 text-center">
+    <h2 class="fw-bold text-dark d-flex align-items-center justify-content-center">
+      <i class="bi bi-credit-card-2-back me-2"></i> Purchase Credits
+    </h2>
+    <hr class="my-4">
+  </div>
+
+  <!-- Instruction Section -->
+  <div class="container text-center mb-4">
+    <div class="p-3 bg-light rounded shadow-sm">
+      <p class="lead text-muted mb-0">
+        <i class="bi bi-info-circle me-2"></i>
+        Users signed up automatically are given 100 FREE credits. Add more credits to your account to apply for more events.
+      </p>
+    </div>
   </div>
 
   <!-- Credit Packages Section -->
-  <div class="m-auto py-5 row row-cols-1 row-cols-md-3 mb-3 text-center">
+  <div class="container m-auto py-5 row row-cols-1 row-cols-md-3 mb-3 text-center">
     <% @credit_packages.each do |package| %>
       <div class="col">
         <div class="card mb-4 rounded-3 shadow-sm">
-          <div class="card-header py-3">
-            <h4 class="my-0 fw-normal"><%= package.name %></h4>
+          <div class="card-header py-3 bg-primary text-white">
+            <h4 class="my-0 fw-normal">
+              <i class="bi bi-box-seam me-2"></i> <%= package.name %>
+            </h4>
           </div>
           <div class="card-body">
-            <h1 class="card-title pricing-card-title">$<%= '%.2f' % (package.price_cents / 100.0) %><small class="text-body-secondary fw-light">/package</small></h1>
+            <h1 class="card-title pricing-card-title">
+              $<%= '%.2f' % (package.price_cents / 100.0) %>
+              <small class="text-body-secondary fw-light">/package</small>
+            </h1>
             <ul class="list-unstyled mt-3 mb-4">
               <li><strong>Credits:</strong> <%= package.credits %></li>
             </ul>
@@ -28,5 +45,15 @@
         </div>
       </div>
     <% end %>
+  </div>
+
+  <!-- Additional Information Section -->
+  <div class="container text-center mt-5">
+    <div class="p-3 bg-light rounded shadow-sm">
+      <p class="lead text-muted mb-0">
+        <i class="bi bi-question-circle me-2"></i>
+        Have questions about purchasing credits? <a href="/support" class="text-decoration-none">Contact Support</a>.
+      </p>
+    </div>
   </div>
 </div>

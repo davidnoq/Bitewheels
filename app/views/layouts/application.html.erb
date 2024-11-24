@@ -19,14 +19,11 @@
   </head>
 
   <body>
-   <% 
-      # Determine whether to render the sidebar
-      # Exclude 'new' and 'create' actions of 'event_applications' controller
-      should_render_sidebar = 
-        (controller_name == 'food_trucks' ) || 
-        (controller_name == 'events') || 
-        (controller_name == 'event_applications' && !['new', 'create'].include?(action_name))
-    %>
+  <% should_render_sidebar = 
+     (controller_name == 'food_trucks') || 
+     (controller_name == 'events') || 
+     (controller_name == 'event_applications' && !['new', 'create'].include?(action_name)) || 
+     (controller_name == 'pages' && action_name == 'purchase_credits') %>
     
     <% if should_render_sidebar %>
       <!-- Render Sidebar for Dashboard -->

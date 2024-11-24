@@ -51,7 +51,9 @@
         <%= f.password_field :password_confirmation, autocomplete: "new-password", class: "form-control", placeholder: "Confirm Password", id: "floatingPasswordConfirmation" %>
         <%= f.label :password_confirmation, "Confirm Password", class: "form-label", for: "floatingPasswordConfirmation" %>
       </div>
-
+ <% if params[:role].present? %>
+    <%= f.hidden_field :role, value: params[:role] %>
+  <% end %>
       <!-- Submit Button -->
       <div class="d-grid">
         <%= f.submit "Sign up", data: { turbo: false }, class: "btn btn-primary py-2 mt-3" %>

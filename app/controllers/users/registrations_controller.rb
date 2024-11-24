@@ -1,4 +1,3 @@
-# app/controllers/users/registrations_controller.rb
 class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_sign_up_params, only: [:create]
   before_action :configure_account_update_params, only: [:update]
@@ -16,7 +15,19 @@ class Users::RegistrationsController < Devise::RegistrationsController
         user.update(role: 'foodtruckowner')
         # Redirect to food truck creation after signup
         redirect_to new_food_truck_path and return
+      elsif params[:user][:role] == 'eventorganizer'
+        user.update(role: 'eventorganizer')
       end
+    end
+  end
+
+  def after_sign_up_path_for(resource)
+    if session[:event_id]
+      new_food_truck_path
+    elsif resource.eventorganizer?
+      events_path
+    else
+      super
     end
   end
 

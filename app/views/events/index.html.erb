@@ -24,19 +24,18 @@
     <hr class="my-4">
   </div>
 
-  <div class="mb-5">
-  
-
+ <div class="mb-5">
     <!-- Alert for Pending Applications -->
-    <% if @events_with_pending_applications.any? %>
+    <% if @pending_applications&.any? %>
       <div class="alert alert-warning alert-dismissible fade show text-center mx-auto mb-4" style="max-width: 80%;" role="alert">
-        <strong>Attention:</strong> You have <%= @events_with_pending_applications.size %> event(s) with pending applications.
+        <strong>Attention:</strong> You have <%= @pending_applications.size %> pending application(s).
         <ul class="list-unstyled mt-2">
-          <% @published_events.each do |event| %>
-            <% if @events_with_pending_applications.include?(event.id) %>
-              <li><%= link_to event.name, event_path(event), class: "text-warning" %></li>
-            <% end %>
-          <% end %> <!-- Added missing end for @published_events.each loop -->
+          <% @pending_applications.each do |application| %>
+            <li>
+              <strong><%= application.food_truck.name %></strong> has applied. 
+              <%= link_to "View More", event_event_application_path(application.event, application), class: "text-warning" %>
+            </li>
+          <% end %>
         </ul>
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
       </div>
@@ -83,9 +82,9 @@
                   <p class="card-text"><strong>Credit Cost:</strong> <%= event.credit_cost %></p>
 
                   <!-- Pending Applications Alert within Event Card -->
-                  <% if @events_with_pending_applications.include?(event.id) %>
+                  <% if @pending_applications.where(event_id: event.id).any? %>
                     <div class="alert alert-info p-2 mb-2" role="alert">
-                      <strong>Pending Applications:</strong> <%= @pending_applications_per_event[event.id] %>
+                      <strong>Pending Applications:</strong> <%= @pending_applications.where(event_id: event.id).count %>
                     </div>
                   <% end %>
 

@@ -1,9 +1,9 @@
-<nav class="navbar navbar-expand-md   text-white" style="background-color: #0F172A">
+<nav class="navbar navbar-expand-md  bg-light text-dark" >
   <div class="container">
     <!-- Brand -->
-    <a class="text-white navbar-brand d-flex align-items-center" href="<%= root_path %>">
+    <a class="text-dark navbar-brand d-flex align-items-center" href="<%= root_path %>">
       <!-- You can replace the SVG below with your logo or brand icon -->
-      <svg class="" width="40" height="32" role="img" aria-label="Bitewheels"><use xlink:href="#bitewheels-logo"/></svg>
+      <svg class="fs-5" width="40" height="32" role="img" aria-label="Bitewheels"><use xlink:href="#bitewheels-logo"/></svg>
       Bitewheels
     </a>
 
@@ -15,17 +15,17 @@
     <!-- Collapsible Navbar Content -->
     <div class="collapse navbar-collapse" id="navbarContent">
       <!-- Centered Navigation Links -->
-      <ul class="navbar-nav mx-auto mb-2 mb-md-0">
+      <ul class="navbar-nav mx-auto fs-6 mb-2 mb-md-0">
         <% if current_user %>
           <li class="nav-item">
-            <%= link_to "All Events", all_events_path, class: "text-white nav-link" %>
+            <%= link_to "My Events", events_path, class: "text-dark nav-link" %>
           </li>
           <% if current_user.foodtruckowner? %>
             <li class="nav-item">
-              <%= link_to "Food Trucks", food_trucks_path, class: "text-white nav-link" %>
+              <%= link_to "Food Trucks", food_trucks_path, class: "text-dark nav-link" %>
             </li>
             <li class="nav-item">
-            <a class="nav-link text-white" href="<%= event_applications_path %>">My Applications</a>
+            <a class="nav-link text-dark" href="<%= event_applications_path %>">My Applications</a>
           </li>
             
           <% end %>
@@ -37,10 +37,10 @@
       </ul>
 
       <!-- Right-Aligned Authentication Buttons -->
-      <div class="d-flex">
+      <div class="d-flex fs-6">
         <% if current_user %>
-          <div class="dropdown">
-            <button class="text-white btn btn-outline-secondary dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+          <div class="dropdown ">
+            <button class="text-white btn btn-dark dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
               Account
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
@@ -50,9 +50,7 @@
               </li>
             </ul>
           </div>
-        <% else %>
-          <%= link_to "Log In", new_user_session_path, class: "btn btn-outline-primary me-2" %>
-          <%= link_to "Sign Up", new_user_registration_path, class: "btn btn-primary" %>
+        
         <% end %>
       </div>
     </div>

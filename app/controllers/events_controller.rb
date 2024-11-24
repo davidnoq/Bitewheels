@@ -17,11 +17,9 @@ class EventsController < ApplicationController
   
     if current_user&.eventorganizer?
       # Fetch pending applications for the current user's events
-      @pending_applications_per_event = EventApplication
-        .where(event_id: @events.pluck(:id), status: 'pending')
-        .group(:event_id)
-        .count
-      @events_with_pending_applications = @pending_applications_per_event.keys
+      @pending_applications = EventApplication
+                              .where(event_id: @events.pluck(:id), status: 'pending')
+                              .includes(:food_truck, :event)
     end
   end
 
