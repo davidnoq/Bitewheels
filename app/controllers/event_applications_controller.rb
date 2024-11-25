@@ -56,34 +56,33 @@ class EventApplicationsController < ApplicationController
       flash[:alert] = "This event is no longer accepting applications."
       redirect_to @event and return
     end
-  
+
     food_truck_ids = Array(params[:food_truck_ids] || params[:food_truck_id]).reject(&:blank?)
     food_trucks = current_user.food_trucks.where(id: food_truck_ids)
-  
+
     if food_trucks.blank?
       flash[:alert] = "No valid food trucks selected."
       redirect_to :new and return
     end
-  
+
     total_cost = food_trucks.size * @event.credit_cost
-  
+
     applications = food_trucks.map do |food_truck|
       @event.event_applications.new(
         food_truck: food_truck,
         status: :pending
       )
     end
-  
+
     if applications.all?(&:save)
       flash[:notice] = "Application(s) submitted successfully."
-      redirect_to @event
     else
       flash[:alert] = "Failed to submit application(s). Ensure you haven't already applied."
-      redirect_to :new
     end
+
+    redirect_to @event
   end
 
-  # In the approve action
   def approve
     authorize @event_application
 

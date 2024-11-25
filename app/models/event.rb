@@ -2,6 +2,7 @@ class Event < ApplicationRecord
   belongs_to :user
   has_many :event_applications, dependent: :destroy
   has_many :food_trucks, through: :event_applications
+  belongs_to :organizer, class_name: 'User', foreign_key: 'user_id'
 
   # Enums
   enum status: { draft: 0, published: 1, completed: 2}

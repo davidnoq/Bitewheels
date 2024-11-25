@@ -71,3 +71,4 @@ gem "phonelib"
 gem 'kaminari'
 gem 'stripe'
 gem 'geocoder'
+gem 'mailgun-ruby'
