@@ -69,6 +69,21 @@
             <% end %>
             <p><%= pluralize(@event.foodtruck_amount, 'Food Truck') %></p>
           </div>
+          <!-- Description -->
+          <div class="mb-3">
+            <%= content_tag :h5, class: 'fw-semibold text-dark d-flex align-items-center' do %>
+              <i class="bi bi-file-text me-2"></i> Description
+            <% end %>
+            <p><%= @event.description %></p>
+          </div>
+
+          <!-- Cuisine Type Needed -->
+          <div class="mb-3">
+            <%= content_tag :h5, class: 'fw-semibold text-dark d-flex align-items-center' do %>
+              <i class="bi bi-shop me-2"></i> Cuisine Type Needed
+            <% end %>
+            <p><%= @event.searching_for_cuisine %></p>
+          </div>
 
           <!-- Credit Cost (Visible Only to Non-Event Organizers) -->
           <% unless current_user&.eventorganizer? %>

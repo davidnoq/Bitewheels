@@ -16,24 +16,25 @@
     <div class="collapse navbar-collapse" id="navbarContent">
       <!-- Centered Navigation Links -->
       <ul class="navbar-nav mx-auto fs-6 mb-2 mb-md-0">
-        <% if current_user %>
-          <li class="nav-item">
-            <%= link_to "My Events", events_path, class: "text-dark nav-link" %>
-          </li>
+    
+          <%if current_user%>
           <% if current_user.foodtruckowner? %>
             <li class="nav-item">
+            
               <%= link_to "Food Trucks", food_trucks_path, class: "text-dark nav-link" %>
             </li>
             <li class="nav-item">
-            <a class="nav-link text-dark" href="<%= event_applications_path %>">My Applications</a>
+            <%= link_to "Applications", event_applications_path, class: "text-dark nav-link" %>
           </li>
-            
+        <li class="nav-item">
+            <%= link_to "All Events", all_events_path, class: "text-dark nav-link" %>
+             
+            </li>
+        <% else%>
+        <%= link_to "My Events", events_path, class: "text-dark nav-link" %>
           <% end %>
+         <% end %>
        
-          
-          
-          
-        <% end %>
       </ul>
 
       <!-- Right-Aligned Authentication Buttons -->
@@ -50,7 +51,9 @@
               </li>
             </ul>
           </div>
-        
+        <% else%>
+          <%= link_to "Log in", new_user_session_path, class: "btn btn-outline-dark me-2" %>
+          <%= link_to "Sign up", new_user_registration_path, class: "btn btn-dark" %>
         <% end %>
       </div>
     </div>

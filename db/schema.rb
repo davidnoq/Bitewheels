@@ -63,7 +63,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_29_020406) do
 
   create_table "events", force: :cascade do |t|
     t.string "name"
-    t.string "description"
+    t.text "description"
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer "expected_attendees"
@@ -79,6 +79,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_29_020406) do
     t.integer "credit_cost", default: 3, null: false
     t.boolean "accepting_applications", default: true, null: false
     t.integer "approved_applications_count", default: 0, null: false
+    t.string "searching_for_cuisine"
     t.index ["user_id"], name: "index_events_on_user_id"
   end
 

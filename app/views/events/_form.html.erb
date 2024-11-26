@@ -66,7 +66,18 @@
               <%= form.label :foodtruck_amount, "Number of Food Trucks", class: "form-label fw-semibold text-dark" %>
               <%= form.number_field :foodtruck_amount, min: 0, value: event.foodtruck_amount, class: "form-control", id: "foodtruck_amount" %>
             </div>
+
+             <div class="row">
+            <div class="col-md-6 mb-3">
+                <%= form.label :description, class: "form-label fw-semibold text-dark" %>
+                <%= form.text_area :description, class: "form-control", required: true %>
+              </div>                
+              <div class="col-md-6 mb-3">
+  <%= form.label :searching_for_cuisine, class: "form-label fw-semibold text-dark" %>
+  <%= form.select :searching_for_cuisine, options_for_select(['Latin', 'Italian', 'Japanese', 'American', 'Indian', 'All'], event.searching_for_cuisine), { prompt: 'Select a Cuisine Type' }, class: 'form-control', id: 'cuisine_select' %>
+</div>
           </div>
+           </div>
 
           <% if current_user.eventorganizer? %>
             <div class="row">
@@ -77,7 +88,7 @@
                   The number of credits required for each food truck to apply to this event.
                 </small>
               </div>
-
+              
               <div class="col-md-6 mb-3">
                 <%= form.label :status, "Save as", class: "form-label fw-semibold text-dark" %>
                 <%= form.select :status, options_for_select([['Draft', 'draft'], ['Publish', 'published']], event.status), {}, class: "form-select" %>

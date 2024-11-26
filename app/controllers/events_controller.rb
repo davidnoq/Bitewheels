@@ -6,24 +6,29 @@ class EventsController < ApplicationController
   after_action :verify_policy_scoped, only: :index
 
   def index
-
     @events = policy_scope(Event)
-    .includes(:food_trucks)
-    .page(params[:page])
-    .per(12)
-   authorize @events
+              .includes(:food_trucks)
+              .page(params[:page])
+              .per(12)
+    authorize @events
+
     @published_events = @events.select { |event| event.status == 'published' }
     @drafted_events = @events.select { |event| event.status == 'draft' }
-  
+
     if current_user&.eventorganizer?
       # Fetch pending applications for the current user's events
       @pending_applications = EventApplication
-                              .where(event_id: @events.pluck(:id), status: 'pending')
-                              .includes(:food_truck, :event)
+                                .where(event_id: @events.pluck(:id), status: 'pending')
+                                .includes(:food_truck, :event)
+
+      # Initialize @events_with_pending_applications with event IDs that have pending applications
+      @events_with_pending_applications = @pending_applications.pluck(:event_id).uniq
+    else
+      # Ensure @events_with_pending_applications is initialized even if the user is not an event organizer
+      @events_with_pending_applications = []
     end
   end
 
-  
   def search
     @events = policy_scope(Event)
   
@@ -179,7 +184,7 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    permitted = [:name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude, :credit_cost]
+    permitted = [:name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude, :credit_cost, :description, :searching_for_cuisine]
     permitted << :status if user_signed_in? && current_user.eventorganizer?
     params.require(:event).permit(permitted)
   end
