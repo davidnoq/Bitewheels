@@ -87,6 +87,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_29_020406) do
     t.string "name"
     t.string "cuisine"
     t.bigint "user_id", null: false
+    t.json "food_image_descriptions", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_food_trucks_on_user_id"

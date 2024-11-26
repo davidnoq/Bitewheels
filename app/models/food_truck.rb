@@ -5,6 +5,7 @@ class FoodTruck < ApplicationRecord
   has_many_attached :menu_images
   has_many_attached :food_images
 
+
   has_many :event_applications, dependent: :destroy
   has_many :events, through: :event_applications
 
@@ -14,9 +15,17 @@ class FoodTruck < ApplicationRecord
   validate :validate_food_images_limit
   validate :validate_menu_images_limit
 
-  def average_rating
-    ratings_count > 0 ? (total_rating_score.to_f / ratings_count).round(2) : 0
+  def food_image_description_for(index)
+    food_image_descriptions[index.to_s]
   end
+
+  def set_food_image_description(index, description)
+    self.food_image_descriptions ||= {}
+    self.food_image_descriptions[index.to_s] = description
+    save!
+  end
+
+
   private
 
   def validate_food_images_limit
@@ -30,4 +39,6 @@ class FoodTruck < ApplicationRecord
       errors.add(:menu_images, "You can upload up to 3 food images.")
     end
   end
+
+
 end

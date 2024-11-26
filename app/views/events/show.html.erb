@@ -32,9 +32,15 @@
         <!-- Card Title and Back Button -->
         <div class="d-flex justify-content-between align-items-center mb-4">
           <h2 class="card-title text-dark fw-bold mb-0"><%= @event.name %></h2>
+          <% if current_user&.foodtruckowner? %>
+            <%= link_to all_events_path, class: "btn btn-secondary btn-lg d-flex align-items-center" do %>
+            <i class="bi bi-arrow-left-circle me-2"></i> Back to Events
+          <% end %>
+          <% else%>
           <%= link_to events_path, class: "btn btn-secondary btn-lg d-flex align-items-center" do %>
             <i class="bi bi-arrow-left-circle me-2"></i> Back to Events
           <% end %>
+          <%end%>
         </div>
         <p class="text-left text-secondary mb-5">
           View all the details of your event below.

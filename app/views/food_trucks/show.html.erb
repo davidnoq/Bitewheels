@@ -66,7 +66,7 @@
             <i class="bi bi-file-earmark-text me-2"></i> Permit Image
           <% end %>
           <% if @food_truck.permit.attached? %>
-            <%= image_tag url_for(@food_truck.permit), class: 'img-fluid img-thumbnail', alt: 'Permit Image', style: 'max-width: 300px; height: auto;' %>
+            <%= image_tag url_for(@food_truck.permit), class: 'img-fluid img-thumbnail', alt: 'Permit Image', style: 'max-width: 300px; height: 100px;' %>
           <% else %>
             <p><em>No permit uploaded.</em></p>
           <% end %>
@@ -81,7 +81,7 @@
             <div class="row">
               <% @food_truck.menu_images.each do |menu_image| %>
                 <div class="col-md-4 mb-2">
-                  <%= image_tag url_for(menu_image), class: 'img-fluid img-thumbnail', alt: 'Menu Image', style: 'max-width: 150px; height: auto;' %>
+                  <%= image_tag url_for(menu_image), class: 'img-fluid img-thumbnail', alt: 'Menu Image', style: 'max-width: 150px; height: 100px;' %>
                 </div>
               <% end %>
             </div>
@@ -99,7 +99,7 @@
             <div class="row">
               <% @food_truck.food_images.each do |food_image| %>
                 <div class="col-md-4 mb-2">
-                  <%= image_tag url_for(food_image), class: 'img-fluid img-thumbnail', alt: 'Food Image', style: 'max-width: 150px; height: auto;' %>
+                  <%= image_tag url_for(food_image), class: 'img-fluid img-thumbnail', alt: 'Food Image', style: 'max-width: 150px; height: 100px;' %>
                 </div>
               <% end %>
             </div>
