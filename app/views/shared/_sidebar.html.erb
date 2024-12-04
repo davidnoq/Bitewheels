@@ -118,7 +118,7 @@
 </div>
 
 <!-- Fixed Sidebar for Large Screens -->
-<div class="d-none d-lg-flex flex-column bg-dark text-white p-3" style="width: 250px; height: 100vh; position: relative; top: 0; left: 0;">
+<div class="d-none d-lg-flex flex-column bg-dark text-white p-3 vh-100" style="width: 250px;  position: relative; top: 0; left: 0;">
   <div class="flex-grow-1 d-flex flex-column justify-content-between">
     <div>
       <h4 class="mb-4 d-flex align-items-center">
@@ -200,7 +200,9 @@
           <div>
             <strong><%= current_user.first_name %></strong>
             <div class="small text-secondary"><%= current_user.email %></div>
+            <%if current_user && current_user.foodtruckowner?%>
             <div><strong>Your Credits:</strong> <%= current_user.credits %></div>
+            <% end%>
           </div>
         </div>
         <div class="mt-3">

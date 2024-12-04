@@ -27,6 +27,8 @@ class EventApplicationsController < ApplicationController
     authorize @event_application
     @food_truck = @event_application.food_truck
     @event = @event_application.event
+    @messages = @event_application.messages.order(created_at: :asc)
+  @message = @event_application.messages.new  # For form submission if needed
   
     # Dynamically render based on user role
     if current_user.foodtruckowner?

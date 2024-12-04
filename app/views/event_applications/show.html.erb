@@ -1,66 +1,87 @@
 <!-- app/views/event_applications/show.html.erb -->
 
-<div class="container my-5">
-  <!-- Back Button and Action Buttons -->
-  <div class="mb-4 d-flex justify-content-start gap-2">
-    <%= link_to "Back to Applications", event_event_applications_path(@event), class: "btn btn-secondary", aria: { label: "Back to Applications List" } %>
-    
-    <% if current_user&.eventorganizer? && current_user == @event.user %>
-      <% if @event.completed? %>
-        <!-- Completed Event: rate_event_event_application_path(@event, @event_application), Show Rate Button -->
-      <% else %>
-        <!-- Not Completed: Show Approve and Reject Buttons Based on Conditions -->
-        <% if @event.accepting_applications && @event.approved_applications_count < @event.foodtruck_amount %>
-          <%= button_to "Approve", approve_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-success", data: { confirm: "Are you sure you want to approve this application?" } %>
-          <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger", data: { confirm: "Are you sure you want to reject this application?" } %>
-        <% elsif @event_application.status == 'pending' || @event_application.status == 'approved' %>
-          <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger", data: { confirm: "Are you sure you want to reject this application?" } %>
-        <% end %>
-      <% end %>
+<% content_for :title, "#{@event.name} - Application Details" %>
+
+<div class="container py-5">
+  <!-- Top Section with Heading and Icon -->
+  <div class="mb-4 text-center">
+  <h2 class="fw-bold text-dark d-flex align-items-center justify-content-center">
+    <i class="bi bi-truck me-2"></i>
+    <%= @food_truck.name %> - Application Details
+  </h2>
+  <hr class="my-4">
+
+  
+
+  <div class="col text-center mt-3 d-flex justify-content-center">
+    <% if @event.accepting_applications && @event.approved_applications_count < @event.foodtruck_amount %>
+      <%= button_to "Approve", approve_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-success me-2 btn-lg", data: { confirm: "Are you sure you want to approve this application?" }, aria: { label: "Approve Application" } %>
+      <%= link_to "Back to Applications", event_event_applications_path(@event), class: "btn btn-secondary btn-lg me-2" %>
+      <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger me-2 btn-lg", data: { confirm: "Are you sure you want to reject this application?" }, aria: { label: "Reject Application" } %>
+    <% elsif @event_application.status.in?(%w[pending approved]) %>
+      <%= link_to "Back to Applications", event_event_applications_path(@event), class: "btn btn-secondary btn-lg me-2" %>
+      <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger me-2 btn-lg", data: { confirm: "Are you sure you want to reject this application?" }, aria: { label: "Reject Application" } %>
+    <% else %>
+      <%= link_to "Back to Applications", event_event_applications_path(@event), class: "btn btn-secondary btn-lg" %>
     <% end %>
   </div>
+</div>
+
+
+
+ 
   
-  <!-- Application Details Card -->
-  <div class="card mb-4 shadow-sm">
-    <div class="card-header bg-dark text-white">
-      <h3 class="card-title mb-0"><%= @event_application.food_truck.name %></h3>
-    </div>
-    <div class="card-body">
-      <!-- Event Information -->
-      <p class="card-text">
-        <strong>Event:</strong> <%= @event.name %><br>
-        <strong>Address:</strong> <%= @event.address %><br>
-        <strong>Dates:</strong> <%= @event.start_date.strftime("%B %d, %Y") %> - <%= @event.end_date.strftime("%B %d, %Y") %><br>
-        <strong>Food Trucks Needed:</strong> <%= @event.foodtruck_amount %>
-      </p>
+  <!-- Main Content Row -->
+  <div class="row mt-5">
+    <!-- Left Column: Event Info and Food Truck Info -->
+    <div class="col-lg-6 mb-4">
+      <!-- Application Details Card -->
+      <div class="card mb-4 shadow-sm">
+        
+          <h5 class="card-title text-left ps-3 pt-3 mb-0"><%= @event_application.event.name %></h5>
+        
+        <div class="card-body">
+          <!-- Event Information -->
+          <p class="card-text">
+            
+            <strong>Address:</strong> <%= @event.address %><br>
+            <strong>Dates:</strong> <%= @event.start_date.strftime("%B %d, %Y") %> - <%= @event.end_date.strftime("%B %d, %Y") %><br>
+            <strong>Food Trucks Needed:</strong> <%= @event.foodtruck_amount %>
+          </p>
 
-      <!-- Application Status -->
-      <p class="card-text">
-        <strong>Status:</strong>
-        <% case @event_application.status %>
-        <% when 'pending' %>
-          <span class="badge bg-warning text-dark">Pending</span>
-        <% when 'approved' %>
-          <span class="badge bg-success">Approved</span>
-        <% when 'rejected' %>
-          <span class="badge bg-danger">Rejected</span>
-        <% else %>
-          <span class="badge bg-secondary"><%= @event_application.status.capitalize %></span>
-        <% end %>
-      </p>
-    </div>
-  </div>
+          <!-- Application Status -->
+          
+        </div>
+      </div>
 
-  <!-- Detailed Information and Chat Section -->
-  <div class="row">
-    <!-- Accordion Section -->
-    <div class="col-lg-8 mb-4">
-      <div class="accordion" id="applicationAccordion">
+      <!-- Accordion Section: Food Truck Information -->
+      <div class="accordion shadow-sm" id="applicationAccordion">
+        <div class="accordion-item">
+          
+          <div class="d-flex justify-content-between align-items-center">
+            <h5 class="mb-3 p-2 d-flex align-items-center">
+              <i class="bi bi-truck me-2"></i> <%= @food_truck.name %> Profile
+            </h5>
+            <span class="mb-3 p-2">
+              <strong>Application Status: </strong>
+              <% case @event_application.status %>
+              <% when 'pending' %>
+                <span class="badge bg-warning text-dark">Pending</span>
+              <% when 'approved' %>
+                <span class="badge bg-success">Approved</span>
+              <% when 'rejected' %>
+                <span class="badge bg-danger">Rejected</span>
+              <% else %>
+                <span class="badge bg-secondary"><%= @event_application.status.capitalize %></span>
+              <% end %>
+            </span>
+          </div>
+        </div>
         <!-- Food Truck Information -->
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingOne">
             <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              <i class="fas fa-info-circle me-2"></i> Food Truck Information
+              <i class="bi bi-info-circle me-2"></i> Food Truck Information
             </button>
           </h2>
           <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#applicationAccordion">
@@ -83,13 +104,12 @@
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingTwo">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-              <i class="fas fa-star me-2"></i> Food Truck Reviews
+              <i class="bi bi-star me-2"></i> Food Truck Reviews
             </button>
           </h2>
           <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#applicationAccordion">
             <div class="accordion-body">
-              <%# Placeholder for reviews; implement as needed %>
-              <p class="text-muted">No reviews available for this food truck.</p>
+              
             </div>
           </div>
         </div>
@@ -98,7 +118,7 @@
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingThree">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-              <i class="fas fa-list-alt me-2"></i> Food Truck Menu
+              <i class="bi bi-list me-2"></i> Food Truck Menu
             </button>
           </h2>
           <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#applicationAccordion">
@@ -124,7 +144,7 @@
         <div class="accordion-item">
           <h2 class="accordion-header" id="headingFour">
             <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-              <i class="fas fa-images me-2"></i> Food Images & Descriptions
+              <i class="bi bi-images me-2"></i> Food Images & Descriptions
             </button>
           </h2>
           <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#applicationAccordion">
@@ -136,7 +156,10 @@
                       <div class="card">
                         <%= image_tag url_for(image), class: 'card-img-top img-fluid', alt: 'Food Image', style: 'height: 200px; object-fit: cover;' %>
                         <div class="card-body">
-                          <p class="card-text"><strong>Description:</strong> <%= @event_application.food_truck.food_image_descriptions[image.id.to_s].present? ? @event_application.food_truck.food_image_descriptions[image.id.to_s] : "No description provided." %></p>
+                          <p class="card-text">
+                            <strong>Description:</strong> 
+                            <%= @event_application.food_truck.food_image_descriptions[image.id.to_s].presence || "No description provided." %>
+                          </p>
                         </div>
                       </div>
                     </div>
@@ -149,41 +172,47 @@
           </div>
         </div>
       </div>
+
+      <% if @event.completed? %>
+        <div class="card mt-4">
+          <div class="card-header">
+            <h5>Leave a Review and Rating</h5>
+          </div>
+          <div class="card-body">
+            <%= form_with model: @food_truck_rating, url: event_path(@event, @event_application), method: :post, local: true do |f| %>
+              <div class="mb-3">
+                <%= f.label :rating, "Rating (1-5)", class: "form-label" %>
+                <%= f.number_field :rating, in: 1..5, step: 1, class: "form-control", required: true %>
+              </div>
+              <div class="mb-3">
+                <%= f.label :review, "Review", class: "form-label" %>
+                <%= f.text_area :review, rows: 4, class: "form-control", required: true %>
+              </div>
+              <%= f.submit "Submit Review", class: "btn btn-primary" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
     </div>
 
-    <!-- Chat Section -->
-    <div class="col-lg-4">
-      <div class="card h-100 shadow-sm">
-        <div class="card-header bg-secondary text-white">
-          <h5 class="card-title mb-0">Chat with Food Truck Owner</h5>
+    <!-- Right Column: Chat Section -->
+    <div class="col-lg-6 mb-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0 d-flex align-items-center">
+            <i class="bi bi-chat-dots me-2"></i> Chat
+          </h5>
         </div>
         <div class="card-body">
-          <!-- Placeholder for Chat -->
-          <p class="text-muted">Chat functionality will be here.</p>
-          <!-- Future Implementation: Integrate a chat widget or system -->
+          <!-- Set the eventApplicationId for JavaScript -->
+          <script>
+            window.eventApplicationId = <%= @event_application.id %>;
+          </script>
+
+          <!-- Render the chat partial -->
+          <%= render 'shared/chat', messages: @messages %>
         </div>
       </div>
     </div>
-
-    <% if @event.completed? %>
-      <div class="card mt-5">
-        <div class="card-header">
-          <h5>Leave a Review and Rating</h5>
-        </div>
-        <div class="card-body">
-          <%= form_with model: @food_truck_rating, url: event_path(@event, @event_application), method: :post, local: true do |f| %>
-            <div class="mb-3">
-              <%= f.label :rating, "Rating (1-5)", class: "form-label" %>
-              <%= f.number_field :rating, in: 1..5, step: 1, class: "form-control", required: true %>
-            </div>
-            <div class="mb-3">
-              <%= f.label :review, "Review", class: "form-label" %>
-              <%= f.text_area :review, rows: 4, class: "form-control", required: true %>
-            </div>
-            <%= f.submit "Submit Review", class: "btn btn-primary" %>
-          <% end %>
-        </div>
-      </div>
-    <% end %>
   </div>
 </div>

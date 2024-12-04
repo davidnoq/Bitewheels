@@ -1,41 +1,44 @@
 <% content_for :title, "My Application" %>
 
 <div class="container py-5">
+  <!-- Top Section with Event Name -->
+  <div class="mb-4 text-center">
+    <h2 class="fw-bold text-dark d-flex align-items-center justify-content-center">
+      <i class="bi bi-calendar-event me-2"></i>
+      <%= @event.name %> - My Application
+    </h2>
+    <hr class="my-4">
+  </div>
+
+  <!-- Main Content Row -->
   <div class="row">
-    <!-- Left Column: Event Details -->
-    <div class="col-lg-8 mb-4">
-      <div class="card shadow-lg">
-        <div class="card-header bg-dark text-white text-center">
-          <h3 class="mb-0"><%= @event.name %></h3>
-        </div>
+    <!-- Left Column: Event and Application Details -->
+    <div class="col-lg-8">
+      <!-- Event Details -->
+      <div class="card shadow-sm mb-4">
+        
+          <h5 class="card-title text-left ps-3 pt-3 mb-0"><%= @event_application.event.name %></h5>
+        
         <div class="card-body">
-          <!-- Event Details -->
-          <p>
+          <p class="mb-3">
             <strong>Address:</strong> <%= @event.address %><br>
             <strong>Dates:</strong> <%= @event.start_date.strftime("%B %d, %Y") %> - <%= @event.end_date.strftime("%B %d, %Y") %><br>
             <strong>Food Trucks Needed:</strong> <%= @event.foodtruck_amount %><br>
             <strong>Expected Attendees:</strong> <%= @event.expected_attendees %><br>
-            <strong>Status:</strong>
-            <% if @event.completed? %>
-              <span class="badge bg-success">Completed</span>
-            <% else %>
-              <span class="badge bg-secondary">Ongoing</span>
-            <% end %>
+            
           </p>
         </div>
       </div>
-    </div>
 
-    <!-- Right Column: Application and Chat -->
-    <div class="col-lg-4">
-      <!-- Application Details Card -->
-      <div class="card h-100 shadow-sm mb-4">
-        <div class="card-header bg-secondary text-white">
-          <h5 class="card-title mb-0">Application Details</h5>
-        </div>
+      <!-- Application Details -->
+      <div class="card shadow-sm">
+        
+          <h5 class="mb-0 d-flex align-items-center ps-3 pt-3">
+            <i class="bi bi-file-earmark-text me-2"></i> Application Details
+          </h5>
+       
         <div class="card-body">
-          <!-- Application Status -->
-          <p>
+          <p class="mb-3">
             <strong>Status:</strong>
             <% case @event_application.status %>
             <% when 'pending' %>
@@ -48,29 +51,26 @@
               <span class="badge bg-secondary"><%= @event_application.status.capitalize %></span>
             <% end %>
           </p>
-          <!-- Manage Food Truck Button -->
-          <%= link_to "Manage Food Truck", event_application_food_truck_path(@event_application), class: "btn btn-primary mb-3 " %>
+          <%= link_to "Manage Food Truck", event_application_food_truck_path(@event_application), class: "btn btn-dark btn-lg  mb-3" %>
         </div>
       </div>
+    </div>
 
-      <!-- Chat Section -->
-      <div class="card h-100 shadow-sm">
+    <!-- Right Column: Chat -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
         <div class="card-header bg-dark text-white">
-          <h5 class="card-title mb-0">
-            <% if @event.completed? %>
-              Chat History
-            <% else %>
-              Chat
-            <% end %>
+          <h5 class="mb-0 d-flex align-items-center">
+            <i class="bi bi-chat-dots me-2"></i> Chat
           </h5>
         </div>
         <div class="card-body">
-          <!-- Placeholder for Chat -->
-          <% if @event.completed? %>
-            <p class="text-muted">Review past messages exchanged during the event.</p>
-          <% else %>
-            <p class="text-muted">Chat functionality will be here.</p>
-          <% end %>
+          <!-- Set the eventApplicationId for JavaScript -->
+          <script>
+            window.eventApplicationId = <%= @event_application.id %>;
+          </script>
+          <!-- Render the chat partial -->
+          <%= render 'shared/chat', messages: @messages %>
         </div>
       </div>
     </div>

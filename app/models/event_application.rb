@@ -5,7 +5,7 @@ class EventApplication < ApplicationRecord
 
   # Delegation for easier access to the user (food truck owner)
   delegate :user, to: :food_truck, prefix: true
-
+  has_many :messages, dependent: :destroy
   # Enums
   enum status: { pending: 0, approved: 1, rejected: 2 }
 

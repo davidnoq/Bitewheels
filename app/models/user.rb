@@ -5,7 +5,7 @@ class User < ApplicationRecord
 
   has_many :events, dependent: :destroy
   has_many :food_trucks, dependent: :destroy
-
+  has_many :messages, dependent: :destroy
   ROLES = %w[user eventorganizer foodtruckowner]
 
   # Ensure that the role is included in the list of ROLES
@@ -18,8 +18,8 @@ class User < ApplicationRecord
 
   validates :phone_number, phone: { possible: true, allow_blank: false }
 
- 
-
+ # Method to generate Firebase custom token
+  
   def formatted_phone_number
     phone = Phonelib.parse(phone_number, country)
     phone.full_e164.presence || phone.full_national.presence

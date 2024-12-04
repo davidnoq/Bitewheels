@@ -1,4 +1,6 @@
 Rails.application.routes.draw do
+
+ 
   # Devise routes for User authentication
   devise_for :users, controllers: {
     registrations: "users/registrations"
@@ -64,4 +66,6 @@ resources :checkout, only: [:create]
 
   # Root Path
   root "pages#home"
+
+  mount ActionCable.server => '/cable'
 end
