@@ -109,7 +109,28 @@
           </h2>
           <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#applicationAccordion">
             <div class="accordion-body">
-              
+              <% if @food_truck.food_truck_ratings.any? %>
+                <% @food_truck.food_truck_ratings.each do |rating| %>
+                  <div class="mb-3">
+                    <h5>
+                      <%= rating.user.first_name %> <%= rating.user.last_name %> 
+                      <small class="text-muted">from <%= @event_application.event.name %></small>
+                    </h5>
+                    <p>
+                      <% rating.rating.times do %>
+                        <i class="bi bi-star-fill text-warning"></i>
+                      <% end %>
+                      <% (5 - rating.rating).times do %>
+                        <i class="bi bi-star text-warning"></i>
+                      <% end %>
+                    </p>
+                    <p><%= rating.review %></p>
+                    <hr>
+                  </div>
+                <% end %>
+              <% else %>
+                <p class="text-muted">No reviews yet for this food truck.</p>
+              <% end %>
             </div>
           </div>
         </div>
@@ -173,16 +194,16 @@
         </div>
       </div>
 
-      <% if @event.completed? %>
+     
         <div class="card mt-4">
           <div class="card-header">
             <h5>Leave a Review and Rating</h5>
           </div>
           <div class="card-body">
-            <%= form_with model: @food_truck_rating, url: event_path(@event, @event_application), method: :post, local: true do |f| %>
+            <%= form_with model: [@food_truck, @food_truck.food_truck_ratings.build], url: food_truck_food_truck_ratings_path(@food_truck), method: :post, local: true do |f| %>
               <div class="mb-3">
-                <%= f.label :rating, "Rating (1-5)", class: "form-label" %>
-                <%= f.number_field :rating, in: 1..5, step: 1, class: "form-control", required: true %>
+                <%= f.label :rating, "Rating (0-5)", class: "form-label" %>
+                <%= f.number_field :rating, in: 0..5, step: 1, class: "form-control", required: true %>
               </div>
               <div class="mb-3">
                 <%= f.label :review, "Review", class: "form-label" %>
@@ -192,7 +213,7 @@
             <% end %>
           </div>
         </div>
-      <% end %>
+      
     </div>
 
     <!-- Right Column: Chat Section -->

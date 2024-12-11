@@ -131,44 +131,55 @@
         
 
         <!-- Event Controls Based on Status and User Role -->
-        <div class="mt-5 text-left">
-          <% if @event.published? %>
-            <% if current_user&.eventorganizer? && current_user == @event.user %>
-              <div class="dropdown">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="manageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  Manage
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="manageDropdown">
-                  <li><%= link_to "Edit Event", edit_event_path(@event), class: "dropdown-item" %></li>
-                  <li><%= link_to "Manage Applications", event_event_applications_path(@event), class: "dropdown-item" %></li>
-                  <li><%= button_to "Mark as Completed", complete_event_path(@event), method: :patch, data: { confirm: "Are you sure you want to mark this event as completed?" }, class: "dropdown-item" %></li>
-                  <li><%= button_to "Delete Event", @event, method: :delete, data: { confirm: "Are you sure you want to delete this event?" }, class: "dropdown-item" %></li>
-                </ul>
-              </div>
-            <% end %>
-          <% elsif @event.draft? %>
-            <p class="text-muted text-center">This event is still a draft. Applications will be available once the event is published.</p>
-            <% if current_user&.eventorganizer? && current_user == @event.user %>
-              <div class="dropdown">
-                <button class="btn btn-outline-primary dropdown-toggle" type="button" id="manageDraftDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                  Manage
-                </button>
-                <ul class="dropdown-menu" aria-labelledby="manageDraftDropdown">
-                  <li><%= link_to "Edit Event", edit_event_path(@event), class: "dropdown-item" %></li>
-                  <li><%= button_to "Publish Event", publish_event_path(@event), method: :patch, data: { confirm: "Are you sure you want to publish this event?" }, class: "dropdown-item" %></li>
-                  <li><%= button_to "Delete Event", @event, method: :delete, data: { confirm: "Are you sure you want to delete this event?" }, class: "dropdown-item" %></li>
-                </ul>
-              </div>
-            <% end %>
-          <% elsif @event.completed? %>
-            <p class="text-muted text-center">Rate past food trucks on their performance.</p>
-            <% if current_user&.eventorganizer? && current_user == @event.user %>
-              <div class="d-flex justify-content-center mt-3">
-                <%= link_to "Visit Food Trucks", event_event_applications_path(@event), class: "btn btn-outline-primary" %>
-              </div>
-            <% end %>
-          <% end %>
-        </div>
+<div class="mt-5 text-left">
+  <% if @event.published? %>
+    <% if current_user&.eventorganizer? && current_user == @event.user %>
+      <div class="dropdown">
+        <button
+          class="btn btn-outline-primary dropdown-toggle"
+          type="button"
+          id="manageDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Manage
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="manageDropdown">
+          <li><%= link_to "Edit Event", edit_event_path(@event), class: "dropdown-item" %></li>
+          <li><%= link_to "Manage Applications", event_event_applications_path(@event), class: "dropdown-item" %></li>
+          <li><%= button_to "Mark as Completed", complete_event_path(@event), method: :patch, data: { confirm: "Are you sure you want to mark this event as completed?" }, class: "dropdown-item" %></li>
+          <li><%= button_to "Delete Event", @event, method: :delete, data: { confirm: "Are you sure you want to delete this event?" }, class: "dropdown-item" %></li>
+        </ul>
+      </div>
+    <% end %>
+  <% elsif @event.draft? %>
+    <p class="text-muted text-center">This event is still a draft. Applications will be available once the event is published.</p>
+    <% if current_user&.eventorganizer? && current_user == @event.user %>
+      <div class="dropdown">
+        <button
+          class="btn btn-outline-primary dropdown-toggle"
+          type="button"
+          id="manageDraftDropdown"
+          data-bs-toggle="dropdown"
+          aria-expanded="false">
+          Manage
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="manageDraftDropdown">
+          <li><%= link_to "Edit Event", edit_event_path(@event), class: "dropdown-item" %></li>
+          <li><%= button_to "Publish Event", publish_event_path(@event), method: :patch, data: { confirm: "Are you sure you want to publish this event?" }, class: "dropdown-item" %></li>
+          <li><%= button_to "Delete Event", @event, method: :delete, data: { confirm: "Are you sure you want to delete this event?" }, class: "dropdown-item" %></li>
+        </ul>
+      </div>
+    <% end %>
+  <% elsif @event.completed? %>
+    <p class="text-muted text-center">Rate past food trucks on their performance.</p>
+    <% if current_user&.eventorganizer? && current_user == @event.user %>
+      <div class="d-flex justify-content-center mt-3">
+        <%= link_to "Visit Food Trucks", event_event_applications_path(@event), class: "btn btn-outline-primary" %>
+      </div>
+    <% end %>
+  <% end %>
+</div>
+
 
         <%# Additional Functionality: Google Maps or Other Features %>
         <%# Ensure that any additional functionalities are preserved here %>

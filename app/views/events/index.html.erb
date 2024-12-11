@@ -26,21 +26,28 @@
 
  <div class="mb-5">
     <!-- Alert for Pending Applications -->
-    <% if @pending_applications&.any? %>
-      <div class="alert alert-warning alert-dismissible fade show text-center mx-auto mb-4" style="max-width: 80%;" role="alert">
-        <strong>Attention:</strong> You have <%= @pending_applications.size %> pending application(s).
-        <ul class="list-unstyled mt-2">
-          <% @pending_applications.each do |application| %>
-            <li>
-              <strong><%= application.food_truck.name %></strong> has applied. 
-              <%= link_to "View More", event_event_application_path(application.event, application), class: "text-warning" %>
-            </li>
-          <% end %>
-        </ul>
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-      </div>
-    <% end %>
+<% if @pending_applications&.any? %>
+  <div class="alert alert-warning alert-dismissible fade show text-center mx-auto mb-4" style="max-width: 50%;" role="alert">
+    <strong>Attention:</strong> You have <%= @pending_applications.size %> pending application(s) across <%= @pending_applications.map(&:event).uniq.size %> event(s).
+    <div class="mt-3 text-center">
+      <% @pending_applications.group_by(&:event).each do |event, applications| %>
+        <div class="mb-3">
+          <strong><%= event.name %></strong> (<%= applications.size %> pending application(s)):
+          <ul class="list-unstyled mt-2">
+            <% applications.each do |application| %>
+              <li>
+                <strong><%= application.food_truck.name %></strong>
+                <%= link_to "View Application", event_event_application_path(event, application), class: "text-warning ms-2" %>
+              </li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
+<% end %>
+
 
 <div class="container d-flex justify-content-center align-items-center mb-5">
   
@@ -60,6 +67,11 @@
         <i class="bi bi-pencil-square me-2"></i> Drafted Events
       </button>
     </li>
+    <li class="nav-item " role="presentation">
+    <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab" aria-controls="completed" aria-selected="false">
+      <i class="bi bi-check-circle me-2"></i> Completed Events
+    </button>
+  </li>
   </ul>
 
   <div class="tab-content" id="eventTabsContent">
@@ -158,11 +170,47 @@
         <p class="text-muted text-center">No drafted events found.</p>
       <% end %>
 
+      
       <!-- Pagination -->
       <% if @drafted_events.respond_to?(:total_pages) && @drafted_events.total_pages > 1 %>
         <div class="d-flex justify-content-center mt-4">
           <%= paginate @drafted_events, param_name: :draft_page %>
         </div>
+      <% end %>
+    </div>
+
+    <!-- Completed Events Tab -->
+    <div class="container tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+      <% if @completed_events.any? %>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+          <% @completed_events.each do |event| %>
+            <div class="col">
+              <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                  <!-- Event Name -->
+                  <h5 class="card-title text-center"><%= event.name %></h5>
+
+                  <!-- Completed Badge -->
+                  <p class="text-center">
+                    <span class="badge bg-secondary">Completed</span>
+                  </p>
+
+                  <!-- Event Details -->
+                  <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
+                  <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
+                  <p class="card-text"><strong>Food Trucks Attended:</strong> <%= event.foodtruck_amount %></p>
+
+                  <!-- Show Event Button -->
+                  <div class="mt-auto">
+                    <%= link_to "View Event", event_path(event), class: "btn btn-outline-primary btn-sm" %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted">No completed events available.</p>
       <% end %>
     </div>
   </div>

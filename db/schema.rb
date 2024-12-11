@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_04_191505) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_11_194035) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -83,6 +83,17 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_04_191505) do
     t.index ["user_id"], name: "index_events_on_user_id"
   end
 
+  create_table "food_truck_ratings", force: :cascade do |t|
+    t.integer "rating"
+    t.text "review"
+    t.bigint "food_truck_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["food_truck_id"], name: "index_food_truck_ratings_on_food_truck_id"
+    t.index ["user_id"], name: "index_food_truck_ratings_on_user_id"
+  end
+
   create_table "food_trucks", force: :cascade do |t|
     t.string "name"
     t.string "cuisine"
@@ -126,6 +137,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_04_191505) do
   add_foreign_key "event_applications", "events"
   add_foreign_key "event_applications", "food_trucks"
   add_foreign_key "events", "users"
+  add_foreign_key "food_truck_ratings", "food_trucks"
+  add_foreign_key "food_truck_ratings", "users"
   add_foreign_key "food_trucks", "users"
   add_foreign_key "messages", "event_applications"
   add_foreign_key "messages", "users"

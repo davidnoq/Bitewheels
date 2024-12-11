@@ -75,4 +75,35 @@
       </div>
     </div>
   </div>
+
+  <!-- Food Truck Reviews -->
+  <div class="card mt-4">
+    <div class="card-header">
+      <h5>Food Truck Reviews</h5>
+    </div>
+    <div class="card-body">
+      <% if @food_truck.food_truck_ratings.any? %>
+        <% @food_truck.food_truck_ratings.each do |rating| %>
+          <div class="mb-3">
+            <h5><%= rating.user.first_name %> <%= rating.user.last_name %> 
+                      <small class="text-muted">from <%= @event_application.event.name %></small></h5>
+            <p>
+              <% rating.rating.times do %>
+                <i class="bi bi-star-fill text-warning"></i>
+              <% end %>
+              <% (5 - rating.rating).times do %>
+                <i class="bi bi-star text-warning"></i>
+              <% end %>
+            </p>
+            <p><%= rating.review %></p>
+            <hr>
+          </div>
+        <% end %>
+      <% else %>
+        <p class="text-muted">No reviews yet for this food truck.</p>
+      <% end %>
+    </div>
+  </div>
+
+
 </div>

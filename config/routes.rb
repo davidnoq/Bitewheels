@@ -35,7 +35,10 @@ Rails.application.routes.draw do
   end
 
 # Routes for Food Trucks
-resources :food_trucks
+resources :food_trucks do
+  # Nested routes for Food Truck Ratings
+  resources :food_truck_ratings, only: [:create, :edit, :update, :destroy]
+end
 
 # Checkout Routes
 resources :checkout, only: [:create]

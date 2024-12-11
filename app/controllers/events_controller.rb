@@ -14,7 +14,9 @@ class EventsController < ApplicationController
 
     @published_events = @events.select { |event| event.status == 'published' }
     @drafted_events = @events.select { |event| event.status == 'draft' }
+    @completed_events = @events.select { |event| event.status == 'completed' } # Add this line
 
+    
     if current_user&.eventorganizer?
       # Fetch pending applications for the current user's events
       @pending_applications = EventApplication
@@ -78,11 +80,7 @@ class EventsController < ApplicationController
     end
   end
 
-  # Display all completed events
-  def completed
-    @events = policy_scope(Event).where(status: :completed).page(params[:page]).per(12)
-    authorize @events
-  end
+  
 
   def all
     @events = Event.where(status: 'published')
