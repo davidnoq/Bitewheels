@@ -11,7 +11,7 @@
   </div>
 
   <!-- Main Content Row -->
-  <div class="row">
+  <div class="row mt-5">
     <!-- Left Column: Event and Application Details -->
     <div class="col-lg-8">
       <!-- Event Details -->
@@ -54,30 +54,7 @@
           <%= link_to "Manage Food Truck", event_application_food_truck_path(@event_application), class: "btn btn-dark btn-lg  mb-3" %>
         </div>
       </div>
-    </div>
-
-    <!-- Right Column: Chat -->
-    <div class="col-lg-4">
-      <div class="card shadow-sm">
-        <div class="card-header bg-dark text-white">
-          <h5 class="mb-0 d-flex align-items-center">
-            <i class="bi bi-chat-dots me-2"></i> Chat
-          </h5>
-        </div>
-        <div class="card-body">
-          <!-- Set the eventApplicationId for JavaScript -->
-          <script>
-            window.eventApplicationId = <%= @event_application.id %>;
-          </script>
-          <!-- Render the chat partial -->
-          <%= render 'shared/chat', messages: @messages %>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Food Truck Reviews -->
-  <div class="card mt-4">
+ <div class="card mt-4">
     <div class="card-header">
       <h5>Food Truck Reviews</h5>
     </div>
@@ -104,6 +81,30 @@
       <% end %>
     </div>
   </div>
+    </div>
+
+    <!-- Right Column: Chat -->
+    <div class="col-lg-4">
+      <div class="card shadow-sm">
+        <div class="card-header bg-dark text-white">
+          <h5 class="mb-0 d-flex align-items-center">
+            <i class="bi bi-chat-dots me-2"></i> Chat
+          </h5>
+        </div>
+        <div class="card-body">
+          <!-- Set the eventApplicationId for JavaScript -->
+          <script>
+            window.eventApplicationId = <%= @event_application.id %>;
+          </script>
+          <!-- Render the chat partial -->
+          <%= render 'shared/chat', messages: @messages %>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Food Truck Reviews -->
+ 
 
 
 </div>

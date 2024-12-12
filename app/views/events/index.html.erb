@@ -23,30 +23,50 @@
     </h2>
     <hr class="my-4">
   </div>
-
- <div class="mb-5">
-    <!-- Alert for Pending Applications -->
+ <div class="mb-4">
 <% if @pending_applications&.any? %>
-  <div class="alert alert-warning alert-dismissible fade show text-center mx-auto mb-4" style="max-width: 50%;" role="alert">
-    <strong>Attention:</strong> You have <%= @pending_applications.size %> pending application(s) across <%= @pending_applications.map(&:event).uniq.size %> event(s).
-    <div class="mt-3 text-center">
-      <% @pending_applications.group_by(&:event).each do |event, applications| %>
-        <div class="mb-3">
-          <strong><%= event.name %></strong> (<%= applications.size %> pending application(s)):
-          <ul class="list-unstyled mt-2">
-            <% applications.each do |application| %>
-              <li>
-                <strong><%= application.food_truck.name %></strong>
-                <%= link_to "View Application", event_event_application_path(event, application), class: "text-warning ms-2" %>
-              </li>
-            <% end %>
-          </ul>
+  <div class="text-center mb-4">
+    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#pendingApplicationsModal">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      You have <%= @pending_applications.size %> pending application(s)
+    </button>
+  </div>
+
+  <!-- Pending Applications Modal -->
+  <div class="modal fade" id="pendingApplicationsModal" tabindex="-1" aria-labelledby="pendingApplicationsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pendingApplicationsModalLabel">Pending Applications</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-      <% end %>
+        <div class="modal-body">
+          <% @pending_applications.group_by(&:event).each do |event, applications| %>
+            <div class="mb-4">
+              <h6 class="fw-bold"><%= event.name %></h6>
+              <ul class="list-unstyled mt-2">
+                <% applications.each do |application| %>
+                  <li class="mb-2">
+                    <%= link_to event_event_application_path(event, application), class: "text-decoration-none" do %>
+                      <div class="d-flex align-items-center">
+                        <i class="bi bi-truck me-2"></i>
+                        <%= application.food_truck.name %>
+                      </div>
+                    <% end %>
+                  </li>
+                <% end %>
+              </ul>
+            </div>
+          <% end %>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        </div>
+      </div>
     </div>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
 <% end %>
+  </div>
 
 
 <div class="container d-flex justify-content-center align-items-center mb-5">

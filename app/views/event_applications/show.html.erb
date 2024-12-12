@@ -114,7 +114,7 @@
                   <div class="mb-3">
                     <h5>
                       <%= rating.user.first_name %> <%= rating.user.last_name %> 
-                      <small class="text-muted">from <%= @event_application.event.name %></small>
+                      
                     </h5>
                     <p>
                       <% rating.rating.times do %>
@@ -124,8 +124,43 @@
                         <i class="bi bi-star text-warning"></i>
                       <% end %>
                     </p>
-                    <p><%= rating.review %></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <p class="mb-0"><%= rating.review %></p>
+                      <% if current_user == rating.user %>
+                        <button class="btn btn-sm btn-primary edit-review-btn" data-bs-toggle="modal" data-bs-target="#editReviewModal<%= rating.id %>">
+                          <i class="bi bi-pencil-square"></i> Edit
+                        </button>
+                      <% end %>
+                    </div>
                     <hr>
+                  </div>
+
+                  <!-- Edit Review Modal for each rating -->
+                  <div class="modal fade" id="editReviewModal<%= rating.id %>" tabindex="-1" aria-labelledby="editReviewModalLabel<%= rating.id %>" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">
+                        <div class="modal-header">
+                          <h5 class="modal-title" id="editReviewModalLabel<%= rating.id %>">Edit Review</h5>
+                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                          <%= form_with(model: rating, url: food_truck_food_truck_rating_path(@food_truck, rating), method: :patch, local: true) do |f| %>
+                            <div class="mb-3">
+                              <%= f.label :rating, "Rating (0-5)", class: "form-label" %>
+                              <%= f.number_field :rating, in: 0..5, step: 1, class: "form-control", required: true %>
+                            </div>
+                            <div class="mb-3">
+                              <%= f.label :review, "Review", class: "form-label" %>
+                              <%= f.text_area :review, rows: 4, class: "form-control", required: true %>
+                            </div>
+                            <div class="modal-footer">
+                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                              <%= f.submit "Update Review", class: "btn btn-primary" %>
+                            </div>
+                          <% end %>
+                        </div>
+                      </div>
+                    </div>
                   </div>
                 <% end %>
               <% else %>

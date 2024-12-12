@@ -29,14 +29,14 @@ class FoodTruck < ApplicationRecord
   private
 
   def validate_food_images_limit
-    if food_images.attached? && food_images.count > 2
-      errors.add(:food_images, "You can upload up to 2 food images.")
+    if food_images.attached? && food_images.count >10
+      errors.add(:food_images, "You can upload up to 10 food images.")
     end
   end
 
   def validate_menu_images_limit
-    if menu_images.attached? && menu_images.count > 3
-      errors.add(:menu_images, "You can upload up to 3 menu images.")
+    if menu_images.attached? && menu_images.count > 5
+      errors.add(:menu_images, "You can upload up to 5 menu images.")
     end
   end
 end
