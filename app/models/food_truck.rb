@@ -1,20 +1,18 @@
 class FoodTruck < ApplicationRecord
   belongs_to :user
   has_one_attached :permit
+  has_many_attached :menu_files
 
-  has_many_attached :menu_images
   has_many_attached :food_images
-
   has_many :event_applications, dependent: :destroy
   has_many :events, through: :event_applications
-
   has_many :food_truck_ratings, dependent: :destroy
 
   # Validations
   validates :name, presence: true
   validates :cuisine, presence: true
   validate :validate_food_images_limit
-  validate :validate_menu_images_limit
+  validate :menu_files_count_within_limit
 
   def food_image_description_for(index)
     food_image_descriptions[index.to_s]
@@ -34,9 +32,9 @@ class FoodTruck < ApplicationRecord
     end
   end
 
-  def validate_menu_images_limit
-    if menu_images.attached? && menu_images.count > 5
-      errors.add(:menu_images, "You can upload up to 5 menu images.")
+  def menu_files_count_within_limit
+    if menu_files.size > 3
+      errors.add(:menu_files, "You can upload up to 3 menu files.")
     end
   end
 end

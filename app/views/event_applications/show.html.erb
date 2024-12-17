@@ -1,259 +1,401 @@
 <!-- app/views/event_applications/show.html.erb -->
 
-<% content_for :title, "#{@event.name} - Application Details" %>
+<% content_for :title, "APPLICATION DETAILS" %>
+
+<!-- Flash Messages -->
+<% if flash[:notice] %>
+  <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+    <%= flash[:notice] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% elsif flash[:alert] %>
+  <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+    <%= flash[:alert] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
 
 <div class="container py-5">
   <!-- Top Section with Heading and Icon -->
   <div class="mb-4 text-center">
-  <h2 class="fw-bold text-dark d-flex align-items-center justify-content-center">
-    <i class="bi bi-truck me-2"></i>
-    <%= @food_truck.name %> - Application Details
-  </h2>
-  <hr class="my-4">
+    <h2 class="fw-bold text-dark">
+      <i class="bi bi-info-circle me-2"></i> APPLICATION DETAILS
+    </h2>
+    <div class="mb-3">
+      <div class="d-flex justify-content-center align-items-center gap-2">
+        <%= link_to "Approve Application", approve_event_event_application_path(@event_application), method: :patch, data: { confirm: "Are you sure you want to approve this application?" }, class: "btn btn-success" %>
+        <%= link_to "Reject Application", reject_event_event_application_path(@event_application), method: :patch, data: { confirm: "Are you sure you want to reject this application?" }, class: "btn btn-danger" %>
+      </div>
+    </div>
+    <hr class="my-4">
+  </div>
 
-  
+  <!-- Main Content Row -->
+  <div class="row g-4 d-flex align-items-stretch">
+    <!-- Left Column: Food Truck Info -->
+     <div class="col-lg-6 d-flex flex-column">
+      <!-- Food Truck Information Card -->
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <!-- Enlarged Food Truck Name -->
+          <h3 class="fw-bold text-uppercase mb-3">
+            <i class="bi bi-truck me-2"></i><%= @event_application.food_truck.name %>
+          </h3>
+          <div class="mb-3 d-flex align-items-center">
+  <i class="bi bi-telephone-fill me-2"></i>
+  <span><%= @event_application.food_truck.user.phone_number %></span>
+</div>
 
-  <div class="col text-center mt-3 d-flex justify-content-center">
-    <% if @event.accepting_applications && @event.approved_applications_count < @event.foodtruck_amount %>
-      <%= button_to "Approve", approve_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-success me-2 btn-lg", data: { confirm: "Are you sure you want to approve this application?" }, aria: { label: "Approve Application" } %>
-      <%= link_to "Back to Applications", event_event_applications_path(@event), class: "btn btn-secondary btn-lg me-2" %>
-      <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger me-2 btn-lg", data: { confirm: "Are you sure you want to reject this application?" }, aria: { label: "Reject Application" } %>
-    <% elsif @event_application.status.in?(%w[pending approved]) %>
-      <%= link_to "Back to Applications", event_event_applications_path(@event), class: "btn btn-secondary btn-lg me-2" %>
-      <%= button_to "Reject", reject_event_event_application_path(@event, @event_application), method: :patch, class: "btn btn-danger me-2 btn-lg", data: { confirm: "Are you sure you want to reject this application?" }, aria: { label: "Reject Application" } %>
+<div class="mb-3 d-flex align-items-center">
+  <i class="bi bi-envelope-fill me-2"></i>
+  <span><%= @event_application.food_truck.user.email %></span>
+</div>
+
+          <!-- Average Rating and Review Count -->
+          <div class="mb-3">
+            <% avg_rating = @event_application.food_truck.food_truck_ratings.average(:rating).to_f.round(1) %>
+            <% rating_count = @event_application.food_truck.food_truck_ratings.count %>
+            <span class="me-2">
+              <strong>Rating:</strong> <%= avg_rating %> / 5
+            </span>
+            <span>
+              <strong>Reviews:</strong> <%= rating_count %>
+            </span>
+          </div>
+
+          <!-- Star Rating Display -->
+          <div class="mb-3">
+            <% 5.times do |i| %>
+              <% if i < avg_rating %>
+                <i class="bi bi-star-fill text-warning"></i>
+              <% elsif i < avg_rating + 0.5 %>
+                <i class="bi bi-star-half text-warning"></i>
+              <% else %>
+                <i class="bi bi-star text-warning"></i>
+              <% end %>
+            <% end %>
+          </div>
+
+          <!-- Cuisine Information -->
+          <div class="mb-3">
+            <h5 class="fw-semibold text-dark d-flex align-items-center">
+              <i class="bi bi-list me-2 fs-6"></i> Cuisine
+            </h5>
+            <p>
+              <%= @event_application.food_truck.cuisine %>
+              <% if @event_application.food_truck.cuisine == 'Other' && @event_application.food_truck.other_cuisine.present? %>
+                (<%= @event_application.food_truck.other_cuisine %>)
+              <% end %>
+            </p>
+          </div>
+
+          <!-- Enhanced Food Images with Single Modal -->
+          <div class="mb-4 position-relative">
+            <h5 class="fw-semibold text-dark d-flex align-items-center">
+              <i class="bi bi-image me-2 fs-6"></i> Food Images
+            </h5>
+            <% if @event_application.food_truck.food_images.attached? %>
+              <% first_image = @event_application.food_truck.food_images.first %>
+              <%= link_to '#foodImagesGalleryModal', data: { bs_toggle: "modal" } do %>
+                <%= image_tag url_for(first_image), class: 'img-fluid rounded prominent-image', style: 'width: 100%; height: auto; object-fit: cover;' %>
+              <% end %>
+
+              <% additional_images_count = @event_application.food_truck.food_images.count - 1 %>
+              <% if additional_images_count > 0 %>
+                <span class="position-absolute top-0 end-0 m-2 btn btn-dark btn-sm rounded-circle opacity-75">
+                  +<%= additional_images_count %>
+                </span>
+              <% end %>
+
+              <!-- Single Modal for Gallery and Main Image View -->
+              <div class="modal fade" id="foodImagesGalleryModal" tabindex="-1" aria-labelledby="foodImagesGalleryModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-scrollable modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="foodImagesGalleryModalLabel">Food Image Gallery</h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                      <!-- Main Large Image Display -->
+                      <div class="text-center mb-4">
+                        <img id="mainGalleryImage" src="<%= url_for(first_image) %>" alt="Main Image" class="img-fluid rounded" style="max-height: 1000px; object-fit: contain;" />
+                      </div>
+
+                      <!-- Thumbnails -->
+                      <div class="row g-3">
+                        <% @event_application.food_truck.food_images.each do |image| %>
+                          <div class="col-6 col-md-4">
+                            <a href="#" class="d-block gallery-thumbnail-trigger" data-image_url="<%= url_for(image) %>">
+                              <%= image_tag url_for(image), class: 'img-fluid rounded', style: 'cursor: pointer;' %>
+                            </a>
+                          </div>
+                        <% end %>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- JavaScript to handle thumbnail clicks -->
+              <script>
+                document.addEventListener('DOMContentLoaded', function() {
+                  var thumbnailTriggers = document.querySelectorAll('.gallery-thumbnail-trigger');
+                  var mainGalleryImage = document.getElementById('mainGalleryImage');
+
+                  thumbnailTriggers.forEach(function(trigger) {
+                    trigger.addEventListener('click', function(event) {
+                      event.preventDefault();
+                      var imageUrl = this.dataset.image_url;
+                      mainGalleryImage.src = imageUrl;
+                    });
+                  });
+                });
+              </script>
+            <% else %>
+              <p><em>No food images uploaded.</em></p>
+            <% end %>
+          </div>
+
+          <ul class="nav nav-tabs mb-4 justify-content-center" id="applicationTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+              <button class="nav-link active" id="menu-tab" data-bs-toggle="tab" data-bs-target="#menu" type="button" role="tab" aria-controls="menu" aria-selected="true">
+                <i class="bi bi-list-ul me-2"></i> Menu
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="ratings-tab" data-bs-toggle="tab" data-bs-target="#ratings" type="button" role="tab" aria-controls="ratings" aria-selected="false">
+                <i class="bi bi-star me-2"></i> Ratings
+              </button>
+            </li>
+            <li class="nav-item" role="presentation">
+              <button class="nav-link" id="permit-tab" data-bs-toggle="tab" data-bs-target="#permit" type="button" role="tab" aria-controls="permit" aria-selected="false">
+                <i class="bi bi-file-earmark-lock me-2"></i> Permit
+              </button>
+            </li>
+          </ul>
+
+          <!-- Tabs Content -->
+          <div class="tab-content" id="applicationTabsContent">
+            <!-- Menu Tab -->
+<div class="tab-pane fade show active" id="menu" role="tabpanel" aria-labelledby="menu-tab">
+  <% if @event_application.food_truck.menu_files.attached? %>
+    <div class="row">
+      <% @event_application.food_truck.menu_files.each_with_index do |file, index| %>
+        <div class="col-md-6 mb-3">
+          <div class="d-flex align-items-center">
+            <% if file.content_type.start_with?('image/') %>
+              <!-- Image file: show thumbnail and modal -->
+              <a href="#" data-bs-toggle="modal" data-bs-target="#menuModal-<%= index %>">
+                <%= image_tag url_for(file), class: 'img-thumbnail me-2', style: 'width: 100px; height: 100px; object-fit: cover; cursor: pointer;' %>
+              </a>
+              <p class="mb-0"><strong><%= file.filename.to_s %></strong></p>
+
+              <!-- Individual Image Modal for this file -->
+              <div class="modal fade" id="menuModal-<%= index %>" tabindex="-1" aria-labelledby="menuModalLabel-<%= index %>" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered modal-lg">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h5 class="modal-title" id="menuModalLabel-<%= index %>"><%= file.filename.to_s %></h5>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center">
+                      <img src="<%= url_for(file) %>" alt="<%= file.filename.to_s %>" class="img-fluid rounded" style="max-height: 1000px; object-fit: contain;">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <% elsif file.content_type == 'application/pdf' %>
+              <!-- PDF file: show filename and download button -->
+              <i class="bi bi-file-earmark-pdf text-danger me-2 fs-4"></i>
+              <p class="mb-0"><strong><%= file.filename.to_s %></strong></p>
+              <%= link_to 'Download', url_for(file), class: 'btn btn-sm btn-outline-primary ms-2', download: file.filename.to_s %>
+            <% else %>
+              <!-- Other non-image, non-PDF files -->
+              <i class="bi bi-file-earmark text-primary me-2 fs-4"></i>
+              <p class="mb-0"><strong><%= file.filename.to_s %></strong></p>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <p><em>No menu files uploaded.</em></p>
+  <% end %>
+</div>
+
+
+            <!-- Ratings Tab -->
+<div class="tab-pane fade" id="ratings" role="tabpanel" aria-labelledby="ratings-tab">
+  <div class="mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="fw-semibold text-dark d-flex align-items-center m-0">
+        <i class="bi bi-star me-2 fs-6"></i> All Ratings
+      </h5>
+      <!-- Add Review Button -->
+      <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addReviewModal">
+        Add Review
+      </button>
+    </div>
+
+    <% if @event_application.food_truck.food_truck_ratings.any? %>
+      <ul class="list-group">
+        <% @event_application.food_truck.food_truck_ratings.order(created_at: :desc).each do |rating| %>
+          <li class="list-group-item">
+            <div class="d-flex justify-content-between">
+              <div>
+                <% 5.times do |i| %>
+                  <% if i < rating.rating %>
+                    <i class="bi bi-star-fill text-warning"></i>
+                  <% else %>
+                    <i class="bi bi-star text-warning"></i>
+                  <% end %>
+                <% end %>
+                <span class="ms-2"><strong><%= rating.user.first_name %></strong></span>
+              </div>
+              <small><%= time_ago_in_words(rating.created_at) %> ago</small>
+            </div>
+            <% if rating.review.present? %>
+              <p class="mt-2"><%= rating.review %></p>
+            <% end %>
+
+            <!-- Edit/Delete buttons if current user owns this review -->
+            <% if rating.user == current_user %>
+              <div class="d-flex gap-2 mt-2">
+               
+                <!-- Delete button - destroys review -->
+                <%= button_to "Delete",
+            food_truck_food_truck_rating_path(@event_application.food_truck, rating, event_application_id: @event_application.id),
+            method: :delete,
+            data: { confirm: "Are you sure you want to delete this review?" },
+            class: "btn btn-sm btn-danger" %>
+
+              </div>
+            <% end %>
+          </li>
+        <% end %>
+      </ul>
     <% else %>
-      <%= link_to "Back to Applications", event_event_applications_path(@event), class: "btn btn-secondary btn-lg" %>
+      <p><em>No ratings available.</em></p>
     <% end %>
+  </div>
+</div>
+
+<!-- Add Review Modal -->
+<div class="modal fade" id="addReviewModal" tabindex="-1" aria-labelledby="addReviewModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addReviewModalLabel">Add a Review</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <%= form_with model: FoodTruckRating.new, url: food_truck_food_truck_ratings_path(@event_application.food_truck), local: true, data: { turbo: "false" } do |f| %>
+          <%= f.hidden_field :event_application_id, value: @event_application.id %>
+          <div class="mb-3">
+            <label class="form-label"><strong>Rating:</strong></label>
+            <div>
+              <% (1..5).each do |star| %>
+                <%= f.radio_button :rating, star, id: "rating_#{star}" %>
+                <label for="rating_<%= star %>" class="me-2">
+                  <% star.times do %>
+                    <i class="bi bi-star-fill text-warning"></i>
+                  <% end %>
+                </label>
+              <% end %>
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <%= f.label :review, "Comment", class: "form-label" %>
+            <%= f.text_area :review, class: "form-control", rows: 4 %>
+          </div>
+
+          <div class="text-end">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+            <%= f.submit "Submit Review", class: "btn btn-primary" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
   </div>
 </div>
 
 
 
- 
-  
-  <!-- Main Content Row -->
-  <div class="row mt-5">
-    <!-- Left Column: Event Info and Food Truck Info -->
-    <div class="col-lg-6 mb-4">
-      <!-- Application Details Card -->
-      <div class="card mb-4 shadow-sm">
-        
-          <h5 class="card-title text-left ps-3 pt-3 mb-0"><%= @event_application.event.name %></h5>
-        
-        <div class="card-body">
-          <!-- Event Information -->
-          <p class="card-text">
-            
-            <strong>Address:</strong> <%= @event.address %><br>
-            <strong>Dates:</strong> <%= @event.start_date.strftime("%B %d, %Y") %> - <%= @event.end_date.strftime("%B %d, %Y") %><br>
-            <strong>Food Trucks Needed:</strong> <%= @event.foodtruck_amount %>
-          </p>
+            <!-- Permit Tab -->
+<div class="tab-pane fade" id="permit" role="tabpanel" aria-labelledby="permit-tab">
+  <% if @event_application.food_truck.permit.attached? %>
+    <div class="d-flex align-items-center">
+      <% if @event_application.food_truck.permit.content_type.start_with?('image/') %>
+        <!-- Permit as an image with its own modal -->
+        <a href="#" data-bs-toggle="modal" data-bs-target="#permitModal">
+          <%= image_tag url_for(@event_application.food_truck.permit), class: 'img-thumbnail me-2', style: 'width: 100px; height: 100px; object-fit: cover; cursor: pointer;' %>
+        </a>
+        <p class="mb-0"><strong><%= @event_application.food_truck.permit.filename.to_s %></strong></p>
 
-          <!-- Application Status -->
-          
-        </div>
-      </div>
-
-      <!-- Accordion Section: Food Truck Information -->
-      <div class="accordion shadow-sm" id="applicationAccordion">
-        <div class="accordion-item">
-          
-          <div class="d-flex justify-content-between align-items-center">
-            <h5 class="mb-3 p-2 d-flex align-items-center">
-              <i class="bi bi-truck me-2"></i> <%= @food_truck.name %> Profile
-            </h5>
-            <span class="mb-3 p-2">
-              <strong>Application Status: </strong>
-              <% case @event_application.status %>
-              <% when 'pending' %>
-                <span class="badge bg-warning text-dark">Pending</span>
-              <% when 'approved' %>
-                <span class="badge bg-success">Approved</span>
-              <% when 'rejected' %>
-                <span class="badge bg-danger">Rejected</span>
-              <% else %>
-                <span class="badge bg-secondary"><%= @event_application.status.capitalize %></span>
-              <% end %>
-            </span>
-          </div>
-        </div>
-        <!-- Food Truck Information -->
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingOne">
-            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-              <i class="bi bi-info-circle me-2"></i> Food Truck Information
-            </button>
-          </h2>
-          <div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#applicationAccordion">
-            <div class="accordion-body">
-              <p><strong>Cuisine:</strong> <%= @event_application.food_truck.cuisine %></p>
-              
-              <% if @event_application.food_truck.permit.attached? %>
-                <div class="mb-3">
-                  <h5>Permit</h5>
-                  <%= image_tag url_for(@event_application.food_truck.permit), class: 'img-fluid img-thumbnail', alt: 'Permit', style: 'max-width: 300px; height: auto;' %>
-                </div>
-              <% else %>
-                <p><em>No permit uploaded.</em></p>
-              <% end %>
+        <!-- Modal for permit image -->
+        <div class="modal fade" id="permitModal" tabindex="-1" aria-labelledby="permitModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="permitModalLabel"><%= @event_application.food_truck.permit.filename.to_s %></h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+              </div>
+              <div class="modal-body text-center">
+                <img src="<%= url_for(@event_application.food_truck.permit) %>" alt="Permit Image" class="img-fluid rounded" style="max-height: 1000px; object-fit: contain;">
+              </div>
             </div>
           </div>
         </div>
+      <% elsif @event_application.food_truck.permit.content_type == 'application/pdf' %>
+        <!-- PDF permit: show filename and download button -->
+        <i class="bi bi-file-earmark-pdf text-danger me-2 fs-4"></i>
+        <p class="mb-0"><strong><%= @event_application.food_truck.permit.filename.to_s %></strong></p>
+        <%= link_to 'Download', url_for(@event_application.food_truck.permit), class: 'btn btn-sm btn-outline-primary ms-2', download: @event_application.food_truck.permit.filename.to_s %>
+      <% else %>
+        <!-- Other non-image, non-PDF files -->
+        <i class="bi bi-file-earmark-lock text-primary me-2 fs-4"></i>
+        <p class="mb-0"><strong><%= @event_application.food_truck.permit.filename.to_s %></strong></p>
+      <% end %>
+    </div>
+  <% else %>
+    <p><em>No permit uploaded.</em></p>
+  <% end %>
+</div>
 
-        <!-- Food Truck Reviews -->
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingTwo">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-              <i class="bi bi-star me-2"></i> Food Truck Reviews
-            </button>
-          </h2>
-          <div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#applicationAccordion">
-            <div class="accordion-body">
-              <% if @food_truck.food_truck_ratings.any? %>
-                <% @food_truck.food_truck_ratings.each do |rating| %>
-                  <div class="mb-3">
-                    <h5>
-                      <%= rating.user.first_name %> <%= rating.user.last_name %> 
-                      
-                    </h5>
-                    <p>
-                      <% rating.rating.times do %>
-                        <i class="bi bi-star-fill text-warning"></i>
-                      <% end %>
-                      <% (5 - rating.rating).times do %>
-                        <i class="bi bi-star text-warning"></i>
-                      <% end %>
-                    </p>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <p class="mb-0"><%= rating.review %></p>
-                      <% if current_user == rating.user %>
-                        <button class="btn btn-sm btn-primary edit-review-btn" data-bs-toggle="modal" data-bs-target="#editReviewModal<%= rating.id %>">
-                          <i class="bi bi-pencil-square"></i> Edit
-                        </button>
-                      <% end %>
-                    </div>
-                    <hr>
-                  </div>
-
-                  <!-- Edit Review Modal for each rating -->
-                  <div class="modal fade" id="editReviewModal<%= rating.id %>" tabindex="-1" aria-labelledby="editReviewModalLabel<%= rating.id %>" aria-hidden="true">
-                    <div class="modal-dialog">
-                      <div class="modal-content">
-                        <div class="modal-header">
-                          <h5 class="modal-title" id="editReviewModalLabel<%= rating.id %>">Edit Review</h5>
-                          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div class="modal-body">
-                          <%= form_with(model: rating, url: food_truck_food_truck_rating_path(@food_truck, rating), method: :patch, local: true) do |f| %>
-                            <div class="mb-3">
-                              <%= f.label :rating, "Rating (0-5)", class: "form-label" %>
-                              <%= f.number_field :rating, in: 0..5, step: 1, class: "form-control", required: true %>
-                            </div>
-                            <div class="mb-3">
-                              <%= f.label :review, "Review", class: "form-label" %>
-                              <%= f.text_area :review, rows: 4, class: "form-control", required: true %>
-                            </div>
-                            <div class="modal-footer">
-                              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                              <%= f.submit "Update Review", class: "btn btn-primary" %>
-                            </div>
-                          <% end %>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                <% end %>
-              <% else %>
-                <p class="text-muted">No reviews yet for this food truck.</p>
-              <% end %>
-            </div>
-          </div>
-        </div>
-
-        <!-- Food Truck Menu -->
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingThree">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-              <i class="bi bi-list me-2"></i> Food Truck Menu
-            </button>
-          </h2>
-          <div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#applicationAccordion">
-            <div class="accordion-body">
-              <% if @event_application.food_truck.menu_images.any? %>
-                <div class="row">
-                  <% @event_application.food_truck.menu_images.each do |image| %>
-                    <div class="col-md-4 mb-3">
-                      <div class="card">
-                        <%= image_tag url_for(image), class: 'card-img-top img-fluid', alt: 'Menu Image', style: 'height: 200px; object-fit: cover;' %>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-              <% else %>
-                <p class="text-muted">No menu images available for this food truck.</p>
-              <% end %>
-            </div>
-          </div>
-        </div>
-
-        <!-- Food Images and Descriptions -->
-        <div class="accordion-item">
-          <h2 class="accordion-header" id="headingFour">
-            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseFour" aria-expanded="false" aria-controls="collapseFour">
-              <i class="bi bi-images me-2"></i> Food Images & Descriptions
-            </button>
-          </h2>
-          <div id="collapseFour" class="accordion-collapse collapse" aria-labelledby="headingFour" data-bs-parent="#applicationAccordion">
-            <div class="accordion-body">
-              <% if @event_application.food_truck.food_images.any? %>
-                <div class="row">
-                  <% @event_application.food_truck.food_images.each_with_index do |image, index| %>
-                    <div class="col-md-4 mb-3">
-                      <div class="card">
-                        <%= image_tag url_for(image), class: 'card-img-top img-fluid', alt: 'Food Image', style: 'height: 200px; object-fit: cover;' %>
-                        <div class="card-body">
-                          <p class="card-text">
-                            <strong>Description:</strong> 
-                            <%= @event_application.food_truck.food_image_descriptions[image.id.to_s].presence || "No description provided." %>
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  <% end %>
-                </div>
-              <% else %>
-                <p class="text-muted">No food images uploaded for this food truck.</p>
-              <% end %>
-            </div>
           </div>
         </div>
       </div>
-
-     
-        <div class="card mt-4">
-          <div class="card-header">
-            <h5>Leave a Review and Rating</h5>
-          </div>
-          <div class="card-body">
-            <%= form_with model: [@food_truck, @food_truck.food_truck_ratings.build], url: food_truck_food_truck_ratings_path(@food_truck), method: :post, local: true do |f| %>
-              <div class="mb-3">
-                <%= f.label :rating, "Rating (0-5)", class: "form-label" %>
-                <%= f.number_field :rating, in: 0..5, step: 1, class: "form-control", required: true %>
-              </div>
-              <div class="mb-3">
-                <%= f.label :review, "Review", class: "form-label" %>
-                <%= f.text_area :review, rows: 4, class: "form-control", required: true %>
-              </div>
-              <%= f.submit "Submit Review", class: "btn btn-primary" %>
-            <% end %>
-          </div>
-        </div>
-      
     </div>
 
     <!-- Right Column: Chat Section -->
-    <div class="col-lg-6 mb-4">
-      <div class="card shadow-sm">
+     <div class="col-lg-6 d-flex flex-column">
+     <!-- Event Details Section -->
+<!-- Event Details Section -->
+<div class="card mb-4">
+  <div class="card-body">
+    <h5 class="card-title d-flex align-items-center">
+      <i class="bi bi-calendar2-event me-2"></i> Event Details
+    </h5>
+    <hr>
+    <p class="mb-1">
+      <strong>Name:</strong> <%= @event.name %>
+    </p>
+    <p class="mb-1">
+      <strong>Dates:</strong> 
+      <%= @event.start_date.strftime("%B %d, %Y") %> 
+      <% if @event.end_date.present? && @event.end_date != @event.start_date %>
+        - <%= @event.end_date.strftime("%B %d, %Y") %>
+      <% end %>
+    </p>
+    <p class="mb-0">
+      <strong>Address:</strong> <%= @event.address %>
+    </p>
+  </div>
+</div>
+
+
+      <div class="card shadow-sm h-60">
         <div class="card-header bg-dark text-white">
           <h5 class="mb-0 d-flex align-items-center">
             <i class="bi bi-chat-dots me-2"></i> Chat
@@ -272,3 +414,78 @@
     </div>
   </div>
 </div>
+
+<!-- JavaScript for Bootstrap Tabs -->
+<script>
+  var triggerTabList = [].slice.call(document.querySelectorAll('#applicationTabs button'))
+  triggerTabList.forEach(function (triggerEl) {
+    var tabTrigger = new bootstrap.Tab(triggerEl)
+    triggerEl.addEventListener('click', function (event) {
+      event.preventDefault()
+      tabTrigger.show()
+    })
+  })
+</script>
+
+<!-- CSS for Consistent Styling -->
+<style>
+  /* Adjust icon sizes within section titles */
+  h3 .bi,
+  h5 .bi {
+    font-size: 1em;
+  }
+
+  /* Responsive image and icon sizes */
+  @media (max-width: 767.98px) {
+    .img-thumbnail {
+      width: 100px !important;
+      height: 100px !important;
+    }
+    .bi-file-earmark-lock, .bi-egg-fried, .bi-list-ul, .bi-star, .bi-star-fill {
+      font-size: 1.2em !important;
+    }
+  }
+
+  /* Adjust filename text alignment and size */
+  .d-flex.align-items-center p {
+    margin: 0;
+    font-size: 14px;
+  }
+
+  /* Chat Section Styling */
+  .border.rounded.p-3 {
+    background-color: #f8f9fa;
+  }
+
+  .list-group-item {
+    border: none;
+    border-bottom: 1px solid #dee2e6;
+  }
+
+  .list-group-item:last-child {
+    border-bottom: none;
+  }
+
+  /* Application Actions Styling */
+  .d-flex.gap-2 .btn {
+    min-width: 120px;
+  }
+
+  /* Overlay Badge Styling */
+  .overlay-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: rgba(0, 0, 0, 0.6);
+    color: #fff;
+    padding: 5px 10px;
+    border-radius: 50%;
+    font-size: 0.9em;
+    cursor: pointer;
+  }
+
+  /* Ensure the prominent image has a pointer cursor */
+  .prominent-image {
+    cursor: pointer;
+  }
+</style>

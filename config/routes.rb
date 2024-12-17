@@ -36,6 +36,11 @@ Rails.application.routes.draw do
 
 # Routes for Food Trucks
 resources :food_trucks do
+  member do
+    delete :remove_permit
+    delete :remove_menu_file
+    delete :remove_food_image
+  end
   # Nested routes for Food Truck Ratings
   resources :food_truck_ratings, only: [:create, :edit, :update, :destroy]
 end

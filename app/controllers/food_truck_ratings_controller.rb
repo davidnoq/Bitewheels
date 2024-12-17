@@ -9,32 +9,50 @@ class FoodTruckRatingsController < ApplicationController
     def create
       @food_truck_rating = @food_truck.food_truck_ratings.build(food_truck_rating_params)
       @food_truck_rating.user = current_user
-  
+    
       if @food_truck_rating.save
-        redirect_to food_truck_path(@food_truck), notice: "Rating and review submitted successfully."
+        # Retrieve event_application_id from params
+        event_application_id = params[:food_truck_rating][:event_application_id]
+        @event_application = EventApplication.find(event_application_id)
+        
+        redirect_to event_event_application_path(@event_application.event, @event_application), notice: "Rating and review submitted successfully."
       else
-        redirect_to food_truck_path(@food_truck), alert: "Failed to submit rating and review."
+        # If failure, also redirect to event_application page
+        event_application_id = params[:food_truck_rating][:event_application_id]
+        @event_application = EventApplication.find(event_application_id)
+    
+        redirect_to event_event_application_path(@event_application.event, @event_application), alert: "Failed to submit rating and review."
       end
     end
+    
   
     # GET /food_trucks/:food_truck_id/food_truck_ratings/:id/edit
     def edit
-      # Authorization (if using Pundit or similar)
+      
+      
     end
   
     # PATCH/PUT /food_trucks/:food_truck_id/food_truck_ratings/:id
     def update
       if @food_truck_rating.update(food_truck_rating_params)
-        redirect_to food_truck_path(@food_truck), notice: "Rating and review updated successfully."
+        # Retrieve event_application_id from params
+        event_application_id = params[:food_truck_rating][:event_application_id]
+        @event_application = EventApplication.find(event_application_id)
+    
+        redirect_to event_event_application_path(@event_application.event, @event_application), notice: "Rating and review updated successfully."
       else
+        # If update fails, re-render edit
         render :edit, status: :unprocessable_entity
       end
     end
-  
     # DELETE /food_trucks/:food_truck_id/food_truck_ratings/:id
     def destroy
+      # Store the event_application_id from params before destroying the rating
+      event_application_id = params[:event_application_id]
       @food_truck_rating.destroy
-      redirect_to food_truck_path(@food_truck), notice: "Rating and review deleted successfully."
+      @event_application = EventApplication.find(event_application_id)
+      
+      redirect_to event_event_application_path(@event_application.event, @event_application), notice: "Rating and review deleted successfully."
     end
   
     private

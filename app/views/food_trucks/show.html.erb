@@ -42,16 +42,16 @@
 
         <!-- Food Truck Information -->
         <div class="mb-3 mt-3">
-          <%= content_tag :h5, class: 'fw-semibold text-dark' do %>
+          <h5 class="fw-semibold text-dark">
             <i class="bi bi-truck me-2"></i> Name
-          <% end %>
+          </h5>
           <p><%= @food_truck.name %></p>
         </div>
 
         <div class="mb-3">
-          <%= content_tag :h5, class: 'fw-semibold text-dark d-flex align-items-center' do %>
-            <i class="bi bi-list me-2"></i> Cuisine
-          <% end %>
+          <h5 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-list me-2 fs-6"></i> Cuisine
+          </h5>
           <p>
             <%= @food_truck.cuisine %>
             <% if @food_truck.cuisine == 'Other' && @food_truck.other_cuisine.present? %>
@@ -60,46 +60,67 @@
           </p>
         </div>
 
-        <!-- Permit Image -->
+        <!-- Permit File Section -->
         <div class="mb-3">
-          <%= content_tag :h5, class: 'fw-semibold text-dark d-flex align-items-center' do %>
-            <i class="bi bi-file-earmark-text me-2"></i> Permit Image
-          <% end %>
+          <h5 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-file-earmark me-2 fs-6"></i> Permit File
+          </h5>
           <% if @food_truck.permit.attached? %>
-            <%= image_tag url_for(@food_truck.permit), class: 'img-fluid img-thumbnail', alt: 'Permit Image', style: 'max-width: 300px; height: 100px;' %>
+            <div class="row align-items-center mb-3">
+              <div class="col-auto">
+                <% if @food_truck.permit.content_type.start_with?('image/') %>
+                  <%= image_tag url_for(@food_truck.permit), class: 'img-thumbnail', style: 'width: 150px; height: 150px; object-fit: cover;' %>
+                <% else %>
+                  <i class="bi bi-file-earmark text-primary fs-6"></i>
+                <% end %>
+              </div>
+              <div class="col">
+                <p class="mb-1"><strong>Filename:</strong> <%= @food_truck.permit.filename.to_s %></p>
+              </div>
+            </div>
           <% else %>
             <p><em>No permit uploaded.</em></p>
           <% end %>
         </div>
 
-        <!-- Menu Images -->
+        <!-- Menu Files Section -->
         <div class="mb-3">
-          <%= content_tag :h5, class: 'fw-semibold text-dark d-flex align-items-center' do %>
-            <i class="bi bi-card-image me-2"></i> Menu Images
-          <% end %>
-          <% if @food_truck.menu_images.any? %>
+          <h5 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-file-earmark me-2 fs-6"></i> Menu Files
+          </h5>
+          <% if @food_truck.menu_files.attached? %>
             <div class="row">
-              <% @food_truck.menu_images.each do |menu_image| %>
-                <div class="col-md-4 mb-2">
-                  <%= image_tag url_for(menu_image), class: 'img-fluid img-thumbnail', alt: 'Menu Image', style: 'max-width: 150px; height: 100px;' %>
+              <% @food_truck.menu_files.each do |file| %>
+                <div class="col-md-4 mb-3">
+                  <div class="d-flex align-items-center">
+                    <% if file.content_type.start_with?('image/') %>
+                      <%= image_tag url_for(file), class: 'img-thumbnail me-2', style: 'width: 150px; height: 150px; object-fit: cover;' %>
+                    <% else %>
+                      <i class="bi bi-file-earmark text-primary fs-6"></i>
+                    <% end %>
+                    <p class="mb-1"><strong>Filename:</strong> <%= file.filename.to_s %></p>
+                  </div>
                 </div>
               <% end %>
             </div>
           <% else %>
-            <p><em>No menu images available.</em></p>
+            <p><em>No menu files uploaded.</em></p>
           <% end %>
         </div>
 
-        <!-- Food Images -->
+        <!-- Food Images Section -->
         <div class="mb-3">
-          <%= content_tag :h5, class: 'fw-semibold text-dark d-flex align-items-center' do %>
-            <i class="bi bi-egg-fried me-2"></i> Food Images
-          <% end %>
-          <% if @food_truck.food_images.any? %>
+          <h5 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-egg-fried me-2 fs-6"></i> Food Images
+          </h5>
+          <% if @food_truck.food_images.attached? %>
             <div class="row">
-              <% @food_truck.food_images.each do |food_image| %>
-                <div class="col-md-4 mb-2">
-                  <%= image_tag url_for(food_image), class: 'img-fluid img-thumbnail', alt: 'Food Image', style: 'max-width: 150px; height: 100px;' %>
+              <% @food_truck.food_images.each do |image| %>
+                <div class="col-md-4 mb-3">
+                  <div class="d-flex align-items-center">
+                    <%= image_tag url_for(image), class: 'img-thumbnail me-2', style: 'width: 150px; height: 150px; object-fit: cover;' %>
+                    <p class="mb-1"><strong>Filename:</strong> <%= image.filename.to_s %></p>
+                  </div>
                 </div>
               <% end %>
             </div>
@@ -145,3 +166,31 @@
       })
   })()
 </script>
+
+<!-- CSS for Preventing Overlap and Adjusting Icon Sizes -->
+<style>
+  /* Ensure icons within h5 are smaller */
+  h5 .bi {
+    font-size: 1em; /* Adjust as needed */
+  }
+
+  /* Adjust spacing between image/icon and text */
+  .img-thumbnail {
+    margin-right: 10px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 767.98px) {
+    .img-thumbnail, .bi-file-earmark, .bi-egg-fried, .bi-list {
+      width: 100px !important;
+      height: 100px !important;
+      font-size: 0.8em; /* Smaller icons on mobile */
+    }
+  }
+
+  /* Adjust filename text alignment and size */
+  .d-flex.align-items-center p {
+    margin: 0;
+    font-size: 14px;
+  }
+</style>

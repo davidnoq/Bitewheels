@@ -2,7 +2,7 @@
 
 class FoodTrucksController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_food_truck, only: [:show, :edit, :update, :destroy, :remove_permit]
+  before_action :set_food_truck, only: [:show, :edit, :update, :destroy, :remove_menu_file, :remove_permit]
   after_action :verify_authorized, except: [:index]
   after_action :verify_policy_scoped, only: [:index]
 
@@ -40,8 +40,10 @@ class FoodTrucksController < ApplicationController
 
   # GET /food_trucks/1/edit
   def edit
+    @food_truck = current_user.food_trucks.find(params[:id])
     authorize @food_truck
   end
+  
 
   # POST /food_trucks
   def create
@@ -60,9 +62,43 @@ class FoodTrucksController < ApplicationController
     end
   end
   
-  
-  
+  # app/controllers/food_trucks_controller.rb
 
+def remove_permit
+  authorize @food_truck
+  if @food_truck.permit.attached?
+    @food_truck.permit.purge
+    redirect_to edit_food_truck_path(@food_truck), notice: "Permit was successfully removed."
+  else
+    redirect_to edit_food_truck_path(@food_truck), alert: "No permit found to remove."
+  end
+end
+
+def remove_menu_file
+  file = @food_truck.menu_files.attachments.find_by(id: params[:file_id])
+
+  if file && file.record == @food_truck && file.name == "menu_files"
+    authorize @food_truck
+    file.purge
+    redirect_to edit_food_truck_path(@food_truck), notice: "Menu file was successfully removed."
+  else
+    raise ActiveRecord::RecordNotFound, "Attachment not found for this Food Truck"
+  end
+end
+  
+def remove_food_image
+  image = @food_truck.food_images.attachments.find_by(id: params[:image_id])
+
+  if image && image.record == @food_truck && image.name == "food_images"
+    authorize @food_truck
+    image.purge
+    redirect_to edit_food_truck_path(@food_truck), notice: "Food image was successfully removed."
+  else
+    raise ActiveRecord::RecordNotFound, "Attachment not found for this Food Truck"
+  end
+end
+  
+  
   # PATCH/PUT /food_trucks/1
   def update
     authorize @food_truck
@@ -105,6 +141,15 @@ class FoodTrucksController < ApplicationController
 
   # Only allow a list of trusted parameters through.
   def food_truck_params
-    params.require(:food_truck).permit(:name, :permit, :cuisine, :number_of_food_trucks, menu_images: [], food_images: [], food_image_descriptions: {})
+    params.require(:food_truck).permit(
+      :name, 
+      :permit, 
+      :cuisine, 
+      
+      :number_of_food_trucks, 
+      menu_files: [], 
+      food_images: [], 
+      food_image_descriptions: {}
+    )
   end
 end
