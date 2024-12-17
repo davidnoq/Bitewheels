@@ -1,58 +1,61 @@
-<!-- app/views/shared/_top_navbar.html.erb -->
-
-<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-  <div class="container-fluid">
+<nav class="navbar navbar-expand-md  bg-light text-dark" >
+  <div class="container">
     <!-- Brand -->
-    <a class="navbar-brand " href="<%= root_path %>">Bitewheels</a>
+    <a class="text-dark navbar-brand d-flex align-items-center" href="<%= root_path %>">
+      <!-- You can replace the SVG below with your logo or brand icon -->
+      <svg class="fs-5" width="40" height="32" role="img" aria-label="Bitewheels"><use xlink:href="#bitewheels-logo"/></svg>
+      Bitewheels
+    </a>
 
     <!-- Toggler for Mobile View -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#topNavbar" aria-controls="topNavbar" aria-expanded="false" aria-label="Toggle navigation">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
       <span class="navbar-toggler-icon"></span>
     </button>
 
-    <!-- Navigation Links & User Actions -->
-    <div class="collapse navbar-collapse d-flex justify-content-between" id="topNavbar">
+    <!-- Collapsible Navbar Content -->
+    <div class="collapse navbar-collapse" id="navbarContent">
       <!-- Centered Navigation Links -->
-      <ul class="navbar-nav mx-auto mb-2 mb-lg-0 justify-content-center">
-        <% if current_user %>
-          <li class="nav-item">
-            <a class="nav-link" href="<%= user_profile_path %>">Profile</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="<%= events_path %>">Events</a>
-          </li>
-         
+      <ul class="navbar-nav mx-auto fs-6 mb-2 mb-md-0">
+    
+          <%if current_user%>
           <% if current_user.foodtruckowner? %>
             <li class="nav-item">
-              <a class="nav-link" href="<%= food_trucks_path %>">Food Trucks</a>
+            
+              <%= link_to "Food Trucks", food_trucks_path, class: "text-dark nav-link" %>
             </li>
+            <li class="nav-item">
+            <%= link_to "Applications", event_applications_path, class: "text-dark nav-link" %>
+          </li>
+        <li class="nav-item">
+            <%= link_to "All Events", all_events_path, class: "text-dark nav-link" %>
+             
+            </li>
+        <% else%>
+        <%= link_to "My Events", events_path, class: "text-dark nav-link" %>
           <% end %>
-        <% end %>
+         <% end %>
+       
       </ul>
 
-      
-      <ul class="navbar-nav ">
+      <!-- Right-Aligned Authentication Buttons -->
+      <div class="d-flex fs-6">
         <% if current_user %>
-          <% if current_user.user? %>
-            <li class="nav-item">
-              <%= button_to "Become an Event Organizer", promote_to_event_organizer_path, method: :post, class: "btn btn-primary btn-sm me-2" %>
-            </li>
-            <li class="nav-item">
-              <%= button_to "Become a Food Truck Owner", promote_to_food_truck_owner_path, method: :post, class: "btn btn-primary btn-sm me-2" %>
-            </li>
-          <% end %>
-          <li class="nav-item">
-            <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "btn btn-light btn-sm" %>
-          </li>
-        <% else %>
-          <li class="nav-item me-2">
-            <%= link_to "Sign up", new_user_registration_path, class: "btn btn-light btn-sm" %>
-          </li>
-          <li class="nav-item">
-            <%= link_to "Log in", new_user_session_path, class: "btn btn-light btn-sm" %>
-          </li>
+          <div class="dropdown ">
+            <button class="text-white btn btn-dark dropdown-toggle" type="button" id="accountDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+              Account
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="accountDropdown">
+              <li><%= link_to "View Profile", user_profile_path, class: " dropdown-item" %></li>
+              <li>
+                <%= button_to "Sign out", destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+              </li>
+            </ul>
+          </div>
+        <% else%>
+          <%= link_to "Log in", new_user_session_path, class: "btn btn-outline-dark me-2" %>
+          <%= link_to "Sign up", new_user_registration_path, class: "btn btn-dark" %>
         <% end %>
-      </ul>
+      </div>
     </div>
   </div>
 </nav>

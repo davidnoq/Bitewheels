@@ -1,39 +1,132 @@
+# app/controllers/events_controller.rb
 class EventsController < ApplicationController
-  before_action :authenticate_user!, except: [ :index, :show ]
-  before_action :set_event, only: %i[show edit update destroy publish]
-  after_action :verify_authorized, except: [ :index, :published, :search ]
+  before_action :authenticate_user!, except: [:index, :show, :search, :all]
+  before_action :set_event, only: %i[show edit update destroy publish complete]
+  after_action :verify_authorized, except: [:index, :show, :search]
   after_action :verify_policy_scoped, only: :index
 
-  # renders current users scope of events, as well as the current users pending applications they must view
   def index
     @events = policy_scope(Event)
-               .includes(:food_trucks)
-               .page(params[:page])
-               .per(10)
-
+              .includes(:food_trucks)
+              .page(params[:page])
+              .per(12)
     authorize @events
+
     @published_events = @events.select { |event| event.status == 'published' }
     @drafted_events = @events.select { |event| event.status == 'draft' }
+    @completed_events = @events.select { |event| event.status == 'completed' } # Add this line
+
+    
     if current_user&.eventorganizer?
-      @pending_applications_per_event = EventApplication.where(event_id: @events.pluck(:id), status: 'pending').group(:event_id).count
-      @events_with_pending_applications = @pending_applications_per_event.keys
+      # Fetch pending applications for the current user's events
+      @pending_applications = EventApplication
+                                .where(event_id: @events.pluck(:id), status: 'pending')
+                                .includes(:food_truck, :event)
+
+      # Initialize @events_with_pending_applications with event IDs that have pending applications
+      @events_with_pending_applications = @pending_applications.pluck(:event_id).uniq
+    else
+      # Ensure @events_with_pending_applications is initialized even if the user is not an event organizer
+      @events_with_pending_applications = []
+    end
+  end
+
+  def search
+    @events = policy_scope(Event)
+  
+    # Location-based filtering
+    if params[:latitude].present? && params[:longitude].present?
+      coordinates = [params[:latitude].to_f, params[:longitude].to_f]
+      radius = params[:radius].present? ? params[:radius].to_i : 50
+      nearby_event_ids = @events.near(coordinates, radius, units: :mi, order: false).pluck(:id)
+      @events = @events.where(id: nearby_event_ids)
+      @search_title = "Events near your location"
+    elsif params[:address].present?
+      coordinates = Geocoder.coordinates(params[:address])
+      radius = params[:radius].present? ? params[:radius].to_i : 50
+  
+      if coordinates
+        nearby_event_ids = @events.near(coordinates, radius, units: :mi, order: false).pluck(:id)
+        @events = @events.where(id: nearby_event_ids)
+        @search_title = "Events near #{params[:address].titleize}"
+      else
+        redirect_to events_path, alert: "Could not geocode the provided address." and return
+      end
+    end
+  
+    # Date-based filtering
+    if params[:start_date].present? && params[:end_date].present?
+      start_date = Date.parse(params[:start_date])
+      end_date = Date.parse(params[:end_date])
+      @events = @events.where("start_date >= ? AND end_date <= ?", start_date, end_date)
+    end
+  
+    # Final pagination and authorization
+    @events = @events.page(params[:page]).per(12)
+    authorize @events
+  
+    @published_events = @events.where(status: 'published')
+    @drafted_events = @events.where(status: 'draft')
+  
+    render :index
+  end
+
+  def complete
+    authorize @event, :complete?
+    if @event.update(status: :completed)
+      redirect_to @event, notice: "Event marked as completed."
+    else
+      redirect_to @event, alert: "Failed to mark the event as completed."
     end
   end
 
   
+
+  def all
+    @events = Event.where(status: 'published')
+    authorize :event, :all? 
+    # Location-based filtering
+    if params[:latitude].present? && params[:longitude].present?
+      coordinates = [params[:latitude].to_f, params[:longitude].to_f]
+      radius = params[:radius].present? ? params[:radius].to_i : 50
+      nearby_event_ids = @events.near(coordinates, radius, units: :mi, order: false).pluck(:id)
+      @events = @events.where(id: nearby_event_ids)
+      @search_title = "Events near your location"
+    elsif params[:address].present?
+      coordinates = Geocoder.coordinates(params[:address])
+      radius = params[:radius].present? ? params[:radius].to_i : 50
+  
+      if coordinates
+        nearby_event_ids = @events.near(coordinates, radius, units: :mi, order: false).pluck(:id)
+        @events = @events.where(id: nearby_event_ids)
+        @search_title = "Events near #{params[:address].titleize}"
+      else
+        redirect_to all_published_events_path, alert: "Could not geocode the provided address." and return
+      end
+    end
+  
+    # Date-based filtering
+    if params[:start_date].present? && params[:end_date].present?
+      start_date = Date.parse(params[:start_date])
+      end_date = Date.parse(params[:end_date])
+      @events = @events.where("start_date >= ? AND end_date <= ?", start_date, end_date)
+    end
+  
+    # Final pagination
+    @events = @events.page(params[:page]).per(12)
+    authorize @events
+  end
+  
   def show
     authorize @event
+
+    @approved_count = @event.approved_applications_count
     @food_trucks = @event.food_trucks
-    @approved_food_trucks = @event.food_trucks.joins(:event_applications).where(event_applications: { status: 'approved' })
-
-    if current_user&.foodtruckowner?
-      applied_food_truck_ids = current_user.food_trucks.joins(:event_applications)
-                                             .where(event_applications: { event_id: @event.id })
-                                             .pluck(:id)
-      @available_food_trucks = current_user.food_trucks.where.not(id: applied_food_truck_ids)
-    end
+    @approved_food_trucks = @event.food_trucks.joins(:event_applications)
+                                            .where(event_applications: { status: 'approved' })
+                                            .distinct
+  
   end
-
 
   def new
     @event = current_user.events.build
@@ -58,6 +151,7 @@ class EventsController < ApplicationController
   def update
     authorize @event
     if @event.update(event_params)
+      @event.update_accepting_applications!
       redirect_to @event, notice: "Event was successfully updated."
     else
       render :edit, status: :unprocessable_entity
@@ -88,8 +182,10 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    permitted = [ :name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude ]
+    permitted = [:name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude, :credit_cost, :description, :searching_for_cuisine]
     permitted << :status if user_signed_in? && current_user.eventorganizer?
     params.require(:event).permit(permitted)
   end
+
+ 
 end

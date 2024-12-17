@@ -1,140 +1,240 @@
+<% content_for :title, "Events" %>
+
+<!-- Flash Messages -->
 <% if flash[:notice] %>
-  <div class="alert alert-success alert-dismissible fade show" role="alert">
+  <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
     <%= flash[:notice] %>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
 <% elsif flash[:alert] %>
-  <div class="alert alert-danger alert-dismissible fade show" role="alert">
+  <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
     <%= flash[:alert] %>
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
 <% end %>
 
-<!-- Remove the global pending applications alert -->
+<div class=" p-5">
+  <!-- Header Section -->
 
-<% content_for :title, "Events" %>
+  <!-- Top Section with Heading and Icon -->
+  <div class="mb-4">
+    <h2 class="fw-bold text-dark d-flex justify-content-center align-items-center">
+      <i class="bi bi-calendar-week me-2"></i> Events - Event Manager
+    </h2>
+    <hr class="my-4">
+  </div>
+ <div class="mb-4">
+<% if @pending_applications&.any? %>
+  <div class="text-center mb-4">
+    <button type="button" class="btn btn-warning" data-bs-toggle="modal" data-bs-target="#pendingApplicationsModal">
+      <i class="bi bi-exclamation-triangle me-2"></i>
+      You have <%= @pending_applications.size %> pending application(s)
+    </button>
+  </div>
 
-<div class="d-flex" style="height: 100vh;">
-  <!-- Main Content Section -->
-  <div class="flex-grow-1 d-flex flex-column p-4">
-    <!-- Top Row: Search Bar -->
-    <% if current_user.foodtruckowner?%>
-    <div class="mb-4">
-      <form action="#" method="get" class="input-group">
-        <input type="text" class="form-control" placeholder="Find events in your area" aria-label="Search" aria-describedby="search-button">
-        <button class="btn btn-primary" type="submit" id="search-button">
-          Search
-        </button>
-      </form>
-    </div>
-    <%end%>
-
-    <!-- Events Near Me Section -->
-<!-- Events Near Me Section -->
-<div class="col flex-grow-1">
-  <% if @events.present? %>
-    <div class="mb-4">
-      <div class="card h-100">
-        <!-- Section Header -->
-        <div class="d-flex justify-content-between align-items-center mb-3 bg-dark text-white py-2 px-3">
-          
-          <% if current_user.eventorganizer?%>
-          <h2>My Events</h2>
-          <%= link_to "Create Event", new_event_path, class: "text-white" %>
-          <%else%>
-          <h2>Events Near Me</h2>
-          <% end%>
+  <!-- Pending Applications Modal -->
+  <div class="modal fade" id="pendingApplicationsModal" tabindex="-1" aria-labelledby="pendingApplicationsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="pendingApplicationsModalLabel">Pending Applications</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
-
-        <div class="card-body">
-          <!-- Published Events Section -->
-          <h3 class="mb-3">Published Events</h3>
-          <% if @published_events.any? %>
-            <div class="row">
-              <% @published_events.each do |event| %>
-                <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
-                  <div class="card h-100" style="min-width: 250px; min-height: 250px; max-width: 350px">
-                    <div class="card-body d-flex flex-column">
-                      <!-- Event Name and Status Badge -->
-                      <h5 class="card-title d-flex justify-content-between align-items-center">
-                        <%= event.name %>
-                        <p class="card-text">
-                          <span class="badge bg-success">Published</span>
-                        </p>
-                      </h5>
-
-                      <!-- Event Details -->
-                      <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
-                      <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
-                      <p class="card-text"><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
-
-                      <!-- Pending Applications Count -->
-                      <% if current_user&.eventorganizer? && @events_with_pending_applications.include?(event.id) %>
-                        <p class="card-text">
-                          <strong>Pending Applications:</strong>
-                          <span class="badge bg-warning text-dark"><%= @pending_applications_per_event[event.id] %></span>
-                        </p>
-                      <% end %>
-
-                      <!-- Show Event Button -->
-                      <div class="mt-auto text-center">
-                        <%= link_to "Show this event", event_path(event), class: "btn btn-primary" %>
+        <div class="modal-body">
+          <% @pending_applications.group_by(&:event).each do |event, applications| %>
+            <div class="mb-4">
+              <h6 class="fw-bold"><%= event.name %></h6>
+              <ul class="list-unstyled mt-2">
+                <% applications.each do |application| %>
+                  <li class="mb-2">
+                    <%= link_to event_event_application_path(event, application), class: "text-decoration-none" do %>
+                      <div class="d-flex align-items-center">
+                        <i class="bi bi-truck me-2"></i>
+                        <%= application.food_truck.name %>
                       </div>
-                    </div>
-                  </div>
-                </div>
-              <% end %>
+                    <% end %>
+                  </li>
+                <% end %>
+              </ul>
             </div>
-          <% else %>
-            <p class="text-muted">No published events available near you.</p>
-          <% end %>
-          
-          <!-- Drafted Events Section -->
-          <% if current_user.eventorganizer?%>
-          <h3 class="mt-5 mb-3">Drafted Events</h3>
-          <% if @drafted_events.any? %>
-            <div class="row">
-              <% @drafted_events.each do |event| %>
-                <div class="col-lg-3 col-md-4 col-sm-6 col-12 mb-4">
-                  <div class="card h-100" style="min-width: 250px; min-height: 250px; max-width: 350px">
-                    <div class="card-body d-flex flex-column">
-                      <!-- Event Name and Status Badge -->
-                      <h5 class="card-title d-flex justify-content-between align-items-center">
-                        <%= event.name %>
-                        <p class="card-text">
-                          <span class="badge bg-warning text-dark">Draft</span>
-                        </p>
-                      </h5>
-
-                      <!-- Event Details -->
-                      <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
-                      <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
-                      <p class="card-text"><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
-
-                      <!-- Show Event Button -->
-                      <div class="mt-auto text-center">
-                        <%= link_to "Show this event", event_path(event), class: "btn btn-secondary" %>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              <% end %>
-            </div>
-          <% else %>
-            <p class="text-muted">No drafted events available at the moment.</p>
-          <% end %>
           <% end %>
         </div>
-        
-
-        <!-- Pagination -->
-        <div class="d-flex justify-content-center mt-2">
-          <%= paginate @events %>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
         </div>
       </div>
     </div>
-  <% else %>
-    <p class="text-muted">No events available near you at the moment.</p>
+  </div>
+<% end %>
+  </div>
+
+
+<div class="container d-flex justify-content-center align-items-center mb-5">
+  
+  <%= link_to new_event_path, class: "btn btn-primary btn-lg d-flex align-items-center" do %>
+    <i class="bi bi-plus me-2"></i> Create Event
   <% end %>
 </div>
+  <!-- Tabs for Published and Drafted Events -->
+  <ul class="container nav nav-tabs w-full mb-4 justify-content-center" id="eventTabs" role="tablist">
+    <li class="nav-item " role="presentation">
+      <button class="nav-link active" id="published-tab" data-bs-toggle="tab" data-bs-target="#published" type="button" role="tab" aria-controls="published" aria-selected="true">
+        <i class="bi bi-folder-fill me-2"></i> Published Events
+      </button>
+    </li>
+    <li class="nav-item " role="presentation">
+      <button class="nav-link" id="drafted-tab" data-bs-toggle="tab" data-bs-target="#drafted" type="button" role="tab" aria-controls="drafted" aria-selected="false">
+        <i class="bi bi-pencil-square me-2"></i> Drafted Events
+      </button>
+    </li>
+    <li class="nav-item " role="presentation">
+    <button class="nav-link" id="completed-tab" data-bs-toggle="tab" data-bs-target="#completed" type="button" role="tab" aria-controls="completed" aria-selected="false">
+      <i class="bi bi-check-circle me-2"></i> Completed Events
+    </button>
+  </li>
+  </ul>
 
+  <div class="tab-content" id="eventTabsContent">
+    <!-- Published Events Tab -->
+    <div class="container tab-pane fade show active" id="published" role="tabpanel" aria-labelledby="published-tab">
+      <% if @published_events.any? %>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+          <% @published_events.each do |event| %>
+            <div class="col">
+              <div class="card h-100 shadow-sm">
+                <!-- Event Image -->
+                <!-- Add an image here if available -->
+                <%# Example: <%= image_tag event.image_url, class: 'card-img-top', alt: event.name %> 
+
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title text-center"><%= event.name %></h5>
+                  <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
+                  <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
+                  <p class="card-text"><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
+                  <p class="card-text"><strong>Credit Cost:</strong> <%= event.credit_cost %></p>
+                  <p class="card-text"><strong>Searching for Cuisine: </strong> <%= event.searching_for_cuisine %></p>
+                  <!-- Pending Applications Alert within Event Card -->
+                  <% if @pending_applications.where(event_id: event.id).any? %>
+                    <div class="alert alert-info p-2 mb-2" role="alert">
+                      <strong>Pending Applications:</strong> <%= @pending_applications.where(event_id: event.id).count %>
+                    </div>
+                  <% end %>
+
+                  <div class="mt-auto">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="btn-group">
+                        <%= link_to "View Event", event_path(event), class: "btn btn-sm btn-outline-primary" %>
+                        
+                      </div>
+                      <small class="text-muted"><%= time_ago_in_words(event.updated_at) %> ago</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted text-center">No published events found.</p>
+      <% end %>
+
+      <!-- Pagination -->
+      <% if @published_events.respond_to?(:total_pages) && @published_events.total_pages > 1 %>
+        <div class="d-flex justify-content-center mt-4">
+          <%= paginate @published_events, param_name: :published_page %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Drafted Events Tab -->
+    <div class="container tab-pane fade" id="drafted" role="tabpanel" aria-labelledby="drafted-tab">
+      <% if @drafted_events.any? %>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+          <% @drafted_events.each do |event| %>
+            <div class="col">
+              <div class="card h-100 shadow-sm">
+                <!-- Event Image -->
+                <!-- Add an image here if available -->
+                <%# Example: <%= image_tag event.image_url, class: 'card-img-top', alt: event.name %> 
+
+                <div class="card-body d-flex flex-column">
+                  <h5 class="card-title"><%= event.name %></h5>
+                  <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
+                  <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
+                  <p class="card-text"><strong>Food Trucks Needed:</strong> <%= event.foodtruck_amount %></p>
+                  <p class="card-text"><strong>Credit Cost:</strong> <%= event.credit_cost %></p>
+                  <p class="card-text"><strong>Searching for Cuisine: </strong> <%= event.searching_for_cuisine %></p>
+
+                  <!-- Pending Applications Alert within Event Card -->
+                  <% if @events_with_pending_applications.include?(event.id) %>
+                    <div class="alert alert-warning p-2 mb-2" role="alert">
+                      <strong>Pending Applications:</strong> <%= @pending_applications_per_event[event.id] %>
+                    </div>
+                  <% end %>
+
+                  <div class="mt-auto">
+                    <div class="d-flex justify-content-between align-items-center">
+                      <div class="btn-group">
+                        <%= link_to "View Draft", event_path(event), class: "btn btn-sm btn-outline-primary" %>
+                       
+                      </div>
+                      <small class="text-muted"><%= time_ago_in_words(event.updated_at) %> ago</small>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted text-center">No drafted events found.</p>
+      <% end %>
+
+      
+      <!-- Pagination -->
+      <% if @drafted_events.respond_to?(:total_pages) && @drafted_events.total_pages > 1 %>
+        <div class="d-flex justify-content-center mt-4">
+          <%= paginate @drafted_events, param_name: :draft_page %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Completed Events Tab -->
+    <div class="container tab-pane fade" id="completed" role="tabpanel" aria-labelledby="completed-tab">
+      <% if @completed_events.any? %>
+        <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
+          <% @completed_events.each do |event| %>
+            <div class="col">
+              <div class="card h-100 shadow-sm">
+                <div class="card-body d-flex flex-column">
+                  <!-- Event Name -->
+                  <h5 class="card-title text-center"><%= event.name %></h5>
+
+                  <!-- Completed Badge -->
+                  <p class="text-center">
+                    <span class="badge bg-secondary">Completed</span>
+                  </p>
+
+                  <!-- Event Details -->
+                  <p class="card-text"><strong>Address:</strong> <%= event.address %></p>
+                  <p class="card-text"><strong>Dates:</strong> <%= event.start_date.strftime("%B %d, %Y") %> - <%= event.end_date.strftime("%B %d, %Y") %></p>
+                  <p class="card-text"><strong>Food Trucks Attended:</strong> <%= event.foodtruck_amount %></p>
+
+                  <!-- Show Event Button -->
+                  <div class="mt-auto">
+                    <%= link_to "View Event", event_path(event), class: "btn btn-outline-primary btn-sm" %>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted">No completed events available.</p>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<!-- Optional JavaScript: Bootstrap JS and dependencies -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>

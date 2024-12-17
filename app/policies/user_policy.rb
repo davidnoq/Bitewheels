@@ -11,4 +11,7 @@ class UserPolicy < ApplicationPolicy
   def update?
     edit?
   end
+  def purchase_credits?
+    user == record && !user.eventorganizer?
+  end
 end

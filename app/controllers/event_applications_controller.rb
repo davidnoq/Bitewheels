@@ -1,35 +1,85 @@
+# app/controllers/event_applications_controller.rb
 class EventApplicationsController < ApplicationController
   before_action :authenticate_user!
-  before_action :set_event
-  before_action :set_event_application, only: [ :approve, :reject, :show ]
+  before_action :set_event, only: [:index, :new, :create, :approve, :reject]
+  before_action :set_event_application, only: [:show, :approve, :reject]
+
 
   def index
-    @event_applications = @event.event_applications.page(params[:page]).per(10)
+    if @event
+      # Nested route: Event Organizer viewing applications for a specific event
+      @event_applications = policy_scope(@event.event_applications).page(params[:page]).per(10)
+    else
+      # Top-level route: Food Truck Owner viewing their own applications
+      @event_applications = policy_scope(EventApplication).page(params[:page]).per(10)
+    end
+
+    authorize @event_applications
+
+    if current_user.eventorganizer?
+      render "event_applications/index" # View for Event Organizers
+    else
+      render "event_applications/food_truck_index" # View for Food Truck Owners
+    end
   end
 
   def show
-    @event_application
+    authorize @event_application
     @food_truck = @event_application.food_truck
+    @event = @event_application.event
+    @messages = @event_application.messages.order(created_at: :asc)
+  @message = @event_application.messages.new  # For form submission if needed
+  
+    # Dynamically render based on user role
+    if current_user.foodtruckowner?
+      render "event_applications/food_truck_show"
+    else
+      render "event_applications/show"
+    end
   end
 
-  def create
-    food_truck_ids = params[:food_truck_ids].reject(&:blank?)
-    success = false
+  
 
-    food_truck_ids.each do |food_truck_id|
-      @event_application = EventApplication.new(
-        event: @event,
-        food_truck_id: food_truck_id,
-        status: :pending
-      )
-      authorize @event_application
-      success = true if @event_application.save
+  def new
+    # Initialize a new EventApplication object
+    @event_application = @event.event_applications.new
+    authorize @event_application
+  
+    # Fetch all food trucks owned by the current user that haven't applied to this event
+    applied_truck_ids = @event.event_applications.pluck(:food_truck_id)
+    @food_trucks = current_user.food_trucks.where.not(id: applied_truck_ids)
+  
+   
+  end
+  
+
+  def create
+    unless @event.accepting_applications
+      flash[:alert] = "This event is no longer accepting applications."
+      redirect_to @event and return
     end
 
-    if success
-      flash[:notice] = "Application submitted successfully."
+    food_truck_ids = Array(params[:food_truck_ids] || params[:food_truck_id]).reject(&:blank?)
+    food_trucks = current_user.food_trucks.where(id: food_truck_ids)
+
+    if food_trucks.blank?
+      flash[:alert] = "No valid food trucks selected."
+      redirect_to :new and return
+    end
+
+    total_cost = food_trucks.size * @event.credit_cost
+
+    applications = food_trucks.map do |food_truck|
+      @event.event_applications.new(
+        food_truck: food_truck,
+        status: :pending
+      )
+    end
+
+    if applications.all?(&:save)
+      flash[:notice] = "Application(s) submitted successfully."
     else
-      flash[:alert] = "Failed to submit application."
+      flash[:alert] = "Failed to submit application(s). Ensure you haven't already applied."
     end
 
     redirect_to @event
@@ -37,51 +87,62 @@ class EventApplicationsController < ApplicationController
 
   def approve
     authorize @event_application
-    if @event_application.status == 'approved'
+
+    if @event_application.approved?
       redirect_to event_event_application_path(@event, @event_application), alert: "Application has already been approved."
       return
     end
-    # Check if the event has food truck slots available
-    if @event.foodtruck_amount > 0
-      Event.transaction do
-        
-        @event.update!(foodtruck_amount: @event.foodtruck_amount - 1)
-  
-        @event_application.update!(status: :approved)
+
+    ActiveRecord::Base.transaction do
+      if @event_application.update(status: :approved)
+        flash[:notice] = "Application approved successfully."
+      else
+        flash[:alert] = "Application could not be approved."
+        raise ActiveRecord::Rollback
       end
-      redirect_to event_event_application_path(@event, @event_application), notice: "Application approved successfully."
-    else
-      redirect_to event_event_application_path(@event, @event_application), alert: "No available slots for food trucks."
     end
+
+    redirect_to event_event_application_path(@event, @event_application)
   end
 
   def reject
     authorize @event_application
-    if @event_application.status == 'rejected'
+
+    if @event_application.rejected?
       redirect_to event_event_application_path(@event, @event_application), alert: "Application has already been rejected."
       return
     end
-    if @event_application.status == 'approved'
-      Event.transaction do
-        @event.update!(foodtruck_amount: @event.foodtruck_amount + 1)
-  
-        @event_application.update!(status: :rejected)
-      end
-      redirect_to event_event_application_path(@event, @event_application), notice: "Application rejected and slot freed up successfully."
-    else
-      @event_application.update!(status: :rejected)
-      redirect_to event_event_application_path(@event, @event_application), notice: "Application rejected successfully."
-    end
-  end
-  
 
+    ActiveRecord::Base.transaction do
+      if @event_application.update(status: :rejected)
+        flash[:notice] = "Application rejected successfully."
+      else
+        flash[:alert] = "Application could not be rejected."
+        raise ActiveRecord::Rollback
+      end
+    end
+
+    redirect_to event_event_application_path(@event, @event_application)
+  end
+
+  
   private
 
   def set_event
-    @event = Event.find(params[:event_id])
+    @event = Event.find(params[:event_id]) if params[:event_id].present?
   end
+  
 
   def set_event_application
-    @event_application = EventApplication.find(params[:id])
+    if @event
+      # Nested route: Event Organizer viewing applications for a specific event
+      @event_application = @event.event_applications.find(params[:id])
+      authorize @event_application
+    else
+      # Top-level route: Food Truck Owner viewing their own applications
+      @event_application = policy_scope(EventApplication).find(params[:id])
+      authorize @event_application
+    end
   end
+  
 end

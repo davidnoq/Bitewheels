@@ -69,3 +69,7 @@ gem "devise", "~> 4.9"
 gem "pundit"
 gem "phonelib"
 gem 'kaminari'
+gem 'stripe'
+gem 'geocoder'
+gem 'mailgun-ruby'
+gem 'firebase-admin-sdk', '~> 0.1.2'

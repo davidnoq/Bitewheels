@@ -4,7 +4,7 @@
  <% if local_assigns[:show_name] %>
   <strong><%= event.name %></strong>
    <% end %>
-<hr>
+
   <p class="card-text">
   <% if local_assigns[:show_address] %>
     <strong>Address:</strong> 
@@ -21,6 +21,12 @@
    <p class="card-text">
     <strong>Number of Food Trucks:</strong> <%= event.foodtruck_amount %>
   </p>
+  <% unless current_user&.eventorganizer? %>
+          <p class="card-text">
+            <strong>Credit Cost to Apply:</strong> <%= @event.credit_cost %>
+          </p>
+        <% end %>
+  
 
   <p class="card-text">
   <% if local_assigns[:show_date] %>

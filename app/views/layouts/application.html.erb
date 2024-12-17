@@ -3,7 +3,7 @@
   <head>
     <title><%= content_for(:title) || "Bitewheels" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -13,33 +13,37 @@
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
-    
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <!-- <script src="https://js.stripe.com/v3/"></script>-->
+    <%= action_cable_meta_tag %>
     <%= javascript_include_tag "application", "data-turbo-track": "reload", type: "module" %>
+<%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
+
+    
   </head>
 
   <body>
-    <% if alert.present? %>
-      <p class="alert alert-warning"><%= alert %></p>
-    <% end %>
-
+  <% should_render_sidebar = 
+     (controller_name == 'food_trucks') || 
+     (controller_name == 'events') || 
+     (controller_name == 'event_applications' && !['new', 'create'].include?(action_name)) || 
+     (controller_name == 'pages' && action_name == 'purchase_credits') %>
     
-    <% if (controller_name == 'food_trucks' ) ||(controller_name == 'events') ||(controller_name == 'event_applications')%>
-    <!-- Render Sidebar for Dashboard -->
-    <div class="d-flex">
-      <%= render 'shared/sidebar' %>
-      <div class="flex-grow-1" >
+    <% if should_render_sidebar %>
+      <!-- Render Sidebar for Dashboard -->
+      <div class="d-flex">
+        <%= render 'shared/sidebar' %>
+        <div class="flex-fill">
+          <%= yield %>
+        </div>
+      </div>
+    <% else %>
+      <!-- Render Top Navbar for Other Pages -->
+      <%= render 'shared/top_navbar' %>
+      <div class="flex-fill">
         <%= yield %>
       </div>
-    </div>
-  <% else %>
-    <!-- Render Top Navbar for Other Pages -->
-    <%= render 'shared/top_navbar' %>
-    <div class="container mt-4">
-      <%= yield %>
-    </div>
-  <% end %>
-    
+    <% end %>
+       
    
   </body>
 </html>

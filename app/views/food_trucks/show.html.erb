@@ -1,50 +1,196 @@
 <% content_for :title, @food_truck.name %>
 
-<div class="d-flex justify-content-center align-items-center min-vh-100 bg-white" >
-  <div class="container">
-    <div class="card shadow-lg" style="max-width: 40rem; margin: auto; min-height: 400px;">
-      <div class="card-header bg-dark text-white text-center">
-        <h1 class="mb-0"><%= @food_truck.name %></h1>
-      </div>
-      <div class="card-body" style="min-height: 300px;">
-        
-        <!-- Food Truck Details -->
-        <p><strong>Cuisine:</strong> <%= @food_truck.cuisine %></p>
+<!-- Flash Messages -->
+<% if flash[:notice] %>
+  <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+    <%= flash[:notice] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% elsif flash[:alert] %>
+  <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+    <%= flash[:alert] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
 
-        <!-- Display Menu Images if available -->
-        <% if @food_truck.menu_images.any? %>
-          <p><strong>Menu Images:</strong></p>
-          <div class="row">
-            <% @food_truck.menu_images.each do |menu_image| %>
-              <div class="col-md-6 mb-2">
-                <%= image_tag url_for(menu_image), class: 'img-fluid img-thumbnail', style: 'max-width: 150px;' %>
-              </div>
+<div class="p-5">
+  <!-- Top Section with Heading and Icon -->
+  <div class="mb-4">
+    <h2 class="fw-bold text-dark d-flex align-items-center justify-content-center">
+      <i class="bi bi-truck me-2"></i> Food Trucks - Full Info
+    </h2>
+    <hr class="my-4">
+  </div>
+
+  <!-- Food Truck Details Card -->
+  <div class="d-flex justify-content-center align-items-center bg-white">
+    <div class="card shadow-lg" style="max-width: 800px; width: 100%; margin: auto;">
+      <div class="card-body px-5 py-4">
+        
+        <!-- Card Title and Explanatory Text -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h2 class="card-title text-dark fw-bold mb-0">
+            Food Truck Details
+          </h2>
+          <%= link_to food_trucks_path, class: "btn btn-dark" do %>
+            <i class="bi bi-arrow-left-circle"></i> Food Trucks
+          <% end %>
+        </div>
+        <p class="text-left text-secondary mb-5">
+          View all the details of your food truck below.
+        </p>
+
+        <!-- Food Truck Information -->
+        <div class="mb-3 mt-3">
+          <h5 class="fw-semibold text-dark">
+            <i class="bi bi-truck me-2"></i> Name
+          </h5>
+          <p><%= @food_truck.name %></p>
+        </div>
+
+        <div class="mb-3">
+          <h5 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-list me-2 fs-6"></i> Cuisine
+          </h5>
+          <p>
+            <%= @food_truck.cuisine %>
+            <% if @food_truck.cuisine == 'Other' && @food_truck.other_cuisine.present? %>
+              (<%= @food_truck.other_cuisine %>)
             <% end %>
-          </div>
-        <% else %>
-          <p>No menu images available.</p>
-        <% end %>
+          </p>
+        </div>
 
-        <!-- Display Permit if available -->
-        <% if @food_truck.permit.attached? %>
-          <div class="mb-4">
-            <h5>Permit</h5>
-            <%= image_tag url_for(@food_truck.permit), class: 'img-fluid img-thumbnail', alt: 'Permit', style: 'max-width: 300px; height: auto;' %>
-          </div>
-        <% else %>
-          <p><em>No permit uploaded.</em></p>
-        <% end %>
+        <!-- Permit File Section -->
+        <div class="mb-3">
+          <h5 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-file-earmark me-2 fs-6"></i> Permit File
+          </h5>
+          <% if @food_truck.permit.attached? %>
+            <div class="row align-items-center mb-3">
+              <div class="col-auto">
+                <% if @food_truck.permit.content_type.start_with?('image/') %>
+                  <%= image_tag url_for(@food_truck.permit), class: 'img-thumbnail', style: 'width: 150px; height: 150px; object-fit: cover;' %>
+                <% else %>
+                  <i class="bi bi-file-earmark text-primary fs-6"></i>
+                <% end %>
+              </div>
+              <div class="col">
+                <p class="mb-1"><strong>Filename:</strong> <%= @food_truck.permit.filename.to_s %></p>
+              </div>
+            </div>
+          <% else %>
+            <p><em>No permit uploaded.</em></p>
+          <% end %>
+        </div>
 
-        
+        <!-- Menu Files Section -->
+        <div class="mb-3">
+          <h5 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-file-earmark me-2 fs-6"></i> Menu Files
+          </h5>
+          <% if @food_truck.menu_files.attached? %>
+            <div class="row">
+              <% @food_truck.menu_files.each do |file| %>
+                <div class="col-md-4 mb-3">
+                  <div class="d-flex align-items-center">
+                    <% if file.content_type.start_with?('image/') %>
+                      <%= image_tag url_for(file), class: 'img-thumbnail me-2', style: 'width: 150px; height: 150px; object-fit: cover;' %>
+                    <% else %>
+                      <i class="bi bi-file-earmark text-primary fs-6"></i>
+                    <% end %>
+                    <p class="mb-1"><strong>Filename:</strong> <%= file.filename.to_s %></p>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p><em>No menu files uploaded.</em></p>
+          <% end %>
+        </div>
+
+        <!-- Food Images Section -->
+        <div class="mb-3">
+          <h5 class="fw-semibold text-dark d-flex align-items-center">
+            <i class="bi bi-egg-fried me-2 fs-6"></i> Food Images
+          </h5>
+          <% if @food_truck.food_images.attached? %>
+            <div class="row">
+              <% @food_truck.food_images.each do |image| %>
+                <div class="col-md-4 mb-3">
+                  <div class="d-flex align-items-center">
+                    <%= image_tag url_for(image), class: 'img-thumbnail me-2', style: 'width: 150px; height: 150px; object-fit: cover;' %>
+                    <p class="mb-1"><strong>Filename:</strong> <%= image.filename.to_s %></p>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+          <% else %>
+            <p><em>No food images available.</em></p>
+          <% end %>
+        </div>
+
         <!-- Actions for Food Truck Owners -->
         <% if current_user.foodtruckowner? %>
           <hr>
-          <div class="d-flex justify-content-between">
+          <div class="d-flex justify-content-between mt-4">
             <%= link_to "Edit Food Truck", edit_food_truck_path(@food_truck), class: "btn btn-primary" %>
             <%= button_to "Delete Food Truck", @food_truck, method: :delete, data: { confirm: "Are you sure you want to delete this food truck?" }, class: "btn btn-danger" %>
           </div>
         <% end %>
+        
       </div>
     </div>
   </div>
 </div>
+
+<!-- JavaScript for Bootstrap Validation (if needed) -->
+<script>
+  // Example starter JavaScript for disabling form submissions if there are invalid fields
+  (function () {
+    'use strict'
+
+    // Fetch all the forms we want to apply custom Bootstrap validation styles to
+    var forms = document.querySelectorAll('.needs-validation')
+
+    // Loop over them and prevent submission
+    Array.prototype.slice.call(forms)
+      .forEach(function (form) {
+        form.addEventListener('submit', function (event) {
+          if (!form.checkValidity()) {
+            event.preventDefault()
+            event.stopPropagation()
+          }
+
+          form.classList.add('was-validated')
+        }, false)
+      })
+  })()
+</script>
+
+<!-- CSS for Preventing Overlap and Adjusting Icon Sizes -->
+<style>
+  /* Ensure icons within h5 are smaller */
+  h5 .bi {
+    font-size: 1em; /* Adjust as needed */
+  }
+
+  /* Adjust spacing between image/icon and text */
+  .img-thumbnail {
+    margin-right: 10px;
+  }
+
+  /* Responsive adjustments */
+  @media (max-width: 767.98px) {
+    .img-thumbnail, .bi-file-earmark, .bi-egg-fried, .bi-list {
+      width: 100px !important;
+      height: 100px !important;
+      font-size: 0.8em; /* Smaller icons on mobile */
+    }
+  }
+
+  /* Adjust filename text alignment and size */
+  .d-flex.align-items-center p {
+    margin: 0;
+    font-size: 14px;
+  }
+</style>

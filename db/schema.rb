@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_10_14_203731) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_11_194035) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,6 +42,14 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_14_203731) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "credit_packages", force: :cascade do |t|
+    t.string "name"
+    t.integer "credits"
+    t.integer "price_cents"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
   create_table "event_applications", force: :cascade do |t|
     t.bigint "food_truck_id", null: false
     t.bigint "event_id", null: false
@@ -55,7 +63,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_14_203731) do
 
   create_table "events", force: :cascade do |t|
     t.string "name"
-    t.string "description"
+    t.text "description"
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer "expected_attendees"
@@ -68,16 +76,42 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_14_203731) do
     t.bigint "user_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "credit_cost", default: 3, null: false
+    t.boolean "accepting_applications", default: true, null: false
+    t.integer "approved_applications_count", default: 0, null: false
+    t.string "searching_for_cuisine"
     t.index ["user_id"], name: "index_events_on_user_id"
+  end
+
+  create_table "food_truck_ratings", force: :cascade do |t|
+    t.integer "rating"
+    t.text "review"
+    t.bigint "food_truck_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["food_truck_id"], name: "index_food_truck_ratings_on_food_truck_id"
+    t.index ["user_id"], name: "index_food_truck_ratings_on_user_id"
   end
 
   create_table "food_trucks", force: :cascade do |t|
     t.string "name"
     t.string "cuisine"
     t.bigint "user_id", null: false
+    t.json "food_image_descriptions", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_food_trucks_on_user_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "event_application_id", null: false
+    t.bigint "user_id", null: false
+    t.index ["event_application_id"], name: "index_messages_on_event_application_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -93,6 +127,7 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_14_203731) do
     t.string "country"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.integer "credits", default: 100, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -102,5 +137,9 @@ ActiveRecord::Schema[7.2].define(version: 2024_10_14_203731) do
   add_foreign_key "event_applications", "events"
   add_foreign_key "event_applications", "food_trucks"
   add_foreign_key "events", "users"
+  add_foreign_key "food_truck_ratings", "food_trucks"
+  add_foreign_key "food_truck_ratings", "users"
   add_foreign_key "food_trucks", "users"
+  add_foreign_key "messages", "event_applications"
+  add_foreign_key "messages", "users"
 end

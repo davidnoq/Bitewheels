@@ -1,9 +1,7 @@
 # app/controllers/pages_controller.rb
 class PagesController < ApplicationController
- 
-  def home
-  end
-
+  before_action :authenticate_user!, only: [:purchase_credits]
+  
   def promote_to_event_organizer
     if current_user.user?
       current_user.update(role: :eventorganizer)
@@ -23,5 +21,10 @@ class PagesController < ApplicationController
       flash[:alert] = "You are already an event organizer or food truck owner."
       redirect_to root_path
     end
+  end
+
+  def purchase_credits
+    @credit_packages = policy_scope(CreditPackage)
+    authorize CreditPackage, :purchase?
   end
 end

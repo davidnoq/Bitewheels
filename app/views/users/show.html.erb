@@ -1,42 +1,73 @@
-<div class="d-flex justify-content-center align-items-center bg-white">
-  
-  <div class="card shadow-lg w-100 mx-2 mx-md-auto" style="max-width: 35rem;">
-    <div class="card-header bg-primary text-white text-center">
-      <h2 class="card-title mb-0">My Profile</h2>
-    </div>
-    <div class="card-body">
-      <div class="row">
-        <div class="col-4 text-right font-weight-bold">First Name:</div>
-        <div class="col-8"><%= @user.first_name %></div>
+<!-- app/views/users/show.html.erb -->
+
+<%# Set the Page Title %>
+<% content_for :title, "My Profile" %>
+
+<div class="container py-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <!-- Profile Header -->
+        <div class="card-body">
+          <div class="d-flex align-items-center mb-4">
+            
+    
+            <!-- User Name and Role -->
+            <div>
+              <h3 class="mb-0"><%= @user.first_name %> <%= @user.last_name %></h3>
+              <p class="text-muted"><%= @user.role.capitalize %></p>
+            </div>
+          </div>
+    
+          <!-- User Information -->
+          <div>
+            <h5 class="text-dark mb-3">User Information</h5>
+            <hr>
+    
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted fw-semibold">First Name:</div>
+              <div class="col-sm-8"><%= @user.first_name %></div>
+            </div>
+    
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted fw-semibold">Last Name:</div>
+              <div class="col-sm-8"><%= @user.last_name %></div>
+            </div>
+    
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted fw-semibold">Email:</div>
+              <div class="col-sm-8"><%= @user.email %></div>
+            </div>
+    
+            <% if @user.foodtruckowner? %>
+              <div class="row mb-3">
+                <div class="col-sm-4 text-muted fw-semibold">Credits:</div>
+                <div class="col-sm-8"><%= @user.credits %></div>
+              </div>
+            <% end %>
+    
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted fw-semibold">Phone Number:</div>
+              <div class="col-sm-8"><%= @user.formatted_phone_number %></div>
+            </div>
+    
+            <div class="row mb-3">
+              <div class="col-sm-4 text-muted fw-semibold">Role:</div>
+              <div class="col-sm-8">
+                <span class="badge bg-<%= @user.role == 'admin' ? 'danger' : 'primary' %>">
+                  <%= @user.role.capitalize %>
+                </span>
+              </div>
+            </div>
+          </div>
+    
+          <%# Action Buttons %>
+          <div class="d-flex justify-content-end gap-3 mt-4">
+            <%= link_to "Edit Profile", edit_user_registration_path, class: "btn btn-primary" %>
+            <%= link_to "Back to Home", root_path, class: "btn btn-secondary" %>
+          </div>
+        </div>
       </div>
-      <hr>
-      <div class="row">
-        <div class="col-4 text-right font-weight-bold">Last Name:</div>
-        <div class="col-8"><%= @user.last_name %></div>
-      </div>
-      <hr>
-      <div class="row">
-        <div class="col-4 text-right font-weight-bold">Email:</div>
-        <div class="col-8"><%= @user.email %></div>
-      </div>
-      <hr>
-      <div class="row">
-        <div class="col-4 text-right font-weight-bold">Phone Number:</div>
-        <div class="col-8"><%= @user.formatted_phone_number %></div>
-      </div>
-      <hr>
-      <div class="row">
-        <div class="col-4 text-right font-weight-bold">Role:</div>
-        <div class="col-8"><%= @user.role %></div>
-      </div>
-      <hr>
-      <div class="d-flex justify-content-around mt-4">
-        <%= link_to "Edit Profile", edit_user_registration_path, class: "btn btn-outline-primary" %>
-        <%= link_to "Back to Home", root_path, class: "btn btn-outline-secondary" %>
-      </div>
-    </div>
-    <div class="card-footer text-center">
-      <small class="text-muted">Profile Information</small>
     </div>
   </div>
 </div>

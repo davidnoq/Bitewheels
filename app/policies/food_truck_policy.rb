@@ -23,6 +23,15 @@ class FoodTruckPolicy < ApplicationPolicy
     user.foodtruckowner?
   end
 
+  def remove_menu_file?
+    user.foodtruckowner?
+  end
+  def remove_permit?
+    user == record.user || user.eventorganizer?
+  end
+  def remove_food_image?
+    user == record.user || user.eventorganizer?
+  end
   def new?
     create?
   end

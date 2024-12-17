@@ -1,0 +1,15 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  rating: 1
+  review: MyText
+  user: one
+  food_truck: one
+  event: one
+
+two:
+  rating: 1
+  review: MyText
+  user: two
+  food_truck: two
+  event: two
