@@ -124,6 +124,7 @@ end
 
   # Use callbacks to share common setup or constraints between actions.
   def set_food_truck
+    
     if params[:event_application_id]
       # Nested under EventApplication
       @event_application = policy_scope(EventApplication).find(params[:event_application_id])
@@ -134,6 +135,10 @@ end
     else
       # Direct access for regular food truck owners
       @food_truck = current_user.food_trucks.find(params[:id])
+    end
+
+    if params[:id] != @food_truck.slug
+      redirect_to @food_truck, :status => :moved_permanently
     end
   end
 

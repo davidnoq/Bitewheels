@@ -1,11 +1,14 @@
 # app/models/event_application.rb
 class EventApplication < ApplicationRecord
+  extend FriendlyId
+
   belongs_to :food_truck
   belongs_to :event
 
   # Delegation for easier access to the user (food truck owner)
   delegate :user, to: :food_truck, prefix: true
   has_many :messages, dependent: :destroy
+
   # Enums
   enum status: { pending: 0, approved: 1, rejected: 2 }
 
@@ -20,11 +23,29 @@ class EventApplication < ApplicationRecord
   # Callbacks
   after_create :deduct_user_credits
   after_update :manage_approved_applications_count, if: :saved_change_to_status?
-  
+
   after_create_commit :notify_event_organizer
   after_update_commit :notify_status_change, if: :saved_change_to_status?
 
+  # FriendlyId Configuration
+  friendly_id :slug_candidates, use: %i[slugged history finders]
+
+  # Virtual attribute to trigger slug regeneration
+  attr_accessor :regenerate_slug
+
+  def should_generate_new_friendly_id?
+    slug.blank? || regenerate_slug
+  end
+
   private
+
+  # Define slug candidates
+  def slug_candidates
+    [
+      "#{event.name}-#{food_truck.name}",
+      "#{event.name}-#{food_truck.name}-#{id}"
+    ]
+  end
 
   # Validation to ensure the user has enough credits
   def user_has_enough_credits

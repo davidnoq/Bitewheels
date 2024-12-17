@@ -1,4 +1,6 @@
 class Event < ApplicationRecord
+  extend FriendlyId
+
   belongs_to :user
   has_many :event_applications, dependent: :destroy
   has_many :food_trucks, through: :event_applications
@@ -24,7 +26,13 @@ class Event < ApplicationRecord
 
   geocoded_by :address
   after_validation :geocode, if: :will_save_change_to_address?
+  after_update :update_event_application_slugs, if: :saved_change_to_name?
+  friendly_id :name, use: %i[slugged history finders]
 
+ # After
+def should_generate_new_friendly_id?
+  will_save_change_to_name? || slug.blank?
+end
   
   # Scopes
   
@@ -48,6 +56,14 @@ class Event < ApplicationRecord
       update_columns(accepting_applications: false)
     else
       update_columns(accepting_applications: true)
+    end
+  end
+
+  private
+  def update_event_application_slugs
+    event_applications.find_each do |application|
+      application.regenerate_slug = true
+      application.save
     end
   end
 

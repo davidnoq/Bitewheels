@@ -179,6 +179,10 @@ class EventsController < ApplicationController
 
   def set_event
     @event = Event.find(params[:id])
+
+    if params[:id] != @event.slug
+      redirect_to @event, :status => :moved_permanently
+    end
   end
 
   def event_params
