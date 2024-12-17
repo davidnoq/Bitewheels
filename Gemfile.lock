@@ -147,6 +147,8 @@ GEM
       faraday_middleware (~> 1.0)
       googleauth (> 0.16, < 2.0)
       jwt (>= 1.5, < 3.0)
+    friendly_id (5.5.1)
+      activerecord (>= 4.0.0)
     geocoder (1.8.3)
       base64 (>= 0.1.0)
       csv (>= 3.0.0)
@@ -393,6 +395,7 @@ DEPENDENCIES
   debug
   devise (~> 4.9)
   firebase-admin-sdk (~> 0.1.2)
+  friendly_id (~> 5.5)
   geocoder
   jbuilder
   jsbundling-rails

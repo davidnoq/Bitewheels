@@ -143,6 +143,9 @@ class EventApplicationsController < ApplicationController
       @event_application = policy_scope(EventApplication).find(params[:id])
       authorize @event_application
     end
+    if params[:id] != @event_application.slug
+      redirect_to @event_application, :status => :moved_permanently
+    end
   end
   
 end

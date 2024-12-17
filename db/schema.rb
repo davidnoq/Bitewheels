@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_12_11_194035) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_17_203701) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -56,9 +56,11 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_11_194035) do
     t.integer "status", default: 0, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug"
     t.index ["event_id"], name: "index_event_applications_on_event_id"
     t.index ["food_truck_id", "event_id"], name: "index_event_applications_on_food_truck_id_and_event_id", unique: true
     t.index ["food_truck_id"], name: "index_event_applications_on_food_truck_id"
+    t.index ["slug"], name: "index_event_applications_on_slug", unique: true
   end
 
   create_table "events", force: :cascade do |t|
@@ -80,6 +82,8 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_11_194035) do
     t.boolean "accepting_applications", default: true, null: false
     t.integer "approved_applications_count", default: 0, null: false
     t.string "searching_for_cuisine"
+    t.string "slug"
+    t.index ["slug"], name: "index_events_on_slug", unique: true
     t.index ["user_id"], name: "index_events_on_user_id"
   end
 
@@ -101,7 +105,20 @@ ActiveRecord::Schema[7.2].define(version: 2024_12_11_194035) do
     t.json "food_image_descriptions", default: {}
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.string "slug"
+    t.index ["slug"], name: "index_food_trucks_on_slug", unique: true
     t.index ["user_id"], name: "index_food_trucks_on_user_id"
+  end
+
+  create_table "friendly_id_slugs", force: :cascade do |t|
+    t.string "slug", null: false
+    t.integer "sluggable_id", null: false
+    t.string "sluggable_type", limit: 50
+    t.string "scope"
+    t.datetime "created_at"
+    t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
+    t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
+    t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
   end
 
   create_table "messages", force: :cascade do |t|
