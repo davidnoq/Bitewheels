@@ -1,0 +1,53 @@
+<!-- app/views/layouts/_footer.html.erb -->
+
+<div class="container">
+  <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top">
+    <!-- Company Information -->
+    <p class="col-md-4 mb-0 text-muted">&copy; 2024 BiteWheels, Inc</p>
+    
+    <!-- Dynamic Navigation Links -->
+    <ul class="nav col-md-4 justify-content-end">
+      <li class="nav-item">
+        <%= link_to "Home", root_path, class: "nav-link px-2 text-muted" %>
+      </li>
+      
+      <% if user_signed_in? %>
+        <li class="nav-item">
+          <%= link_to "Events", all_events_path, class: "nav-link px-2 text-muted" %>
+        </li>
+        
+        <% if current_user.foodtruckowner? %>
+          <li class="nav-item">
+            <%= link_to "Food Trucks", food_trucks_path, class: "nav-link px-2 text-muted" %>
+          </li>
+          <li class="nav-item">
+            <%= link_to "Pricing", purchase_credits_path, class: "nav-link px-2 text-muted" %>
+          </li>
+        <% end %>
+        
+        <li class="nav-item">
+          <%= link_to "About", root_path, class: "nav-link px-2 text-muted" %>
+        </li>
+        
+      <% else %>
+        <li class="nav-item">
+          <%= link_to "Features", root_path, class: "nav-link px-2 text-muted" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "Pricing", purchase_credits_path, class: "nav-link px-2 text-muted" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "FAQs", root_path, class: "nav-link px-2 text-muted" %>
+        </li>
+        <li class="nav-item">
+          <%= link_to "About", root_path, class: "nav-link px-2 text-muted" %>
+        </li>
+      <% end %>
+    </ul>
+    
+    <!-- Optional: Add Social Media Links or Additional Info -->
+    
+   
+   
+  </footer>
+</div>

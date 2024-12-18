@@ -1,0 +1,26 @@
+<% content_for :title, "Editing foodtruck" %>
+
+<% if flash[:notice] %>
+  <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+    <%= flash[:notice] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% elsif flash[:alert] %>
+  <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+    <%= flash[:alert] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<div class="p-5">
+  <!-- Top Section with Heading and Icon -->
+  <div class="mb-4">
+    <h2 class="fw-bold text-dark d-flex align-items-center justify-content-center">
+      <i class="bi bi-truck me-2"></i> Food Trucks - Edit Truck Information
+    </h2>
+    <hr class="my-4">
+  </div>
+
+<%= render "form", foodtruck: @food_truck %>
+
+

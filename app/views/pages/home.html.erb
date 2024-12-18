@@ -1,0 +1,148 @@
+<% content_for :title, "Home Page" %>
+
+<!-- Flash Messages -->
+<% if flash[:notice] %>
+  <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 80%;" role="alert">
+    <%= flash[:notice] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% elsif flash[:alert] %>
+  <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 80%;" role="alert">
+    <%= flash[:alert] %>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+<% end %>
+
+<!-- Hero Section -->
+<div class="d-flex align-items-center justify-content-center text-center text-black" style="background: white; min-height: 50vh;">
+  <div class="container">
+    <h1 class="display-2 fw-bold">Connecting Food Trucks to Amazing Events</h1>
+    <p class="lead fs-4 mt-4 m-auto w-75">
+      Bitewheels is the ultimate platform for event organizers to discover, book, and manage food trucks for their events.
+    </p>
+    
+    <!-- Get Started Button -->
+    <div class="mt-4">
+      <% if user_signed_in? %>
+        <% if current_user.eventorganizer? %>
+          <%= link_to "Get Started", events_path, class: "btn btn-dark btn-lg px-5 py-3 fw-bold" %>
+        <% elsif current_user.foodtruckowner? %>
+          <%= link_to "Get Started", food_trucks_path, class: "btn btn-dark btn-lg px-5 py-3 fw-bold" %>
+        <% end %>
+      <% else %>
+<%= link_to "Get Started", new_user_registration_path(role: 'eventorganizer'), class: "btn btn-dark btn-lg px-5 py-3 fw-bold" %>
+      <% end %>
+    </div>
+
+    <!-- Promotion Buttons -->
+    <% if user_signed_in? && current_user.user? %>
+      <div class="mt-4">
+        <h3>Upgrade Your Account</h3>
+        <div class="d-flex justify-content-center mt-3">
+          <%= button_to "Promote to Food Truck Owner", promote_to_food_truck_owner_path, method: :post, class: "btn btn-success btn-lg", data: { confirm: "Are you sure you want to become a Food Truck Owner?" }, form: { data: { turbo: false } } %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Features Section -->
+<div class="bg-light py-5">
+  <div class="container py-5">
+    <h1 class="text-center display-4 fw-bold mb-5 text-dark" >Why Choose Bitewheels?</h1>
+    <div class="row g-4">
+      <!-- Streamlined Booking -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0 bg-white text-center ">
+          <div class="card-body">
+            <i class=" bi bi-hourglass text-dark mb-3"></i>
+            <h5 class="fw-bold fs-3">Streamlined Booking</h5>
+            <p class="lead fs-5">Effortlessly create events to manage and save on tons of time. </p>
+          </div>
+        </div>
+      </div>
+      <!-- Event Management -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0 bg-white text-center ">
+          <div class="card-body">
+            <i class="bi bi-calendar-check  text-dark mb-3"></i>
+            <h5 class="fw-bold fs-3">Event Management</h5>
+            <p class="lead fs-5">Manage all aspects of your food truck lineup, from scheduling to menu coordination.</p>
+          </div>
+        </div>
+      </div>
+      <!-- Diverse Selection -->
+      <div class="col-lg-4 col-md-6">
+        <div class="card h-100 shadow-sm border-0 bg-white text-center ">
+          <div class="card-body">
+            <i class="bi bi-people text-dark mb-3"></i>
+            <h5 class="fw-bold fs-3">Diverse Selection</h5>
+            <p class="lead fs-5">Access a wide variety of food trucks to cater to all tastes and dietary requirements.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Call-to-Action Section -->
+<div class="text-center py-5 my-5" >
+  <div class="container">
+    <h2 class="text-center text-dark display-4 fw-bold">Ready to Get Started?</h2>
+    <p class="lead mt-4">Register with us today for a limited free trial.</p>
+    <div class="mt-4">
+      <% if user_signed_in? %>
+        <% if current_user.eventorganizer? %>
+          <%= link_to "Manage Events", events_path, class: "btn btn-dark btn-lg px-5 py-3 fw-bold" %>
+        <% end %>
+      <% else %>
+<%= link_to "Get Started", new_user_registration_path(role: 'eventorganizer'), class: "btn btn-dark btn-lg px-5 py-3 fw-bold" %>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+
+
+<!-- Promote to Event Organizer Modal -->
+<div class="modal fade" id="promoteEventOrganizerModal" tabindex="-1" aria-labelledby="promoteEventOrganizerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="promoteEventOrganizerModalLabel">Promote to Event Organizer</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to become an Event Organizer?
+      </div>
+      <div class="modal-footer">
+        <%= button_to "Yes, Promote Me", promote_to_event_organizer_path, method: :post, class: "btn btn-primary" %>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Promote to Food Truck Owner Modal -->
+<div class="modal fade" id="promoteFoodTruckOwnerModal" tabindex="-1" aria-labelledby="promoteFoodTruckOwnerModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="promoteFoodTruckOwnerModalLabel">Promote to Food Truck Owner</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Are you sure you want to become a Food Truck Owner?
+      </div>
+      <div class="modal-footer">
+        <%= button_to "Yes, Promote Me", promote_to_food_truck_owner_path, method: :post, class: "btn btn-success" %>
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
+
+

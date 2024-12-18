@@ -1,0 +1,15 @@
+
+
+<!-- Set the eventApplicationId for JavaScript -->
+<script>
+  window.eventApplicationId = <%= @event_application.id %>;
+</script>
+
+<div id="messages" class="mb-3" style="height: 600px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px;">
+  <%= render @messages %>
+</div>
+
+<form id="chat-form" class="d-flex">
+  <input type="text" id="message-input" placeholder="Type your message here..." class="form-control me-2" autocomplete="off" required />
+  <button type="submit" class="btn btn-primary">Send</button>
+</form>

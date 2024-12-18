@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.2].define(version: 2024_09_30_194609) do
+ActiveRecord::Schema[7.2].define(version: 2024_12_17_203701) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -42,41 +42,121 @@ ActiveRecord::Schema[7.2].define(version: 2024_09_30_194609) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
-  create_table "event_organizers", force: :cascade do |t|
+  create_table "credit_packages", force: :cascade do |t|
+    t.string "name"
+    t.integer "credits"
+    t.integer "price_cents"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "event_applications", force: :cascade do |t|
+    t.bigint "food_truck_id", null: false
+    t.bigint "event_id", null: false
+    t.integer "status", default: 0, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "slug"
+    t.index ["event_id"], name: "index_event_applications_on_event_id"
+    t.index ["food_truck_id", "event_id"], name: "index_event_applications_on_food_truck_id_and_event_id", unique: true
+    t.index ["food_truck_id"], name: "index_event_applications_on_food_truck_id"
+    t.index ["slug"], name: "index_event_applications_on_slug", unique: true
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.string "name"
+    t.text "description"
+    t.datetime "start_date"
+    t.datetime "end_date"
+    t.integer "expected_attendees"
+    t.string "logo"
+    t.integer "foodtruck_amount"
+    t.string "address"
+    t.float "latitude"
+    t.float "longitude"
+    t.integer "status", default: 0, null: false
+    t.bigint "user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.integer "credit_cost", default: 3, null: false
+    t.boolean "accepting_applications", default: true, null: false
+    t.integer "approved_applications_count", default: 0, null: false
+    t.string "searching_for_cuisine"
+    t.string "slug"
+    t.index ["slug"], name: "index_events_on_slug", unique: true
+    t.index ["user_id"], name: "index_events_on_user_id"
+  end
+
+  create_table "food_truck_ratings", force: :cascade do |t|
+    t.integer "rating"
+    t.text "review"
+    t.bigint "food_truck_id", null: false
+    t.bigint "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["food_truck_id"], name: "index_food_truck_ratings_on_food_truck_id"
+    t.index ["user_id"], name: "index_food_truck_ratings_on_user_id"
+  end
+
+  create_table "food_trucks", force: :cascade do |t|
+    t.string "name"
+    t.string "cuisine"
+    t.bigint "user_id", null: false
+    t.json "food_image_descriptions", default: {}
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "slug"
+    t.index ["slug"], name: "index_food_trucks_on_slug", unique: true
+    t.index ["user_id"], name: "index_food_trucks_on_user_id"
+  end
+
+  create_table "friendly_id_slugs", force: :cascade do |t|
+    t.string "slug", null: false
+    t.integer "sluggable_id", null: false
+    t.string "sluggable_type", limit: 50
+    t.string "scope"
+    t.datetime "created_at"
+    t.index ["slug", "sluggable_type", "scope"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type_and_scope", unique: true
+    t.index ["slug", "sluggable_type"], name: "index_friendly_id_slugs_on_slug_and_sluggable_type"
+    t.index ["sluggable_type", "sluggable_id"], name: "index_friendly_id_slugs_on_sluggable_type_and_sluggable_id"
+  end
+
+  create_table "messages", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "event_application_id", null: false
+    t.bigint "user_id", null: false
+    t.index ["event_application_id"], name: "index_messages_on_event_application_id"
+    t.index ["user_id"], name: "index_messages_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
     t.string "reset_password_token"
     t.datetime "reset_password_sent_at"
     t.datetime "remember_created_at"
+    t.string "role", default: "user"
+    t.string "first_name"
+    t.string "last_name"
+    t.string "phone_number"
+    t.string "country"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_event_organizers_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_event_organizers_on_reset_password_token", unique: true
-  end
-
-  create_table "events", force: :cascade do |t|
-    t.string "name"
-    t.string "location"
-    t.datetime "date"
-    t.integer "expected_attendees"
-    t.string "logo"
-    t.text "description"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "organizer_id"
-    t.integer "amount_of_food_trucks"
-  end
-
-  create_table "food_trucks", force: :cascade do |t|
-    t.string "cuisine"
-    t.bigint "event_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.string "name"
-    t.index ["event_id"], name: "index_food_trucks_on_event_id"
+    t.integer "credits", default: 100, null: false
+    t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
-  add_foreign_key "food_trucks", "events"
+  add_foreign_key "event_applications", "events"
+  add_foreign_key "event_applications", "food_trucks"
+  add_foreign_key "events", "users"
+  add_foreign_key "food_truck_ratings", "food_trucks"
+  add_foreign_key "food_truck_ratings", "users"
+  add_foreign_key "food_trucks", "users"
+  add_foreign_key "messages", "event_applications"
+  add_foreign_key "messages", "users"
 end

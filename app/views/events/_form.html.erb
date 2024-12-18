@@ -1,0 +1,186 @@
+<!-- app/views/events/_form.html.erb -->
+
+
+
+  <!-- Event Form Card -->
+  <div class="d-flex justify-content-center align-items-center bg-white">
+    <div class="card shadow-lg" style="max-width: 800px; width: 100%; margin: auto;">
+      <div class="card-body px-5 py-4">
+        <!-- Card Title and Description -->
+        <div class="d-flex justify-content-center align-items-center mb-4">
+          <h2 class="card-title text-dark fw-bold mb-0">Event Details</h2>
+        </div>
+        <p class="text-center text-secondary mb-5">
+          Enter the information for your new event below.
+        </p>
+
+        <!-- Display Error Messages -->
+        <% if event.errors.any? %>
+          <div class="alert alert-danger">
+            <h4 class="alert-heading"><%= pluralize(event.errors.count, "error") %> prohibited this event from being saved:</h4>
+            <ul>
+              <% event.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        <% end %>
+
+        <!-- Event Form -->
+        <%= form_with(model: event, class: "px-3") do |form| %>
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <%= form.label :name, class: "form-label fw-semibold text-dark" %>
+              <%= form.text_field :name, class: "form-control", required: true %>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <%= form.label :address, class: "form-label fw-semibold text-dark" %>
+              <%= form.text_field :address, placeholder: "123 Main St, Springfield, IL, USA", id: "event_address", class: "form-control", required: true %>
+            </div>
+          </div>
+
+          <!-- Hidden Fields for Latitude and Longitude -->
+          <%= form.hidden_field :latitude, id: :event_latitude %>
+          <%= form.hidden_field :longitude, id: :event_longitude %>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <%= form.label :start_date, class: "form-label fw-semibold text-dark" %>
+              <%= form.datetime_field :start_date, class: "form-control", required: true %>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <%= form.label :end_date, class: "form-label fw-semibold text-dark" %>
+              <%= form.datetime_field :end_date, class: "form-control", required: true %>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <%= form.label :expected_attendees, class: "form-label fw-semibold text-dark" %>
+              <%= form.number_field :expected_attendees, min: 0, class: "form-control", required: true %>
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <%= form.label :foodtruck_amount, "Number of Food Trucks", class: "form-label fw-semibold text-dark" %>
+              <%= form.number_field :foodtruck_amount, min: 0, value: event.foodtruck_amount, class: "form-control", id: "foodtruck_amount" %>
+            </div>
+
+             <div class="row">
+            <div class="col-md-6 mb-3">
+                <%= form.label :description, class: "form-label fw-semibold text-dark" %>
+                <%= form.text_area :description, class: "form-control", required: true %>
+              </div>                
+              <div class="col-md-6 mb-3">
+  <%= form.label :searching_for_cuisine, class: "form-label fw-semibold text-dark" %>
+  <%= form.select :searching_for_cuisine, options_for_select(['Latin', 'Italian', 'Japanese', 'American', 'Indian', 'All'], event.searching_for_cuisine), { prompt: 'Select a Cuisine Type' }, class: 'form-control', id: 'cuisine_select' %>
+</div>
+          </div>
+           </div>
+
+          <% if current_user.eventorganizer? %>
+            <div class="row">
+              <div class="col-md-6 mb-3">
+                <%= form.label :credit_cost, "Credit Cost to Apply", class: "form-label fw-semibold text-dark" %>
+                <%= form.number_field :credit_cost, min: 0, class: "form-control", required: true, placeholder: "Enter credit cost for applications" %>
+                <small class="form-text text-muted">
+                  The number of credits required for each food truck to apply to this event.
+                </small>
+              </div>
+              
+              <div class="col-md-6 mb-3">
+                <%= form.label :status, "Save as", class: "form-label fw-semibold text-dark" %>
+                <%= form.select :status, options_for_select([['Draft', 'draft'], ['Publish', 'published']], event.status), {}, class: "form-select" %>
+              </div>
+            </div>
+          <% end %>
+
+          <!-- Submit Button -->
+          <div class="d-flex justify-content-center">
+            <%= form.submit "Save Event", class: "btn btn-primary mt-4 px-5" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+
+<!-- JavaScript for Google Places Autocomplete and Map Integration -->
+<script>
+  function initAutocomplete() {
+    var input = document.getElementById('event_address');
+    var latitudeField = document.getElementById('event_latitude');
+    var longitudeField = document.getElementById('event_longitude');
+    var mapElement = document.getElementById('map');
+    var map;
+    var marker;
+
+    // Initialize the Autocomplete functionality
+    var autocomplete = new google.maps.places.Autocomplete(input, {
+      types: ['geocode'] // Restrict to geographical location types
+    });
+
+    // Listen for the event when a place is selected
+    autocomplete.addListener('place_changed', function() {
+      var place = autocomplete.getPlace();
+
+      // Check if the selected place has geometry
+      if (!place.geometry) {
+        alert("No details available for input: '" + place.name + "'");
+        return;
+      }
+
+      // Extract latitude and longitude
+      var lat = place.geometry.location.lat();
+      var lng = place.geometry.location.lng();
+
+      // Set the hidden fields
+      latitudeField.value = lat;
+      longitudeField.value = lng;
+
+      // Initialize or update the map
+      if (!map) {
+        map = new google.maps.Map(mapElement, {
+          center: { lat: lat, lng: lng },
+          zoom: 14
+        });
+      } else {
+        map.setCenter({ lat: lat, lng: lng });
+      }
+
+      // Initialize or move the marker
+      if (marker) {
+        marker.setPosition({ lat: lat, lng: lng });
+      } else {
+        marker = new google.maps.Marker({
+          position: { lat: lat, lng: lng },
+          map: map
+        });
+      }
+    });
+  }
+</script>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const startDateField = document.getElementById("event_start_date");
+    const endDateField = document.getElementById("event_end_date");
+
+    function validateDates() {
+      const startDate = new Date(startDateField.value);
+      const endDate = new Date(endDateField.value);
+
+      if (endDate < startDate) {
+        endDateField.setCustomValidity("End date must be after the start date.");
+      } else {
+        endDateField.setCustomValidity("");
+      }
+    }
+
+    startDateField.addEventListener("change", validateDates);
+    endDateField.addEventListener("change", validateDates);
+  });
+</script>
+
+<!-- Load the Google Maps JavaScript API with Places library and use Rails credentials for the API key -->
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps[:api_key] %>&libraries=places&callback=initAutocomplete"></script>

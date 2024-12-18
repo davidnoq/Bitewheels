@@ -2,16 +2,12 @@
 
 one:
   name: MyString
-  location: MyString
-  date: 2024-09-26 00:49:38
-  expected_attendees: 1
-  logo: MyString
-  description: MyText
+  description: MyString
+  start_date: 2024-09-30 20:47:27
+  end_date: 2024-09-30 20:47:27
 
 two:
   name: MyString
-  location: MyString
-  date: 2024-09-26 00:49:38
-  expected_attendees: 1
-  logo: MyString
-  description: MyText
+  description: MyString
+  start_date: 2024-09-30 20:47:27
+  end_date: 2024-09-30 20:47:27

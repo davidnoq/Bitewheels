@@ -1,0 +1,45 @@
+<main class="form-signin w-100 m-auto d-flex justify-content-center align-items-center min-vh-100">
+  <!-- Form Container with Maximum Width -->
+  <div class="w-100" style="max-width: 30rem;">
+    <!-- Logo and Title -->
+    <div class="text-center mb-4">
+      <%= image_tag 'svgs/logo.svg', alt: 'Bitewheels Logo', width: 72, height: 57 %>
+      <h1 class="h3 mb-3 fw-normal">Sign In</h1>
+    </div>
+
+    <!-- Devise Login Form -->
+    <%= form_for(resource, as: resource_name, url: session_path(resource_name), html: { class: 'needs-validation', novalidate: true }) do |f| %>
+      
+      <!-- Email Field with Floating Label -->
+      <div class="form-floating mb-3">
+        <%= f.email_field :email, autofocus: true, autocomplete: "email", class: "form-control", placeholder: "name@example.com", id: "floatingInput" %>
+        <%= f.label :email, "Email address", class: "form-label", for: "floatingInput" %>
+      </div>
+
+      <!-- Password Field with Floating Label -->
+      <div class="form-floating mb-3">
+        <%= f.password_field :password, autocomplete: "current-password", class: "form-control", placeholder: "Password", id: "floatingPassword" %>
+        <%= f.label :password, "Password", class: "form-label", for: "floatingPassword" %>
+      </div>
+
+      <!-- Remember Me Checkbox -->
+      <% if devise_mapping.rememberable? %>
+        <div class="form-check mb-3">
+          <%= f.check_box :remember_me, class: 'form-check-input', id: 'remember_me' %>
+          <%= f.label :remember_me, "Remember me", class: 'form-check-label', for: 'remember_me' %>
+        </div>
+      <% end %>
+
+      <!-- Submit Button -->
+      <div class="d-grid">
+        <%= f.submit "Sign in", data: { turbo: false }, class: "btn btn-primary py-2" %>
+      </div>
+
+      <!-- Additional Links (e.g., Forgot Password, Sign Up) -->
+      <div class="mt-3 text-center">
+        <%= render "devise/shared/links" %>
+      </div>
+    <% end %>
+
+  </div>
+</main>

@@ -1,23 +1,79 @@
 Rails.application.routes.draw do
-  # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
-  # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
-  # Can be used by load balancers and uptime monitors to verify that the app is live.
+ 
+  # Devise routes for User authentication
+  devise_for :users, controllers: {
+    registrations: "users/registrations"
+  }
+
+  # Define a Devise scope for the apply_to_event route
+  
+  # Routes for Events
+  resources :events do
+    member do
+      patch :publish
+      patch :complete
+    end
+    collection do
+      get :search
+      get :completed
+      get :all
+    end
+
+    # Nested routes for Event Applications specific to events
+    resources :event_applications, only: [:index, :new, :create, :show] do
+      member do
+        patch :approve
+        patch :reject
+      end
+    end
+  end
+
+  # Top-level routes for Event Applications
+  resources :event_applications, only: [:index, :show] do
+    resource :food_truck, only: [:show], controller: 'food_trucks'
+  end
+
+# Routes for Food Trucks
+resources :food_trucks do
+  member do
+    delete :remove_permit
+    delete :remove_menu_file
+    delete :remove_food_image
+  end
+  # Nested routes for Food Truck Ratings
+  resources :food_truck_ratings, only: [:create, :edit, :update, :destroy]
+end
+
+# Checkout Routes
+resources :checkout, only: [:create]
+
+
+#user purchase credits routes
+  get 'purchase_credits', to: 'pages#purchase_credits', as: 'purchase_credits'
+  post 'checkout/create', to: 'checkout#create', as: :checkout_create
+  get 'checkout/success', to: 'checkout#success', as: :checkout_success
+  get 'checkout/cancel', to: 'checkout#cancel', as: :checkout_cancel
+
+    # User Promotion Routes
+  post "promote_to_event_organizer", to: "pages#promote_to_event_organizer"
+  post "promote_to_food_truck_owner", to: "pages#promote_to_food_truck_owner"
+
+  # User Profiles
+  get "users/:id", to: "users#show", as: "user"
+  get "profile", to: "users#show", as: "user_profile"
+
+  # Health Check and PWA Routes
   get "up" => "rails/health#show", as: :rails_health_check
-
-  # Render dynamic PWA files from app/views/pwa/*
   get "service-worker" => "rails/pwa#service_worker", as: :pwa_service_worker
   get "manifest" => "rails/pwa#manifest", as: :pwa_manifest
+  
+  devise_scope :user do
+    get 'apply_to_event/:event_id', to: 'users/registrations#apply_to_event', as: 'apply_to_event'
+  end
 
-  # Set root path
-  root to: "static#home"
+  # Root Path
+  root "pages#home"
 
-  # Add Devise routes for User model
-  devise_for :event_organizers, controllers: {
-  registrations: 'event_organizers/registrations'
-}
-
-  resources :events
-  # Defines the root path route ("/")
-  # root "posts#index"
+  mount ActionCable.server => '/cable'
 end
