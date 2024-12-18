@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-
+gem "ruby", '3.5.5'
 
 
 
