@@ -6,20 +6,25 @@ class EventApplicationsController < ApplicationController
 
 
   def index
-    if @event
-      # Nested route: Event Organizer viewing applications for a specific event
-      @event_applications = policy_scope(@event.event_applications).page(params[:page]).per(10)
-    else
-      # Top-level route: Food Truck Owner viewing their own applications
-      @event_applications = policy_scope(EventApplication).page(params[:page]).per(10)
+    @event_applications = policy_scope(EventApplication)
+
+    if params[:start_date].present? && params[:end_date].present?
+      start_date = Date.parse(params[:start_date])
+      end_date = Date.parse(params[:end_date])
+      @event_applications = @event_applications.joins(:event).where(events: { start_date: start_date..end_date })
     end
 
+    if params[:event_id].present?
+      @event_applications = @event_applications.where(event_id: params[:event_id])
+    end
+
+    @event_applications = @event_applications.page(params[:page]).per(10)
     authorize @event_applications
 
     if current_user.eventorganizer?
-      render "event_applications/index" # View for Event Organizers
+      render "event_applications/index"
     else
-      render "event_applications/food_truck_index" # View for Food Truck Owners
+      render "event_applications/food_truck_index"
     end
   end
 

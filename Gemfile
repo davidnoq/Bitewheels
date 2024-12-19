@@ -66,6 +66,9 @@ group :test do
   gem "capybara"
   gem "selenium-webdriver"
 end
+# Gemfile
+
+gem 'whenever', require: false
 
 gem "devise", "~> 4.9"
 gem "pundit"

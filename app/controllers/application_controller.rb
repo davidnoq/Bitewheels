@@ -11,6 +11,16 @@ class ApplicationController < ActionController::Base
     root_path
   end
 
+
+  def after_sign_in_path_for(resource)
+    if resource.eventorganizer?
+      events_path # Redirect to events index
+    elsif resource.foodtruckowner?
+      food_trucks_path # Redirect to food trucks index
+    else
+      super # Default Devise behavior
+    end
+  end
   # any pundit error will give a not authorized error and go to
   # the user not authorized function below
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -32,7 +42,5 @@ class ApplicationController < ActionController::Base
     devise_parameter_sanitizer.permit(:sign_up, keys: [:first_name, :last_name, :phone_number])
     devise_parameter_sanitizer.permit(:account_update, keys: [:first_name, :last_name, :phone_number])
   end
-  def after_sign_in_path_for(resource)
-    new_event_path
-  end
+  
 end

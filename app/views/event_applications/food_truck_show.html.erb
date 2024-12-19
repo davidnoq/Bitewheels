@@ -33,10 +33,12 @@
       <!-- Application Details -->
       <div class="card shadow-sm">
         
-          <h5 class="mb-0 d-flex align-items-center ps-3 pt-3">
+          <h5 class="card-title text-left ps-3 pt-3 mb-0">
             <i class="bi bi-file-earmark-text me-2"></i> Application Details
           </h5>
-       
+          <h6 class="text-left ps-3 pt-3 mb-0">
+            <strong>Date Applied:</strong> <%= @event_application.created_at.strftime("%B %d, %Y") %>
+          </h6>
         <div class="card-body">
           <p class="mb-3">
             <strong>Status:</strong>

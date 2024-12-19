@@ -1,44 +1,56 @@
 <!-- app/views/events/_event.html.erb -->
 
 <div id="<%= dom_id event %>">
- <% if local_assigns[:show_name] %>
-  <strong><%= event.name %></strong>
-   <% end %>
-
-  <p class="card-text">
-  <% if local_assigns[:show_address] %>
-    <strong>Address:</strong> 
- 
+  <% if local_assigns[:show_name] %>
+    <strong><%= event.name %></strong>
   <% end %>
-  <%= event.address %>
-   </p>
 
-  <% if local_assigns[:show_expected_attendees]  %> <!-- Add this check -->
+  <!-- Address Section -->
+  <% if local_assigns[:show_address] %>
+    <% if policy(event).address? %>
+      <div class="mb-3">
+        <%= content_tag :h5, class: 'fw-semibold text-dark d-flex align-items-center' do %>
+          <i class="bi bi-geo-alt me-2"></i> Address
+        <% end %>
+        <p><%= event.address %></p>
+      </div>
+    <% else %>
+      <div class="mb-3">
+        <%= content_tag :h5, class: 'fw-semibold text-dark d-flex align-items-center' do %>
+          <i class="bi bi-geo-alt me-2"></i> Address
+        <% end %>
+        <p><em>Address available after applying to the event.</em></p>
+        
+      </div>
+    <% end %>
+  <% end %>
+
+  <% if local_assigns[:show_expected_attendees] %>
     <p class="card-text">
       <strong>Expected Attendees:</strong> <%= event.expected_attendees %>
     </p>
   <% end %>
-   <p class="card-text">
-    <strong>Number of Food Trucks:</strong> <%= event.foodtruck_amount %>
-  </p>
-  <% unless current_user&.eventorganizer? %>
-          <p class="card-text">
-            <strong>Credit Cost to Apply:</strong> <%= @event.credit_cost %>
-          </p>
-        <% end %>
-  
 
   <p class="card-text">
-  <% if local_assigns[:show_date] %>
-  <strong>Date and Time:</strong>
-   <% end %>
-  <% if event.start_date.to_date == event.end_date.to_date %>
-   <%= event.start_date.strftime('%m/%d') %>: <%= event.start_date.strftime('%I:%M %p').downcase %> - <%= event.end_date.strftime('%I:%M %p').downcase %>
-  <% else %>
-    <%= event.start_date.strftime('%m/%d %I:%M %p').downcase %> - <%= event.end_date.strftime('%m/%d %I:%M %p').downcase %>
+    <strong>Number of Food Trucks:</strong> <%= event.foodtruck_amount %>
+  </p>
+
+  <% unless current_user&.eventorganizer? %>
+    <p class="card-text">
+      <strong>Credit Cost to Apply:</strong> <%= @event.credit_cost %>
+    </p>
   <% end %>
-</p>
- 
+
+  <p class="card-text">
+    <% if local_assigns[:show_date] %>
+      <strong>Date and Time:</strong>
+    <% end %>
+    <% if event.start_date.to_date == event.end_date.to_date %>
+      <%= event.start_date.strftime('%B %d, %Y %I:%M %p').downcase %> - <%= event.end_date.strftime('%I:%M %p').downcase %>
+    <% else %>
+      <%= event.start_date.strftime('%B %d, %Y %I:%M %p').downcase %> - <%= event.end_date.strftime('%B %d, %Y %I:%M %p').downcase %>
+    <% end %>
+  </p>
 
   <% if local_assigns[:show_latitude_longitude] %>
     <p class="card-text">

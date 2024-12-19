@@ -84,7 +84,15 @@ class EventsController < ApplicationController
 
   def all
     @events = Event.where(status: 'published')
-    authorize :event, :all? 
+    authorize :event, :all?
+
+    if user_signed_in? && current_user.foodtruckowner?
+      # Get all event IDs the user has applied to
+      @applied_event_ids = current_user.food_trucks.joins(:event_applications).pluck(:event_id)
+    else
+      @applied_event_ids = []
+    end
+
     # Location-based filtering
     if params[:latitude].present? && params[:longitude].present?
       coordinates = [params[:latitude].to_f, params[:longitude].to_f]
@@ -118,8 +126,14 @@ class EventsController < ApplicationController
   end
   
   def show
+    @event = Event.find(params[:id])
     authorize @event
 
+    if user_signed_in? && current_user.foodtruckowner?
+      @has_applied = current_user.food_trucks.joins(:event_applications).exists?(event_applications: { event_id: @event.id })
+    else
+      @has_applied = false
+    end
     @approved_count = @event.approved_applications_count
     @food_trucks = @event.food_trucks
     @approved_food_trucks = @event.food_trucks.joins(:event_applications)

@@ -30,7 +30,12 @@ class EventPolicy < ApplicationPolicy
       record.published?
     end
   end
+  def address?
+    return false unless user&.foodtruckowner? # Only food truck owners are concerned
 
+    # Check if any of the user's food trucks have applied to this event
+    user.food_trucks.joins(:event_applications).where(event_applications: { event_id: record.id }).exists?
+  end
   def complete?
     user&.eventorganizer?
   end

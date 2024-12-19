@@ -35,7 +35,9 @@ def should_generate_new_friendly_id?
 end
   
   # Scopes
-  
+  # Scope to find events that have ended but are not yet completed
+  scope :needs_completion, -> { where('end_date < ?', Time.current).where.not(status: :completed) }
+
   scope :published, -> { where(status: statuses[:published]) }
   scope :draft, -> { where(status: statuses[:draft]) }
 
@@ -57,6 +59,11 @@ end
     else
       update_columns(accepting_applications: true)
     end
+  end
+
+  # Method to mark an event as completed
+  def mark_as_completed!
+    update!(status: :completed)
   end
 
   private

@@ -21,6 +21,9 @@
     <h2 class="fw-bold text-dark">
       <i class="bi bi-info-circle me-2"></i> APPLICATION DETAILS
     </h2>
+    <p class="text-muted mb-3">
+      Date Applied: <%= @event_application.created_at.strftime("%B %d, %Y") %>
+    </p>
     <div class="mb-3">
       <div class="d-flex justify-content-center align-items-center gap-2">
         <%= link_to "Approve Application", approve_event_event_application_path(@event_application), method: :patch, data: { confirm: "Are you sure you want to approve this application?" }, class: "btn btn-success" %>

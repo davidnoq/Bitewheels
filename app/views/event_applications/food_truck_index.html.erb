@@ -39,11 +39,18 @@
                     <div>
                       <h5 class="mb-1">
                         <% if application.event.present? %>
-                          <%= link_to application.event.name, event_path(application.event), class: "text-decoration-none text-dark fw-bold" %>
+                          <%= link_to application.event.name, event_path(application.event), class: "text-decoration-none bg-light text-dark fw-bold" %>
                         <% else %>
                           <span class="text-muted">Event not found</span>
                         <% end %>
                       </h5>
+                      <p class="mb-1">
+                        <% if application.event.start_date.to_date == application.event.end_date.to_date %>
+                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d, %Y') %>
+                        <% else %>
+                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d') %> - <%= application.event.end_date.strftime('%d, %Y') %>
+                        <% end %>
+                      </p>
                       <p class="mb-1"><strong>Food Truck:</strong> <%= application.food_truck.name %></p>
                       <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
                       <span class="badge bg-success">Approved</span>
@@ -83,6 +90,13 @@
                           <span class="text-muted">Event not found</span>
                         <% end %>
                       </h5>
+                      <p class="mb-1">
+                        <% if application.event.start_date.to_date == application.event.end_date.to_date %>
+                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d, %Y') %>
+                        <% else %>
+                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d') %> - <%= application.event.end_date.strftime('%d, %Y') %>
+                        <% end %>
+                      </p>
                       <p class="mb-1"><strong>Food Truck:</strong> <%= application.food_truck.name %></p>
                       <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
                       <span class="badge bg-warning text-dark">Pending</span>
@@ -122,6 +136,13 @@
                           <span class="text-muted">Event not found</span>
                         <% end %>
                       </h5>
+                      <p class="mb-1">
+                        <% if application.event.start_date.to_date == application.event.end_date.to_date %>
+                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d, %Y') %>
+                        <% else %>
+                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d') %> - <%= application.event.end_date.strftime('%d, %Y') %>
+                        <% end %>
+                      </p>
                       <p class="mb-1"><strong>Food Truck:</strong> <%= application.food_truck.name %></p>
                       <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
                       <span class="badge bg-danger">Rejected</span>
