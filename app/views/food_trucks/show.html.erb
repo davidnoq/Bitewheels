@@ -80,7 +80,7 @@
           <% if @food_truck.menu_files.attached? %>
             <div class="row">
               <% @food_truck.menu_files.each do |file| %>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-4 mb-3 d-flex align-items-center">
                   <div class="d-flex align-items-center">
                     <% if file.content_type.start_with?('image/') %>
                       <%= image_tag url_for(file), class: 'img-thumbnail me-2', style: 'width: 150px; height: 150px; object-fit: cover;' %>
@@ -105,10 +105,10 @@
           <% if @food_truck.food_images.attached? %>
             <div class="row">
               <% @food_truck.food_images.each do |image| %>
-                <div class="col-md-4 mb-3">
+                <div class="col-md-4 mb-3 d-flex align-items-center">
                   <div class="d-flex align-items-center">
                     <%= image_tag url_for(image), class: 'img-thumbnail me-2', style: 'width: 150px; height: 150px; object-fit: cover;' %>
-                    <p class="mb-1"><strong>Filename:</strong> <%= image.filename.to_s %></p>
+                    <p class="mb-1" style="overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;"><strong>Filename:</strong> <%= image.filename.to_s %></p>
                   </div>
                 </div>
               <% end %>

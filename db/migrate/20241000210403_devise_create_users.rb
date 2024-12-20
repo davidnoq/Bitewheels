@@ -44,7 +44,7 @@ class DeviseCreateUsers < ActiveRecord::Migration[7.2]
 
     add_index :users, :email,                unique: true
     add_index :users, :reset_password_token, unique: true
-    add_column :users, :credits, :integer, default: 100, null: false
+    add_column :users, :credits, :integer, default: 10, null: false
     #default is zero and we have a promotional button right now to add credits
 
     # add_index :users, :confirmation_token,   unique: true
