@@ -6,25 +6,28 @@ class EventApplicationsController < ApplicationController
 
 
   def index
-    @event_applications = policy_scope(EventApplication)
+    if @event
+      # Nested route: Event Organizer viewing applications for a specific event
+      @event_applications = policy_scope(@event.event_applications).page(params[:page]).per(10)
+    else
+      # Top-level route: Food Truck Owner viewing their own applications
+      @event_applications = policy_scope(EventApplication).page(params[:page]).per(10)
+    end
+    
 
+    authorize @event_applications
     if params[:start_date].present? && params[:end_date].present?
       start_date = Date.parse(params[:start_date])
       end_date = Date.parse(params[:end_date])
-      @event_applications = @event_applications.joins(:event).where(events: { start_date: start_date..end_date })
+      @event_applications = @event_applications.where(created_at: start_date.beginning_of_day..end_date.end_of_day)
     end
-
-    if params[:event_id].present?
-      @event_applications = @event_applications.where(event_id: params[:event_id])
-    end
-
-    @event_applications = @event_applications.page(params[:page]).per(10)
-    authorize @event_applications
+    UserEventApplicationRead.find_or_initialize_by(user: current_user, event_application: @event_application)
+      .update(last_read_at: Time.current)
 
     if current_user.eventorganizer?
-      render "event_applications/index"
+      render "event_applications/index" # View for Event Organizers
     else
-      render "event_applications/food_truck_index"
+      render "event_applications/food_truck_index" # View for Food Truck Owners
     end
   end
 
@@ -33,8 +36,12 @@ class EventApplicationsController < ApplicationController
     @food_truck = @event_application.food_truck
     @event = @event_application.event
     @messages = @event_application.messages.order(created_at: :asc)
-  @message = @event_application.messages.new  # For form submission if needed
+   @message = @event_application.messages.new  # For form submission if needed
   
+      # Update or create the read status
+      UserEventApplicationRead.find_or_initialize_by(user: current_user, event_application: @event_application)
+      .update(last_read_at: Time.current)
+
     # Dynamically render based on user role
     if current_user.foodtruckowner?
       render "event_applications/food_truck_show"

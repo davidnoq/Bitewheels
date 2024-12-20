@@ -45,18 +45,18 @@
                         <% end %>
                       </h5>
                       <p class="mb-1">
-                        <% if application.event.start_date.to_date == application.event.end_date.to_date %>
-                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d, %Y') %>
-                        <% else %>
-                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d') %> - <%= application.event.end_date.strftime('%d, %Y') %>
-                        <% end %>
+                        <strong>Applied:</strong> <%= application.created_at.strftime('%B %d, %Y') %>
                       </p>
                       <p class="mb-1"><strong>Food Truck:</strong> <%= application.food_truck.name %></p>
                       <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
-                      <span class="badge bg-success">Approved</span>
-                    </div>
-                    <%= link_to "View More", event_application_path(application), class: "btn btn-primary btn-sm" %>
-                  </div>
+                      <% new_count = new_messages_count(application) %>
+                      <% if new_count > 0 %>
+                      <p class="mb-1"><strong>New Messages:</strong> <span class="badge bg-dark badge-new-messages"><%= new_count > 9 ? "9+" : new_count %></span></p>
+                      <% end %>
+                     <p class="mb-1">
+                    <%= link_to "View More", event_application_path(application), class: "btn btn-dark btn-sm mt-2" %>
+                    
+                  </p>
                 </li>
               <% end %>
             </ul>
@@ -91,18 +91,19 @@
                         <% end %>
                       </h5>
                       <p class="mb-1">
-                        <% if application.event.start_date.to_date == application.event.end_date.to_date %>
-                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d, %Y') %>
-                        <% else %>
-                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d') %> - <%= application.event.end_date.strftime('%d, %Y') %>
-                        <% end %>
+                        <strong>Applied:</strong> <%= application.created_at.strftime('%B %d, %Y') %>
                       </p>
                       <p class="mb-1"><strong>Food Truck:</strong> <%= application.food_truck.name %></p>
                       <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
-                      <span class="badge bg-warning text-dark">Pending</span>
-                    </div>
-                    <%= link_to "View More", event_application_path(application), class: "btn btn-primary btn-sm" %>
-                  </div>
+                      <% new_count = new_messages_count(application) %>
+                      <% if new_count > 0 %>
+                      <p class="mb-1"><strong>New Messages:</strong> <span class="badge bg-dark badge-new-messages"><%= new_count > 9 ? "9+" : new_count %></span></p>
+                      <% end %>
+                     <p class="mb-1">
+                    <%= link_to "View More", event_application_path(application), class: "btn btn-dark btn-sm mt-2" %>
+                    
+                  </p>
+                      
                 </li>
               <% end %>
             </ul>
@@ -137,18 +138,20 @@
                         <% end %>
                       </h5>
                       <p class="mb-1">
-                        <% if application.event.start_date.to_date == application.event.end_date.to_date %>
-                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d, %Y') %>
-                        <% else %>
-                          <strong>Date:</strong> <%= application.event.start_date.strftime('%B %d') %> - <%= application.event.end_date.strftime('%d, %Y') %>
-                        <% end %>
+                        <strong>Applied:</strong> <%= application.created_at.strftime('%B %d, %Y') %>
                       </p>
                       <p class="mb-1"><strong>Food Truck:</strong> <%= application.food_truck.name %></p>
                       <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
-                      <span class="badge bg-danger">Rejected</span>
-                    </div>
-                    <%= link_to "View More", event_application_path(application), class: "btn btn-primary btn-sm" %>
-                  </div>
+                      <% new_count = new_messages_count(application) %>
+                      <% if new_count > 0 %>
+                      <p class="mb-1"><strong>New Messages:</strong> <span class="badge bg-dark badge-new-messages"><%= new_count > 9 ? "9+" : new_count %></span></p>
+                      <% end %>
+                     <p class="mb-1">
+                    <%= link_to "View More", event_application_path(application), class: "btn btn-dark btn-sm mt-2" %>
+                    
+                  </p>
+                      
+                    
                 </li>
               <% end %>
             </ul>

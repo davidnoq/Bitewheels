@@ -12,9 +12,9 @@ class EventsController < ApplicationController
               .per(12)
     authorize @events
 
-    @published_events = @events.select { |event| event.status == 'published' }
-    @drafted_events = @events.select { |event| event.status == 'draft' }
-    @completed_events = @events.select { |event| event.status == 'completed' } # Add this line
+    @published_events = @events.where(status: 'published').order(start_date: :desc)
+    @drafted_events = @events.where(status: 'draft').order(start_date: :desc)
+    @completed_events = @events.where(status: 'completed').order(start_date: :desc)
 
     
     if current_user&.eventorganizer?
@@ -62,11 +62,10 @@ class EventsController < ApplicationController
     end
   
     # Final pagination and authorization
-    @events = @events.page(params[:page]).per(12)
+    @events = @events.order(start_date: :desc).page(params[:page]).per(12)
     authorize @events
   
-    @published_events = @events.where(status: 'published')
-    @drafted_events = @events.where(status: 'draft')
+    
   
     render :index
   end
@@ -156,6 +155,9 @@ class EventsController < ApplicationController
     authorize @event
 
     if @event.save
+      if params[:event][:use_ai_photo] == '1' # Checkbox is checked
+        GenerateAiEventPhotoJob.perform_later(@event.id)
+      end
       redirect_to @event, notice: "Event was successfully created."
     else
       render :new, status: :unprocessable_entity
@@ -200,7 +202,7 @@ class EventsController < ApplicationController
   end
 
   def event_params
-    permitted = [:name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude, :credit_cost, :description, :searching_for_cuisine]
+    permitted = [:name, :address, :start_date, :end_date, :expected_attendees, :foodtruck_amount, :latitude, :longitude, :credit_cost, :description, :searching_for_cuisine, :photo, :use_ai_photo ]
     permitted << :status if user_signed_in? && current_user.eventorganizer?
     params.require(:event).permit(permitted)
   end

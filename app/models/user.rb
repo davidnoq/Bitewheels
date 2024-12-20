@@ -7,7 +7,8 @@ class User < ApplicationRecord
   has_many :food_trucks, dependent: :destroy
   has_many :messages, dependent: :destroy
   ROLES = %w[user eventorganizer foodtruckowner]
-
+  has_many :user_event_application_reads
+  has_many :read_event_applications, through: :user_event_application_reads, source: :event_application
   # Ensure that the role is included in the list of ROLES
   validates :role, inclusion: { in: ROLES }
   validates :credits, numericality: { greater_than_or_equal_to: 0 }

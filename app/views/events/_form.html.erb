@@ -28,6 +28,25 @@
 
         <!-- Event Form -->
         <%= form_with(model: event, class: "px-3") do |form| %>
+           <!-- Optional: Use AI to Generate Photo -->
+         <% if event.new_record? %>
+          <div class="mb-3 form-check">
+            <%= form.check_box :use_ai_photo, class: "form-check-input", id: "use_ai_photo_checkbox" %>
+            <%= form.label :use_ai_photo, "Use AI to generate event photo", class: "form-check-label", for: "use_ai_photo_checkbox" %>
+          </div>
+        <% end %>
+
+        <!-- Event Photo Upload Field -->
+        <div class="mb-3" id="photo_upload_field">
+          <%= form.label :photo, "Event Photo", class: "form-label fw-semibold text-dark" %>
+          <%= form.file_field :photo, class: "form-control", accept: "image/*" %>
+          <% if event.photo.attached? && event.persisted? %>
+            <div class="mt-2">
+              <%= image_tag event.photo, size: "200x200" %>
+            </div>
+          <% end %>
+        </div>
+        
           <div class="row">
             <div class="col-md-6 mb-3">
               <%= form.label :name, class: "form-label fw-semibold text-dark" %>

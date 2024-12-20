@@ -43,4 +43,11 @@ class MailgunMailer
   
       @mg_client.send_message(@domain, message_params)
     end
+
+    def send_unread_messages_email(to:, event_application:, unread_count:)
+      subject = "You have #{unread_count} new messages in #{event_application.event.name}"
+      text = "Hello,\n\nYou have #{unread_count} new messages in your conversation regarding #{event_application.event.name}.\n\nPlease check your chat to stay updated.\n\nRegards,\nBiteWheels Team"
+  
+      send_email(to: to, subject: subject, text: text)
+    end
   end

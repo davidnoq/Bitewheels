@@ -5,6 +5,7 @@ class Event < ApplicationRecord
   has_many :event_applications, dependent: :destroy
   has_many :food_trucks, through: :event_applications
   belongs_to :organizer, class_name: 'User', foreign_key: 'user_id'
+  has_one_attached :photo  # Add this line
 
   # Enums
   enum status: { draft: 0, published: 1, completed: 2}
@@ -28,8 +29,9 @@ class Event < ApplicationRecord
   after_validation :geocode, if: :will_save_change_to_address?
   after_update :update_event_application_slugs, if: :saved_change_to_name?
   friendly_id :name, use: %i[slugged history finders]
-
+  attr_accessor :use_ai_photo
  # After
+ validate :ai_photo_and_photo_upload_cannot_coexist
 def should_generate_new_friendly_id?
   will_save_change_to_name? || slug.blank?
 end
@@ -67,11 +69,16 @@ end
   end
 
   private
+  
   def update_event_application_slugs
     event_applications.find_each do |application|
       application.regenerate_slug = true
       application.save
     end
   end
-
+  def ai_photo_and_photo_upload_cannot_coexist
+    if use_ai_photo.present? && (use_ai_photo == '1' || use_ai_photo == true) && photo.attached?
+      errors.add(:base, "Cannot upload a photo when AI photo generation is selected.")
+    end
+  end
 end

@@ -42,18 +42,11 @@
         <div class="card-body">
           <p class="mb-3">
             <strong>Status:</strong>
-            <% case @event_application.status %>
-            <% when 'pending' %>
-              <span class="badge bg-warning text-dark">Pending</span>
-            <% when 'approved' %>
-              <span class="badge bg-success">Approved</span>
-            <% when 'rejected' %>
-              <span class="badge bg-danger">Rejected</span>
-            <% else %>
-              <span class="badge bg-secondary"><%= @event_application.status.capitalize %></span>
-            <% end %>
+            <span class="badge <%= @event_application.status == 'approved' ? 'bg-success' : (@event_application.status == 'rejected' ? 'bg-danger' : 'bg-warning') %> fs-6">
+              <%= @event_application.status.upcase %>
+            </span>
           </p>
-          <%= link_to "Manage Food Truck", event_application_food_truck_path(@event_application), class: "btn btn-dark btn-lg  mb-3" %>
+          <%= link_to "Manage Food Truck", event_application_food_truck_path(@event_application), class: "btn btn-dark btn-sm  mb-3" %>
         </div>
       </div>
  <div class="card mt-4">

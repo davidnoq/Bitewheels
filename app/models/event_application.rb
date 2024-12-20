@@ -17,7 +17,8 @@ class EventApplication < ApplicationRecord
   validates :food_truck_id, uniqueness: { scope: :event_id, message: "has already applied to this event." }
   validates :food_truck, presence: true
   validates :event, presence: true
-
+  has_many :user_event_application_reads
+  has_many :users_who_read, through: :user_event_application_reads, source: :user
   validate :user_has_enough_credits, on: :create
 
   # Callbacks

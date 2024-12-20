@@ -29,20 +29,50 @@
      (controller_name == 'pages' && action_name == 'purchase_credits') %>
     
     <% if should_render_sidebar %>
-      <!-- Render Sidebar for Dashboard -->
-      <div class="d-flex">
-        <%= render 'shared/sidebar' %>
-        <div class="flex-fill">
-          <%= yield %>
+  <!-- Render Sidebar for Dashboard -->
+  <div class="d-flex">
+     <%= render 'shared/sidebar' %>
+    <!-- Main Content Wrapper -->
+    <div class="flex-grow-1" style="margin-left: 250px; min-height: 100vh;">
+      <!-- Flash Messages -->
+      <% if flash[:notice] %>
+        <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+          <%= flash[:notice] %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
+      <% elsif flash[:alert] %>
+        <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+          <%= flash[:alert] %>
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      <% end %>
+
+      <!-- Yield Content -->
+      <div class="flex-grow-1 justify-content-center " style="min-height: calc(100vh - 4rem);">
+        <%= yield %>
       </div>
-    <% else %>
-      <!-- Render Top Navbar for Other Pages -->
-      <%= render 'shared/top_navbar' %>
+    </div>
+  </div>
+<% else %>
+  <!-- Render Top Navbar for Other Pages -->
+  <%= render 'shared/top_navbar' %>
+  <!-- Flash Messages -->
+  <% if flash[:notice] %>
+    <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+      <%= flash[:notice] %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% elsif flash[:alert] %>
+    <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
+      <%= flash[:alert] %>
+      <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+  <% end %>
       <div class="flex-fill">
         <%= yield %>
       </div>
-    <% end %>
+<% end %>
+
        
    
   </body>

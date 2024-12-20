@@ -1,17 +1,6 @@
 <% content_for :title, "Home Page" %>
 
-<!-- Flash Messages -->
-<% if flash[:notice] %>
-  <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 80%;" role="alert">
-    <%= flash[:notice] %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-<% elsif flash[:alert] %>
-  <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 80%;" role="alert">
-    <%= flash[:alert] %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-<% end %>
+
 
 <!-- Hero Section -->
 <div class="d-flex align-items-center justify-content-center text-center text-black" style="background: white; min-height: 50vh;">

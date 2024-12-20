@@ -3,18 +3,7 @@
 <%# Set the Page Title %>
 <% content_for :title, @event.name %>
 
-<!-- Flash Messages -->
-<% if flash[:notice] %>
-  <div class="alert alert-success alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
-    <%= flash[:notice] %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-<% elsif flash[:alert] %>
-  <div class="alert alert-danger alert-dismissible fade show text-center mx-auto mt-3" style="max-width: 60%;" role="alert">
-    <%= flash[:alert] %>
-    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-  </div>
-<% end %>
+
 
 <div class="p-5">
   <!-- Header Section with Heading and Back Button -->
@@ -52,8 +41,16 @@
         <% end %>
         
         
-
+ <!-- Display Event Photo -->
+  <% if @event.photo.attached? %>
+    <div class="mb-4 align-items-center justify-content-center">
+      <%= image_tag @event.photo.variant(resize_to_limit: [400, 400]), alt: "Photo for #{@event.name}" %>
+    </div>
+  <% else %>
+    <p>No photo available for this event.</p>
+  <% end %>
         <!-- Event Information -->
+
         <div class="mb-4">
           
 

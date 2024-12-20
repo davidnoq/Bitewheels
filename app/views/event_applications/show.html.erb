@@ -26,9 +26,9 @@
     </p>
     <div class="mb-3">
       <div class="d-flex justify-content-center align-items-center gap-2">
-        <%= link_to "Approve Application", approve_event_event_application_path(@event_application), method: :patch, data: { confirm: "Are you sure you want to approve this application?" }, class: "btn btn-success" %>
-        <%= link_to "Reject Application", reject_event_event_application_path(@event_application), method: :patch, data: { confirm: "Are you sure you want to reject this application?" }, class: "btn btn-danger" %>
-      </div>
+  <%= button_to "Approve Application", approve_event_event_application_path(@event, @event_application), method: :patch, data: { confirm: "Are you sure you want to approve this application?" }, class: "btn btn-success" %>
+  <%= button_to "Reject Application", reject_event_event_application_path(@event, @event_application), method: :patch, data: { confirm: "Are you sure you want to reject this application?" }, class: "btn btn-danger" %>
+</div>
     </div>
     <hr class="my-4">
   </div>
@@ -40,10 +40,15 @@
       <!-- Food Truck Information Card -->
       <div class="card shadow-sm">
         <div class="card-body">
-          <!-- Enlarged Food Truck Name -->
-          <h3 class="fw-bold text-uppercase mb-3">
-            <i class="bi bi-truck me-2"></i><%= @event_application.food_truck.name %>
-          </h3>
+          <!-- Enlarged Food Truck Name and Status -->
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="fw-bold text-uppercase mb-0">
+              <i class="bi bi-truck me-2"></i><%= @event_application.food_truck.name %>
+            </h3>
+            <span class="badge <%= @event_application.status == 'approved' ? 'bg-success' : (@event_application.status == 'rejected' ? 'bg-danger' : 'bg-warning') %> fs-6">
+              <%= @event_application.status.upcase %>
+            </span>
+          </div>
           <div class="mb-3 d-flex align-items-center">
   <i class="bi bi-telephone-fill me-2"></i>
   <span><%= @event_application.food_truck.user.phone_number %></span>
@@ -94,70 +99,75 @@
 
           <!-- Enhanced Food Images with Single Modal -->
           <div class="mb-4 position-relative">
-            <h5 class="fw-semibold text-dark d-flex align-items-center">
-              <i class="bi bi-image me-2 fs-6"></i> Food Images
-            </h5>
-            <% if @event_application.food_truck.food_images.attached? %>
-              <% first_image = @event_application.food_truck.food_images.first %>
-              <%= link_to '#foodImagesGalleryModal', data: { bs_toggle: "modal" } do %>
-                <%= image_tag url_for(first_image), class: 'img-fluid rounded prominent-image', style: 'width: 100%; height: auto; object-fit: cover;' %>
-              <% end %>
+  <h5 class="fw-semibold text-dark d-flex align-items-center">
+    <i class="bi bi-image me-2 fs-6"></i> Food Images
+  </h5>
+  
+  <% if @event_application.food_truck.food_images.attached? %>
+    <div class="d-flex gap-2">
+      <!-- Main Preview Image -->
+      <% first_image = @event_application.food_truck.food_images.first %>
+      <%= link_to '#foodImagesGalleryModal', data: { bs_toggle: "modal" }, class: "flex-grow-1" do %>
+        <%= image_tag url_for(first_image), class: 'img-fluid rounded', style: 'width: 100%; height: 300px; object-fit: cover;' %>
+      <% end %>
 
-              <% additional_images_count = @event_application.food_truck.food_images.count - 1 %>
-              <% if additional_images_count > 0 %>
-                <span class="position-absolute top-0 end-0 m-2 btn btn-dark btn-sm rounded-circle opacity-75">
-                  +<%= additional_images_count %>
-                </span>
-              <% end %>
+      <!-- Additional Image Previews in 2 Columns -->
+      <div class="d-flex flex-column gap-2" style="width: 40px;">
+        <% @event_application.food_truck.food_images.drop(1).take(2).each do |image| %>
+          <%= link_to '#foodImagesGalleryModal', data: { bs_toggle: "modal" } do %>
+            <%= image_tag url_for(image), class: 'rounded', style: 'width: 40px; height: 40px; object-fit: cover;' %>
+          <% end %>
+        <% end %>
+        
+        <% remaining_count = @event_application.food_truck.food_images.count - 3 %>
+        <% if remaining_count > 0 %>
+          <%= link_to '#foodImagesGalleryModal', data: { bs_toggle: "modal" }, class: "position-relative" do %>
+            <div class="rounded bg-dark d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+              <span class="text-white small">+<%= remaining_count %></span>
+            </div>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
 
-              <!-- Single Modal for Gallery and Main Image View -->
-              <div class="modal fade" id="foodImagesGalleryModal" tabindex="-1" aria-labelledby="foodImagesGalleryModalLabel" aria-hidden="true">
-                <div class="modal-dialog modal-dialog-scrollable modal-lg">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h5 class="modal-title" id="foodImagesGalleryModalLabel">Food Image Gallery</h5>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <!-- Main Large Image Display -->
-                      <div class="text-center mb-4">
-                        <img id="mainGalleryImage" src="<%= url_for(first_image) %>" alt="Main Image" class="img-fluid rounded" style="max-height: 1000px; object-fit: contain;" />
-                      </div>
-
-                      <!-- Thumbnails -->
-                      <div class="row g-3">
-                        <% @event_application.food_truck.food_images.each do |image| %>
-                          <div class="col-6 col-md-4">
-                            <a href="#" class="d-block gallery-thumbnail-trigger" data-image_url="<%= url_for(image) %>">
-                              <%= image_tag url_for(image), class: 'img-fluid rounded', style: 'cursor: pointer;' %>
-                            </a>
-                          </div>
-                        <% end %>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <!-- JavaScript to handle thumbnail clicks -->
-              <script>
-                document.addEventListener('DOMContentLoaded', function() {
-                  var thumbnailTriggers = document.querySelectorAll('.gallery-thumbnail-trigger');
-                  var mainGalleryImage = document.getElementById('mainGalleryImage');
-
-                  thumbnailTriggers.forEach(function(trigger) {
-                    trigger.addEventListener('click', function(event) {
-                      event.preventDefault();
-                      var imageUrl = this.dataset.image_url;
-                      mainGalleryImage.src = imageUrl;
-                    });
-                  });
-                });
-              </script>
-            <% else %>
-              <p><em>No food images uploaded.</em></p>
-            <% end %>
+    <!-- Single Modal for Gallery and Main Image View -->
+    <div class="modal fade" id="foodImagesGalleryModal" tabindex="-1" aria-labelledby="foodImagesGalleryModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-dialog-scrollable modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="foodImagesGalleryModalLabel">Food Image Gallery</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
           </div>
+          <div class="modal-body">
+            <!-- Main Large Image Display -->
+            <div class="text-center mb-4">
+              <img id="mainGalleryImage" src="<%= url_for(first_image) %>" alt="Main Image" class="img-fluid rounded" style="max-height: 1000px; object-fit: contain;" />
+            </div>
+
+            <!-- Thumbnails -->
+            <div class="row g-3">
+              <% @event_application.food_truck.food_images.each do |image| %>
+                <div class="col-6 col-md-4">
+                  <img src="<%= url_for(image) %>" class="img-fluid rounded gallery-thumbnail" style="cursor: pointer;" onclick="updateMainImage(this.src)" />
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- JavaScript to Handle Thumbnail Clicks -->
+    <script>
+      function updateMainImage(newSrc) {
+        document.getElementById('mainGalleryImage').src = newSrc;
+      }
+    </script>
+  <% else %>
+    <p class="text-muted">No images available</p>
+  <% end %>
+</div>
+
 
           <ul class="nav nav-tabs mb-4 justify-content-center" id="applicationTabs" role="tablist">
             <li class="nav-item" role="presentation">

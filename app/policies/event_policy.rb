@@ -31,11 +31,13 @@ class EventPolicy < ApplicationPolicy
     end
   end
   def address?
-    return false unless user&.foodtruckowner? # Only food truck owners are concerned
-
+    return true if user&.eventorganizer? # Allow event organizers to always view the address
+    return false unless user&.foodtruckowner? # Only food truck owners are concerned otherwise
+  
     # Check if any of the user's food trucks have applied to this event
     user.food_trucks.joins(:event_applications).where(event_applications: { event_id: record.id }).exists?
   end
+  
   def complete?
     user&.eventorganizer?
   end

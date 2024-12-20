@@ -22,6 +22,6 @@
 set :output, "log/cron.log"
 set :environment, "development" # or "development" as needed
 
-every 1.minutes do
+every 1.days do
   runner "CompleteEndedEventsJob.perform_later"
 end

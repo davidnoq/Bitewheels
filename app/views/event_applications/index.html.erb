@@ -9,7 +9,7 @@
       <i class="bi bi-clipboard2-pulse me-2"></i> <%= @event.name %> - <%= @event.status != 'completed' ? 'Applications' : 'Previous Trucks' %>
     </h2>
     <hr class="my-4">
-    <%= link_to "Back to Event", event_path(@event), class: "btn btn-secondary btn-lg mt-3" %>
+    <%= link_to "Back to Event", event_path(@event), class: "btn btn-dark btn-lg mt-3" %>
   </div>
 
  <!-- Instruction Section -->
@@ -46,11 +46,20 @@
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
                       <h5 class="mb-1"><%= application.food_truck.name %></h5>
+                       <p class="mb-1">
+                        <strong>Applied:</strong> <%= application.created_at.strftime('%B %d, %Y') %>
+                      </p>
                       <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
-                      <span class="badge bg-success">Approved</span>
-                    </div>
-                    <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-primary btn-sm" %>
-                  </div>
+                      <% new_count = new_messages_count(application) %>
+                      <% if new_count > 0 %>
+                      <p class="mb-1"><strong>New Messages:</strong> <span class="badge bg-dark badge-new-messages"><%= new_count > 9 ? "9+" : new_count %></span></p>
+                      <% end %>
+                     <p class="mb-1">
+                    <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-dark btn-sm mt-2" %>
+                    
+                  </p>
+                      
+                    
                 </li>
               <% end %>
             </ul>
@@ -78,11 +87,21 @@
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
                       <h5 class="mb-1"><%= application.food_truck.name %></h5>
+                       <p class="mb-1">
+
+                        <strong>Applied:</strong> <%= application.created_at.strftime('%B %d, %Y') %>
+                      </p>
                       <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
-                      <span class="badge bg-warning text-dark">Pending</span>
-                    </div>
-                    <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-primary btn-sm" %>
-                  </div>
+                      <% new_count = new_messages_count(application) %>
+                      <% if new_count > 0 %>
+                      <p class="mb-1"><strong>New Messages:</strong> <span class="badge bg-dark badge-new-messages"><%= new_count > 9 ? "9+" : new_count %></span></p>
+                      <% end %>
+                     <p class="mb-1">
+                    <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-dark btn-sm mt-2" %>
+                    
+                  </p>
+                      
+                    
                 </li>
               <% end %>
             </ul>
@@ -110,11 +129,20 @@
                   <div class="d-flex justify-content-between align-items-center">
                     <div>
                       <h5 class="mb-1"><%= application.food_truck.name %></h5>
+                       <p class="mb-1">
+                        <strong>Applied:</strong> <%= application.created_at.strftime('%B %d, %Y') %>
+                      </p>
                       <p class="mb-1"><strong>Cuisine:</strong> <%= application.food_truck.cuisine %></p>
-                      <span class="badge bg-danger">Rejected</span>
-                    </div>
-                    <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-primary btn-sm" %>
-                  </div>
+                      <% new_count = new_messages_count(application) %>
+                      <% if new_count > 0 %>
+                      <p class="mb-1"><strong>New Messages:</strong> <span class="badge bg-dark badge-new-messages"><%= new_count > 9 ? "9+" : new_count %></span></p>
+                      <% end %>
+                     <p class="mb-1">
+                    <%= link_to "View More", event_event_application_path(@event, application), class: "btn btn-dark btn-sm mt-2" %>
+                    
+                  </p>
+                      
+                    
                 </li>
               <% end %>
             </ul>
