@@ -77,7 +77,7 @@ gem 'kaminari'
 gem 'stripe'
 gem 'geocoder'
 gem 'mailgun-ruby'
-gem 'firebase-admin-sdk', '~> 0.1.2'
+gem 'firebase-admin-sdk', '~> 0.3.1'
 gem "friendly_id", "~> 5.5"
 gem 'ruby-openai'
 gem 'image_processing', '~> 1.2'
