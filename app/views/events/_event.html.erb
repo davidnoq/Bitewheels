@@ -68,7 +68,7 @@
         width="100%"
         height="300"
         frameborder="0" style="border:0"
-        src="https://www.google.com/maps/embed/v1/view?key=<%= Rails.application.credentials.google_maps[:api_key] %>&center=<%= event.latitude %>,<%= event.longitude %>&zoom=14" allowfullscreen>
+        src="https://www.google.com/maps/embed/v1/view?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&center=<%= event.latitude %>,<%= event.longitude %>&zoom=14" allowfullscreen>
       </iframe>
     </div>
   <% elsif local_assigns[:show_map] %>
