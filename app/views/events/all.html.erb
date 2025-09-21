@@ -113,4 +113,4 @@
     initIndexAutocomplete();
   });
 </script>
-<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= Rails.application.credentials.google_maps[:api_key] %>&libraries=places&callback=initIndexAutocomplete"></script>
+<script async defer src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&libraries=places&callback=initIndexAutocomplete"></script>
