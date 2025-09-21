@@ -19,7 +19,4 @@ test:
 
 production:
   <<: *default
-  database: bitewheels_production
-  username: <%= ENV["BITEWHEELS_DATABASE_USERNAME"] %>
-  password: <%= ENV["BITEWHEELS_DATABASE_PASSWORD"] %>
-  host: <%= ENV["BITEWHEELS_DATABASE_HOST"] %>
+  url: <%= ENV['DATABASE_URL'] %>
